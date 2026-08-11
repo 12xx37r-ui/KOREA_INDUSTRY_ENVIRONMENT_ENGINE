@@ -47,3 +47,19 @@ def test_valuation_history_is_one_snapshot_per_iso_week(tmp_path: Path):
     data = read_json(tmp_path / "output" / "validation" / "industry_valuation_history.json", {})
     assert len(data["snapshots"]) == 1
     assert data["snapshots"][0]["industries"]["semiconductor"]["median_per"] == 21.0
+
+
+def test_valuation_history_mobile_visible_mirror_is_identical(tmp_path: Path):
+    rows = {
+        "semiconductor": {"median_per": 65.335, "median_pbr": 8.12},
+        "finance": {"median_per": 9.9, "median_pbr": 0.815},
+    }
+    returned = _write_valuation_history(tmp_path, "20260811", rows)
+    canonical = read_json(tmp_path / "output" / "validation" / "industry_valuation_history.json", {})
+    visible = read_json(tmp_path / "output" / "industry_valuation_history.json", {})
+    assert returned == canonical == visible
+    assert canonical["data_kind"] == "industry_valuation_history"
+    assert canonical["snapshot_count"] == 1
+    assert canonical["latest_week"] == "2026-W33"
+    assert "median_per" in canonical["snapshots"][0]["industries"]["semiconductor"]
+    assert "current_score" not in canonical["snapshots"][0]["industries"]["semiconductor"]
