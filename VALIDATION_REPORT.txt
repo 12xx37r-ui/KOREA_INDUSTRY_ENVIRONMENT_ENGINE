@@ -1,45 +1,19 @@
-KOREA INDUSTRY ENVIRONMENT ENGINE V1.0.3
-Historical Valuation + OOS Metadata Sync Patch
+V1.0.4 validation
 
-핵심 수정
-1) 산업 밸류에이션 구조 편향 보정
-- 기존: 업종 PER/PBR을 KOSPI/KOSDAQ 전체시장 중앙값과 직접 비교해 고성장 업종이 구조적으로 과도한 고평가 점수를 받을 수 있었음.
-- 수정: 동일 산업의 주간 PER/PBR 이력을 기존 8회 KRX bulk 호출에서 자동 축적.
-- 역사표본 8개 미만: 전체시장 횡단면 점수를 50점 방향으로 80% 축소(영향 20%만 인정), 품질 최대 35/100.
-- 역사표본 8개 이상: 산업 자체 역사 PER/PBR을 1순위로 사용하고 전체시장 횡단면은 보조로 축소.
-- 역사표본 16개 이상에서 역사기준 비중이 최대 90%까지 상승.
-- 같은 ISO 주간에는 1개 snapshot만 저장하여 Action 반복실행으로 표본수가 부풀려지지 않음.
-- LKG(stale) 데이터는 역사표본에 기록하지 않음.
-- 신규 외부/API/KRX 호출 0개.
-
-2) prospective OOS 출력 동기화
-- 기존: forecast_registry를 갱신해 25건을 등록해도 각 산업 내부 prospective_validation 블록은 등록 전 값(0건)을 유지할 수 있었음.
-- 수정: registry update 직후 25개 산업을 로컬에서 1회 재계산하여 embedded metadata와 engine_health/latest가 동일한 최신 summary를 사용.
-- 네트워크/API 호출 없음.
-
-3) 출력 진단 강화
-- direct_market에 valuation_method / valuation_history_ready / valuation_history_samples / raw cross-section score / historical score 추가.
-- engine_health에 valuation_history_ready_industry_count / total / sampling 추가.
-- quality에 industry_historical_valuation_available / samples / method 추가.
-
-실제 사용자 출력 기반 보정 예
-- 반도체 raw 횡단면 valuation 11.25 -> 역사 미축적 초기 보정 42.25, 품질 35.
-- 전자부품 raw 횡단면 valuation 18.87 -> 역사 미축적 초기 보정 43.774, 품질 35.
-이는 산업 자체 역사자료가 없는 상태에서 은행/철강 등 저멀티플 업종과 직접 비교해 반도체/성장산업을 극단적으로 고평가 처리하는 문제를 막기 위한 품질가중 보정이며, 주가에 맞춰 점수를 올리는 방식이 아님.
+수정 목적
+- 모바일에서 output/industry_environment_history.json과 valuation history를 혼동하지 않도록 valuation history를 output 최상단에도 생성.
+- canonical output/validation/industry_valuation_history.json은 유지.
+- 두 파일은 동일 in-memory payload에서 동시에 기록되어 내용 불일치 방지.
+- valuation history 파일에 data_kind / snapshot_count / latest_week 메타데이터 추가.
+- engine_health에 valuation history snapshot 수와 경로를 노출.
 
 검증
-- python -m compileall -q src tests : PASS
-- 전체 pytest : 23 passed
-- 관련 집중 pytest : 8 passed
-- KRX 정상 bulk call budget 회귀: 8 calls 유지
-- 기업별 live calls: 0 유지
-- pykrx API 호출 코드 개수: V1.0.2 대비 증가 0
-- sparse valuation neutralization regression: PASS
-- sufficient history own-sector anchor regression: PASS
-- same-week history dedup regression: PASS
-- prospective registered_forecasts metadata sync regression: PASS
-
-주의
-- 실제 산업별 역사 PER/PBR은 앞으로 매주 자동 축적됩니다. 첫 V1.0.3 실행 직후에는 history_samples=0 상태에서 현재 횡단면 점수를 강하게 중립축소합니다.
-- 8개 주간표본부터 산업 자기역사 앵커가 활성화됩니다.
-- 별도 과거 KRX backfill을 하지 않은 이유는 외부 호출량을 급증시키지 않기 위해서입니다.
+- Python compileall: PASS
+- pytest: 24 passed
+- valuation history ISO-week 중복 방지: PASS
+- canonical/visible valuation history object equality: PASS
+- valuation history에 median_per/median_pbr 포함: PASS
+- forecast current_score가 valuation history에 섞이지 않음: PASS
+- 신규 외부 API / KRX / GitHub 호출: 0
+- 기존 bulk/local 계산 구조 변경 없음
+- 점(.)으로 시작하는 폴더: 0
