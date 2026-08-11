@@ -6,284 +6,147 @@
     "medical_devices"
   ],
   "current": {
-    "score": 46.3,
-    "band": "중립",
-    "quality_score": 76.4,
-    "data_coverage_pct": 100,
-    "quality_weighted_coverage_pct": 64.6,
+    "score": null,
+    "band": "데이터 부족",
+    "quality_score": 0.0,
+    "data_coverage_pct": 0.0,
+    "quality_weighted_coverage_pct": 0.0,
     "factors": {
       "earnings_momentum": {
-        "score": 50.29,
-        "quality": 53.9,
-        "available": true,
-        "source": "산업붐 실물·상업화 + 한국시장 이익환경 대용치",
-        "detail": "테마 연결 산업은 실물·상업화 신호를 우선하고, 미연결 산업은 한국시장 후행 EPS 대용치를 축소 사용합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "demand_cycle": {
-        "score": 45.76,
-        "quality": 55.7,
-        "available": true,
-        "source": "산업 선행 실물신호 + 글로벌 고용·소비·경기",
-        "detail": "산업 테마의 실물·사업화 흐름과 글로벌 수요 환경을 산업별 소비민감도로 결합합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "pricing_margin": {
-        "score": 49.32,
-        "quality": 77.5,
-        "available": true,
-        "source": "산업 마진·상업화 + 글로벌 원가압력",
-        "detail": "원가 소비 산업과 원자재 생산 산업의 방향을 반대로 적용합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "financial_conditions": {
-        "score": 45.92,
-        "quality": 86.7,
-        "available": true,
-        "source": "한국 금리·원화·유동성·신용",
-        "detail": "{'rate_impulse': 0.1573, 'krw_weakness': -0.156, 'liquidity': 0.0923, 'credit_health': -0.9156}",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "market_internals": {
-        "score": 42.19,
-        "quality": 71.0,
-        "available": true,
-        "source": "KRX 대표바스켓 + 한국증시 직접환경 + 글로벌 주식환경",
-        "detail": "KRX는 시장 전체 표를 소수 회 호출한 뒤 업종 대표바스켓만 로컬 필터링합니다. 미래값은 현재 수급을 과도하게 연장하지 않고 검증형 글로벌 3개월 주식환경 비중을 높입니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "valuation": {
-        "score": 47.65,
-        "quality": 38.5,
-        "available": true,
-        "source": "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
-        "detail": "산업 자체 역사표본이 아직 0개라 초기구간입니다. 전체시장 대비 PER/PBR은 산업구조 차이를 과대평가하지 않도록 50점 방향으로 축소하고 품질을 제한합니다.",
-        "proxy": true
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+        "proxy": false
       }
     },
-    "contributions": [
-      {
-        "factor": "earnings_momentum",
-        "label": "산업 실적 모멘텀",
-        "score": 50.29,
-        "quality": 53.9,
-        "base_weight": 0.2,
-        "effective_weight": 0.1078,
-        "normalized_weight": 0.167,
-        "contribution_points": 0.05,
-        "available": true
-      },
-      {
-        "factor": "demand_cycle",
-        "label": "수요·경기",
-        "score": 45.76,
-        "quality": 55.7,
-        "base_weight": 0.2,
-        "effective_weight": 0.1114,
-        "normalized_weight": 0.1725,
-        "contribution_points": -0.73,
-        "available": true
-      },
-      {
-        "factor": "pricing_margin",
-        "label": "가격·마진",
-        "score": 49.32,
-        "quality": 77.5,
-        "base_weight": 0.12,
-        "effective_weight": 0.093,
-        "normalized_weight": 0.144,
-        "contribution_points": -0.1,
-        "available": true
-      },
-      {
-        "factor": "financial_conditions",
-        "label": "금융환경",
-        "score": 45.92,
-        "quality": 86.7,
-        "base_weight": 0.16,
-        "effective_weight": 0.1387,
-        "normalized_weight": 0.2149,
-        "contribution_points": -0.88,
-        "available": true
-      },
-      {
-        "factor": "market_internals",
-        "label": "증시 내부환경",
-        "score": 42.19,
-        "quality": 71.0,
-        "base_weight": 0.22,
-        "effective_weight": 0.1562,
-        "normalized_weight": 0.2419,
-        "contribution_points": -1.89,
-        "available": true
-      },
-      {
-        "factor": "valuation",
-        "label": "밸류에이션",
-        "score": 47.65,
-        "quality": 38.5,
-        "base_weight": 0.1,
-        "effective_weight": 0.0385,
-        "normalized_weight": 0.0596,
-        "contribution_points": -0.14,
-        "available": true
-      }
-    ]
+    "contributions": [],
+    "status": "insufficient_data",
+    "reason": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다."
   },
   "forecast_3m": {
-    "score": 46.4,
-    "band": "중립",
-    "delta_points": 0.1,
-    "direction": "유지",
-    "change_strength": "거의 변화 없음",
-    "quality_score": 73.4,
-    "data_coverage_pct": 100,
-    "quality_weighted_coverage_pct": 63.7,
+    "score": null,
+    "band": "데이터 부족",
+    "quality_score": 0.0,
+    "data_coverage_pct": 0.0,
+    "quality_weighted_coverage_pct": 0.0,
     "factors": {
       "earnings_momentum": {
-        "score": 49.38,
-        "quality": 51.6,
-        "available": true,
-        "source": "산업붐 실물·상업화 + 한국시장 이익환경 대용치",
-        "detail": "테마 연결 산업은 실물·상업화 신호를 우선하고, 미연결 산업은 한국시장 후행 EPS 대용치를 축소 사용합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "demand_cycle": {
-        "score": 45.84,
-        "quality": 52.8,
-        "available": true,
-        "source": "산업 선행 실물신호 + 글로벌 고용·소비·경기",
-        "detail": "산업 테마의 실물·사업화 흐름과 글로벌 수요 환경을 산업별 소비민감도로 결합합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "pricing_margin": {
-        "score": 49.04,
-        "quality": 74.7,
-        "available": true,
-        "source": "산업 마진·상업화 + 글로벌 원가압력",
-        "detail": "원가 소비 산업과 원자재 생산 산업의 방향을 반대로 적용합니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "financial_conditions": {
-        "score": 42.45,
-        "quality": 83.1,
-        "available": true,
-        "source": "한국 금리·원화·유동성·신용",
-        "detail": "{'rate_impulse': 0.0125, 'krw_weakness': -0.3568, 'liquidity': 0.1264, 'credit_health': -0.9156}",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "market_internals": {
-        "score": 49.56,
-        "quality": 71.1,
-        "available": true,
-        "source": "KRX 대표바스켓 + 한국증시 직접환경 + 글로벌 주식환경",
-        "detail": "KRX는 시장 전체 표를 소수 회 호출한 뒤 업종 대표바스켓만 로컬 필터링합니다. 미래값은 현재 수급을 과도하게 연장하지 않고 검증형 글로벌 3개월 주식환경 비중을 높입니다.",
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
         "proxy": false
       },
       "valuation": {
-        "score": 47.42,
-        "quality": 27.3,
-        "available": true,
-        "source": "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
-        "detail": "산업 자체 역사표본이 아직 0개라 초기구간입니다. 전체시장 대비 PER/PBR은 산업구조 차이를 과대평가하지 않도록 50점 방향으로 축소하고 품질을 제한합니다.",
-        "proxy": true
+        "score": null,
+        "quality": 0.0,
+        "available": false,
+        "source": "산업실물지표 연결 대기",
+        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+        "proxy": false
       }
     },
-    "contributions": [
-      {
-        "factor": "earnings_momentum",
-        "label": "산업 실적 모멘텀",
-        "score": 49.38,
-        "quality": 51.6,
-        "base_weight": 0.15,
-        "effective_weight": 0.0774,
-        "normalized_weight": 0.1215,
-        "contribution_points": -0.08,
-        "available": true
-      },
-      {
-        "factor": "demand_cycle",
-        "label": "수요·경기",
-        "score": 45.84,
-        "quality": 52.8,
-        "base_weight": 0.3,
-        "effective_weight": 0.1584,
-        "normalized_weight": 0.2487,
-        "contribution_points": -1.03,
-        "available": true
-      },
-      {
-        "factor": "pricing_margin",
-        "label": "가격·마진",
-        "score": 49.04,
-        "quality": 74.7,
-        "base_weight": 0.12,
-        "effective_weight": 0.0896,
-        "normalized_weight": 0.1408,
-        "contribution_points": -0.14,
-        "available": true
-      },
-      {
-        "factor": "financial_conditions",
-        "label": "금융환경",
-        "score": 42.45,
-        "quality": 83.1,
-        "base_weight": 0.23,
-        "effective_weight": 0.1911,
-        "normalized_weight": 0.3001,
-        "contribution_points": -2.27,
-        "available": true
-      },
-      {
-        "factor": "market_internals",
-        "label": "증시 내부환경",
-        "score": 49.56,
-        "quality": 71.1,
-        "base_weight": 0.15,
-        "effective_weight": 0.1066,
-        "normalized_weight": 0.1675,
-        "contribution_points": -0.07,
-        "available": true
-      },
-      {
-        "factor": "valuation",
-        "label": "밸류에이션",
-        "score": 47.42,
-        "quality": 27.3,
-        "base_weight": 0.05,
-        "effective_weight": 0.0137,
-        "normalized_weight": 0.0214,
-        "contribution_points": -0.06,
-        "available": true
-      }
-    ],
+    "contributions": [],
+    "status": "insufficient_data",
+    "reason": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+    "delta_points": null,
+    "change_strength": "대기",
+    "direction": "대기",
     "top_positive_reasons": [],
-    "top_negative_reasons": [
-      {
-        "factor": "financial_conditions",
-        "label": "금융환경",
-        "points": -2.27,
-        "score": 42.45
-      },
-      {
-        "factor": "demand_cycle",
-        "label": "수요·경기",
-        "points": -1.03,
-        "score": 45.84
-      },
-      {
-        "factor": "pricing_margin",
-        "label": "가격·마진",
-        "points": -0.14,
-        "score": 49.04
-      },
-      {
-        "factor": "earnings_momentum",
-        "label": "산업 실적 모멘텀",
-        "points": -0.08,
-        "score": 49.38
-      }
-    ]
+    "top_negative_reasons": []
+  },
+  "forecast_3_6m": {
+    "score": null,
+    "direction": "대기",
+    "status": "insufficient_data",
+    "reason": "해당 기간의 산업 선행지표가 연결되지 않아 전망을 계산하지 않았습니다.",
+    "quality_score": 0.0,
+    "data_coverage_pct": 0.0,
+    "factors": {}
+  },
+  "forecast_6_12m": {
+    "score": null,
+    "direction": "대기",
+    "status": "insufficient_data",
+    "reason": "해당 기간의 산업 선행지표가 연결되지 않아 전망을 계산하지 않았습니다.",
+    "quality_score": 0.0,
+    "data_coverage_pct": 0.0,
+    "factors": {}
   },
   "direct_market": {
     "label": "의료기기·헬스테크",
@@ -326,52 +189,32 @@
     "stale": false
   },
   "theme_bridge": {
-    "available": true,
-    "current": 46.8425149,
-    "leading_3m": 46.6587038,
-    "quality": 56.07000000000001,
-    "themes": [
-      {
-        "theme_id": "SURGICAL_ROBOTICS",
-        "theme_name": "수술로봇",
-        "current_score": 48.03,
-        "leading_score_3m": 47.75,
-        "source_diffusion_percent": 40.0,
-        "prevalidation": true,
-        "industry_theme_relevance": 0.8
-      },
-      {
-        "theme_id": "ADVANCED_DIAGNOSTICS",
-        "theme_name": "첨단진단·액체생검",
-        "current_score": 45.65,
-        "leading_score_3m": 45.56,
-        "source_diffusion_percent": 40.0,
-        "prevalidation": true,
-        "industry_theme_relevance": 0.8
-      }
-    ],
-    "prevalidation": true,
-    "relevance_weight": 0.8
+    "available": false,
+    "current": null,
+    "leading_3m": null,
+    "quality": 0.0,
+    "themes": [],
+    "relevance_weight": 0.0
   },
   "stock_prediction_bridge": {
-    "allowed_as_auxiliary": true,
+    "allowed_as_auxiliary": false,
     "allowed_as_primary": false,
-    "bounded_direction_adjustment_points": -0.15,
-    "max_abs_adjustment_points": 5.0,
-    "signal_normalized": -0.0402,
-    "quality_score": 73.4,
+    "bounded_direction_adjustment_points": 0.0,
+    "max_abs_adjustment_points": 0.0,
+    "signal_normalized": 0.0,
+    "quality_score": 0.0,
     "validation_status": "PENDING",
-    "rule": "산업전망은 개별종목 방향예측의 보조 오버레이로만 사용하며, 자체 OOS가 통과하기 전 최대 영향도를 제한합니다."
+    "rule": "산업실물지표가 연결되기 전에는 종목 신호로 산업경기를 대체하지 않음"
   },
   "interpretation": {
-    "headline": "현재 중립 46/100 · 3개월 중립 46/100 · +0.1점 거의 변화 없음 유지",
-    "beginner": "현재 의료기기·헬스테크 산업환경은 중립 구간입니다. 3개월 예상은 46점으로 현재보다 0.1점 차이가 작아 투자 스탠스를 크게 바꿀 수준은 아닙니다.",
-    "warning": "점수는 산업환경의 상대적 유불리이며 해당 산업 모든 종목의 주가 상승·하락을 보장하지 않습니다."
+    "headline": "산업실물지표 연결 대기",
+    "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+    "warning": "생산·출하·재고·주문·가격·마진 등 산업 고유 데이터가 부족해 점수를 표시하지 않습니다."
   },
   "quality": {
-    "sector_specificity_score": 95.0,
-    "forecast_upstream_quality_score": 79.0,
-    "source_freshness_score": 88.6,
+    "sector_specificity_score": 0.0,
+    "forecast_upstream_quality_score": 0.0,
+    "source_freshness_score": 0.0,
     "prospective_validation": {
       "schema_version": "1.0.0",
       "status": "PENDING",
@@ -391,13 +234,20 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-11T12:13:47.552596+00:00"
+      "generated_at_utc": "2026-08-11T17:32:21.282422+00:00"
     },
-    "direct_sector_market_available": true,
-    "industry_specific_valuation_available": true,
-    "industry_historical_valuation_available": false,
-    "industry_valuation_history_samples": 0,
-    "industry_valuation_method": "provisional_cross_section_shrunk"
+    "data_status": "insufficient_data",
+    "current_metric_coverage": 0.0,
+    "leading_metric_coverage": 0.0
+  },
+  "score_model": {
+    "current": "industry_observed_metrics_only",
+    "future": "industry_leading_metrics_plus_sensitive_macro",
+    "data_status": "insufficient_data",
+    "current_inputs": [],
+    "leading_inputs": [],
+    "specialized_current_metrics": [],
+    "specialized_leading_metrics": []
   },
   "notes": ""
 }
