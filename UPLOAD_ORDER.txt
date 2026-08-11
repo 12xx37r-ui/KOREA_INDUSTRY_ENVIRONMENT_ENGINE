@@ -1,0 +1,22 @@
+KOREA INDUSTRY ENVIRONMENT ENGINE V1.0.3 PATCH
+
+현재 저장소 V1.0.2 기준으로 아래 파일만 덮어쓰기/추가하세요.
+새 workflow 파일은 없습니다. .github 폴더 작업도 없습니다.
+
+[덮어쓰기]
+1. src/kiee/__init__.py
+2. src/kiee/engine.py
+3. src/kiee/krx_market.py
+4. src/kiee/scoring.py
+5. config/scoring_policy.json
+
+[추가]
+6. tests/test_valuation_history.py
+7. tests/test_prospective_sync.py
+
+업로드 후 기존 GitHub Actions의 Korea Industry Environment Engine을 1회 Run workflow 하세요.
+성공 후 아래 4개 파일을 ChatGPT에 보내면 실제 운영 출력까지 최종 확인할 수 있습니다.
+- output/engine_health.json
+- output/industry_environment_latest.json
+- output/stock_prediction_bridge.json
+- output/validation/industry_valuation_history.json
