@@ -166,6 +166,139 @@ def _relative_valuation_score(
     return clamp(num / den, 0.0, 100.0)
 
 
+
+
+def _valuation_history_path(root: Path) -> Path:
+    return root / "output" / "validation" / "industry_valuation_history.json"
+
+
+def _valuation_week_key(day_text: str) -> str:
+    try:
+        d = datetime.strptime(str(day_text), "%Y%m%d").date()
+    except Exception:
+        d = _latest_completed_market_date()
+    iso = d.isocalendar()
+    return f"{iso.year}-W{iso.week:02d}"
+
+
+def _history_rows_for_industry(history: dict[str, Any], industry_key: str, current_week: str) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for snap in (history.get("snapshots") or []) if isinstance(history, dict) else []:
+        if not isinstance(snap, dict) or str(snap.get("week")) == current_week:
+            continue
+        row = (snap.get("industries") or {}).get(industry_key)
+        if isinstance(row, dict):
+            out.append(row)
+    return out
+
+
+def _history_multiple_score(current: float | None, values: list[float]) -> float | None:
+    if current is None or current <= 0 or not values:
+        return None
+    valid = sorted(float(v) for v in values if finite(v) is not None and float(v) > 0)
+    if not valid:
+        return None
+    med = median(valid)
+    lower = sum(v < current for v in valid)
+    equal = sum(v == current for v in valid)
+    percentile = (lower + 0.5 * equal) / len(valid)
+    percentile_score = 100.0 * (1.0 - percentile)
+    log_score = 50.0 + 24.0 * math.log(med / current)
+    return clamp(0.55 * percentile_score + 0.45 * log_score, 10.0, 90.0)
+
+
+def _calibrated_valuation_score(
+    cross_section_score: float | None,
+    current_per: float | None,
+    current_pbr: float | None,
+    history_rows: list[dict[str, Any]],
+    base_quality: float,
+    policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Prefer the industry's own valuation history and neutralize structural sector premia.
+
+    Until enough weekly history has accumulated, the broad-market cross-sectional score
+    is deliberately shrunk toward 50 and quality-capped. This prevents structurally high
+    PER/PBR industries (e.g. semiconductors/growth) from being treated as extremely
+    expensive merely because banks/materials trade on lower multiples. No extra KRX calls
+    are required; history is accumulated from the same 8 bulk tables already fetched.
+    """
+    policy = policy or {}
+    min_samples = int(policy.get("valuation_history_min_samples", 8))
+    full_samples = max(min_samples, int(policy.get("valuation_history_full_samples", 16)))
+    provisional_shrink = float(policy.get("valuation_provisional_cross_section_shrinkage", 0.20))
+    provisional_cap = float(policy.get("valuation_provisional_quality_cap", 35.0))
+
+    per_values = [float(r["median_per"]) for r in history_rows if finite(r.get("median_per")) is not None and float(r["median_per"]) > 0]
+    pbr_values = [float(r["median_pbr"]) for r in history_rows if finite(r.get("median_pbr")) is not None and float(r["median_pbr"]) > 0]
+    sample_count = max(len(per_values), len(pbr_values))
+    history_parts: list[tuple[float, float]] = []
+    per_hist = _history_multiple_score(current_per, per_values) if len(per_values) >= min_samples else None
+    pbr_hist = _history_multiple_score(current_pbr, pbr_values) if len(pbr_values) >= min_samples else None
+    if per_hist is not None:
+        history_parts.append((per_hist, 0.60))
+    if pbr_hist is not None:
+        history_parts.append((pbr_hist, 0.40))
+
+    historical_score = None
+    if history_parts:
+        historical_score = sum(v*w for v,w in history_parts) / sum(w for _,w in history_parts)
+
+    if historical_score is None:
+        score = None if cross_section_score is None else 50.0 + (cross_section_score - 50.0) * provisional_shrink
+        return {
+            "score": clamp(score, 0.0, 100.0) if score is not None else None,
+            "quality": min(base_quality, provisional_cap) if score is not None else 0.0,
+            "method": "provisional_cross_section_shrunk" if score is not None else "unavailable",
+            "history_ready": False,
+            "history_samples": sample_count,
+            "historical_score": None,
+            "cross_section_score_raw": cross_section_score,
+            "history_median_per": roundn(median(per_values), 3) if per_values else None,
+            "history_median_pbr": roundn(median(pbr_values), 3) if pbr_values else None,
+        }
+
+    maturity = clamp((sample_count - min_samples + 1) / max(1, full_samples - min_samples + 1), 0.0, 1.0)
+    historical_weight = 0.70 + 0.20 * maturity
+    cross_weight = 1.0 - historical_weight if cross_section_score is not None else 0.0
+    score = historical_score if cross_section_score is None else historical_score * historical_weight + cross_section_score * cross_weight
+    quality = min(92.0, base_quality * (0.60 + 0.32 * maturity))
+    return {
+        "score": clamp(score, 0.0, 100.0),
+        "quality": quality,
+        "method": "industry_history_blended",
+        "history_ready": True,
+        "history_samples": sample_count,
+        "historical_score": historical_score,
+        "cross_section_score_raw": cross_section_score,
+        "history_median_per": roundn(median(per_values), 3) if per_values else None,
+        "history_median_pbr": roundn(median(pbr_values), 3) if pbr_values else None,
+    }
+
+
+def _write_valuation_history(root: Path, end: str, industries: dict[str, Any]) -> None:
+    path = _valuation_history_path(root)
+    payload = read_json(path, {}) or {}
+    snapshots = payload.get("snapshots") if isinstance(payload, dict) else None
+    if not isinstance(snapshots, list):
+        snapshots = []
+    week = _valuation_week_key(end)
+    snapshots = [row for row in snapshots if isinstance(row, dict) and str(row.get("week")) != week]
+    compact: dict[str, Any] = {}
+    for key, row in industries.items():
+        if not isinstance(row, dict) or row.get("stale") is True:
+            continue
+        per = finite(row.get("median_per"))
+        pbr = finite(row.get("median_pbr"))
+        if per is None and pbr is None:
+            continue
+        compact[str(key)] = {"median_per": roundn(per, 4), "median_pbr": roundn(pbr, 4)}
+    if compact:
+        snapshots.append({"as_of": end, "week": week, "industries": compact})
+    snapshots = sorted(snapshots, key=lambda x: str(x.get("as_of") or ""))[-160:]
+    write_json(path, {"schema_version": "1.0.3", "sampling": "one snapshot per ISO week; no extra KRX calls", "snapshots": snapshots})
+
+
 def _fetch_price_change(
     stock: Any,
     start: str,
@@ -309,6 +442,7 @@ def collect_sector_market(
     stock_module: Any = None,
     allow_live: bool = True,
     max_lkg_age_hours: float = 120.0,
+    valuation_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Bulk KRX market-internal snapshot.
 
@@ -417,6 +551,8 @@ def collect_sector_market(
     broad_per = median(broad_pers) if broad_pers else None
     broad_pbr = median(broad_pbrs) if broad_pbrs else None
 
+    valuation_history = read_json(_valuation_history_path(root), {}) or {}
+    current_week = _valuation_week_key(end)
     result_industries: dict[str, Any] = {}
     fresh_industries = 0
     for industry in industries:
@@ -477,7 +613,7 @@ def collect_sector_market(
             and finite(fundamental_all[code].get("pbr")) is not None
             and float(fundamental_all[code]["pbr"]) > 0
         ]
-        valuation_score = _relative_valuation_score(sector_pers, sector_pbrs, broad_per, broad_pbr)
+        cross_section_valuation_score = _relative_valuation_score(sector_pers, sector_pbrs, broad_per, broad_pbr)
 
         requested = len(basket)
         member_cov = (len(members) / requested) if requested else 0.0
@@ -489,12 +625,21 @@ def collect_sector_market(
         if len(members) <= 1:
             market_quality = min(market_quality, 55.0)
         valuation_cov = (max(len(sector_pers), len(sector_pbrs)) / len(members)) if members else 0.0
-        valuation_quality = (
+        raw_valuation_quality = (
             round(100 * (0.65 * valuation_cov + 0.35 * breadth_penalty), 1)
-            if valuation_score is not None else 0.0
+            if cross_section_valuation_score is not None else 0.0
         )
         if len(members) <= 1:
-            valuation_quality = min(valuation_quality, 50.0)
+            raw_valuation_quality = min(raw_valuation_quality, 50.0)
+        current_per = median(sector_pers) if sector_pers else None
+        current_pbr = median(sector_pbrs) if sector_pbrs else None
+        history_rows = _history_rows_for_industry(valuation_history, key, current_week)
+        calibrated_val = _calibrated_valuation_score(
+            cross_section_valuation_score, current_per, current_pbr, history_rows,
+            raw_valuation_quality, valuation_policy,
+        )
+        valuation_score = finite(calibrated_val.get("score"))
+        valuation_quality = finite(calibrated_val.get("quality"), 0.0) or 0.0
 
         row = {
             "label": industry.get("label"),
@@ -509,9 +654,16 @@ def collect_sector_market(
             "market_internal_score": roundn(market_score, 2),
             "market_internal_quality": market_quality,
             "valuation_score": roundn(valuation_score, 2),
-            "valuation_quality": valuation_quality,
-            "median_per": roundn(median(sector_pers), 3) if sector_pers else None,
-            "median_pbr": roundn(median(sector_pbrs), 3) if sector_pbrs else None,
+            "valuation_quality": roundn(valuation_quality, 1),
+            "valuation_method": calibrated_val.get("method"),
+            "valuation_history_ready": calibrated_val.get("history_ready") is True,
+            "valuation_history_samples": int(calibrated_val.get("history_samples") or 0),
+            "valuation_historical_score": roundn(calibrated_val.get("historical_score"), 2),
+            "valuation_cross_section_score_raw": roundn(calibrated_val.get("cross_section_score_raw"), 2),
+            "valuation_history_median_per": calibrated_val.get("history_median_per"),
+            "valuation_history_median_pbr": calibrated_val.get("history_median_pbr"),
+            "median_per": roundn(current_per, 3),
+            "median_pbr": roundn(current_pbr, 3),
             "broad_market_median_per": roundn(broad_per, 3),
             "broad_market_median_pbr": roundn(broad_pbr, 3),
             "member_closes": closes,
@@ -550,6 +702,12 @@ def collect_sector_market(
         1 for v in result_industries.values()
         if v.get("market_internal_score") is not None or v.get("valuation_score") is not None
     )
+    # Accumulate one sector-multiple snapshot per ISO week from the same bulk KRX
+    # tables. This adds zero external calls and becomes the primary valuation anchor
+    # once enough history has accumulated.
+    if fresh_industries > 0:
+        _write_valuation_history(root, end, result_industries)
+    valuation_history_ready_count = sum(1 for v in result_industries.values() if v.get("valuation_history_ready") is True)
     result = {
         "schema_version": "1.0.2",
         "generated_at_utc": utc_now_iso(),
@@ -569,11 +727,14 @@ def collect_sector_market(
         "lkg_reused_industry_count": lkg_reused,
         "available_industry_count": available_count,
         "industry_coverage_pct": roundn(available_count / len(industries) * 100.0, 1) if industries else 0.0,
+        "valuation_history_ready_industry_count": valuation_history_ready_count,
+        "valuation_history_total_industry_count": len(industries),
+        "valuation_history_sampling": "weekly-from-existing-bulk-calls",
         "industries": result_industries,
         "diagnostics": diagnostics,
         "limitations": [
             "업종별 수급은 대표 바스켓 종목에서 외국인·기관의 순매수 방향 확산도를 사용하며 거래대금 대비 bp가 아닙니다.",
-            "업종 밸류에이션은 대표 바스켓의 현재 PER/PBR을 전체 시장 횡단면과 비교한 상대값이며 장기 역사백분위가 아닙니다.",
+            "업종 밸류에이션은 산업 자체의 주간 PER/PBR 이력이 충분하면 자기 역사 기준을 우선합니다. 이력이 부족한 초기에는 전체시장 횡단면 값의 편향을 막기 위해 50점 방향으로 강하게 축소하고 품질을 제한합니다.",
             "대표 바스켓 수가 1개뿐인 산업은 시장내부·밸류에이션 품질점수를 자동으로 제한합니다.",
             "KRX live 호출은 KRX_ID/KRX_PW 세션이 필요하며, 일시 실패 시 최대 120시간 LKG만 품질 할인 후 재사용합니다.",
         ],

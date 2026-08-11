@@ -100,6 +100,7 @@ def run_engine(
     direct_market = collect_sector_market(
         root, industries, boom, stock_module=stock_module, allow_live=allow_live_krx,
         max_lkg_age_hours=float((policy.get("upstream_max_age_hours") or {}).get("krx_market", 120)),
+        valuation_policy=policy,
     )
     freshness = _freshness_quality(sources, upstream_cfg)
     prospective_before = read_summary(root)
@@ -110,12 +111,13 @@ def run_engine(
     ]
 
     prospective_after = update_registry(root, results, direct_market, policy, as_of)
-    # Re-score only if validation state materially changed; this is local computation, no new calls.
-    if prospective_after.get("status") != prospective_before.get("status") or prospective_after.get("quality_score") != prospective_before.get("quality_score"):
-        results = [
-            score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, direct_market, freshness, prospective_after)
-            for industry in industries
-        ]
+    # Always perform one local-only re-score after registry update so every per-industry
+    # prospective_validation block is synchronized with the just-written registry summary
+    # (registered/evaluated counts included). This adds zero network/API calls.
+    results = [
+        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, direct_market, freshness, prospective_after)
+        for industry in industries
+    ]
 
     by_key = {row["industry_key"]: row for row in results}
     alias_lookup: dict[str, str] = {}
@@ -172,7 +174,7 @@ def run_engine(
         "limitations": [
             "산업붐 V7 출력은 자체 investment_use_allowed가 false인 동안 전체 산업점수에서 중립방향으로 축소하고 품질 상한을 적용합니다. 소스가 허용 최대연령을 넘으면 테마축을 자동 제외하고 다른 축으로 재가중합니다.",
             "산업별 EPS 컨센서스 revision 유료데이터는 사용하지 않습니다. 테마 실물·상업화 또는 한국시장 후행 EPS 대용치를 명확히 구분해 사용합니다.",
-            "KRX 업종 대표바스켓은 시장 내부환경과 횡단면 상대가치를 보강하지만 장기 업종 PER/PBR 역사백분위 자체를 대체하지 않습니다.",
+            "산업 밸류에이션은 동일 산업의 주간 PER/PBR 이력을 우선 사용합니다. 역사표본이 부족한 초기에는 전체시장 횡단면 값의 산업구조 편향을 막기 위해 중립 방향으로 강하게 축소하고 품질을 제한합니다.",
             "3개월 산업전망의 개별종목 방향예측 영향은 prospective OOS 통과 전 제한됩니다.",
         ],
     }
@@ -200,6 +202,9 @@ def run_engine(
         "direct_krx_fresh_industry_count": direct_market.get("fresh_industry_count", 0),
         "direct_krx_lkg_reused_industry_count": direct_market.get("lkg_reused_industry_count", 0),
         "direct_krx_available_industry_count": direct_market.get("available_industry_count", 0),
+        "valuation_history_ready_industry_count": direct_market.get("valuation_history_ready_industry_count", 0),
+        "valuation_history_total_industry_count": direct_market.get("valuation_history_total_industry_count", len(industries)),
+        "valuation_history_sampling": direct_market.get("valuation_history_sampling", "weekly-from-existing-bulk-calls"),
         "direct_krx_actual_periods": direct_market.get("actual_periods") or {},
         "direct_krx_diagnostics": direct_market.get("diagnostics") or [],
         "call_efficiency": overall["call_efficiency"],

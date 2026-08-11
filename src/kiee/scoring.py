@@ -291,12 +291,20 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
 
     direct_val = finite(direct.get("valuation_score"))
     direct_val_q = finite(direct.get("valuation_quality"), 0.0) or 0.0
+    history_ready = direct.get("valuation_history_ready") is True
+    history_samples = int(direct.get("valuation_history_samples") or 0)
     broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", shrink)
+    direct_weight = 0.90 if history_ready else 0.65
+    broad_weight = 0.10 if history_ready else 0.35
     valuation = _combine_factor(
-        [(direct_val, 0.80 if direct_val is not None else 0.0, direct_val_q * (0.75 if future else 1.0)), (broad_val, 0.20 if direct_val is not None else 1.0, broad_val_q * (0.65 if future else 1.0))],
-        "KRX 대표바스켓 PER·PBR 상대가치 + 한국시장 가치환경",
-        "업종 장기 역사백분위가 아직 없으면 현재 횡단면 상대가치로만 사용하고 품질가중치를 낮춥니다.",
-        proxy=direct_val is None,
+        [(direct_val, direct_weight if direct_val is not None else 0.0, direct_val_q * (0.75 if future else 1.0)), (broad_val, broad_weight if direct_val is not None else 1.0, broad_val_q * (0.65 if future else 1.0))],
+        "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
+        (
+            f"동일 산업 주간 PER/PBR 역사표본 {history_samples}개를 우선 사용합니다."
+            if history_ready else
+            f"산업 자체 역사표본이 아직 {history_samples}개라 초기구간입니다. 전체시장 대비 PER/PBR은 산업구조 차이를 과대평가하지 않도록 50점 방향으로 축소하고 품질을 제한합니다."
+        ),
+        proxy=not history_ready,
     )
 
     factors = {
@@ -461,6 +469,9 @@ def score_industry(
             "prospective_validation": prospective_summary,
             "direct_sector_market_available": finite(direct.get("market_internal_score")) is not None,
             "industry_specific_valuation_available": finite(direct.get("valuation_score")) is not None,
+            "industry_historical_valuation_available": direct.get("valuation_history_ready") is True,
+            "industry_valuation_history_samples": int(direct.get("valuation_history_samples") or 0),
+            "industry_valuation_method": direct.get("valuation_method"),
         },
         "notes": industry.get("notes") or "",
     }
