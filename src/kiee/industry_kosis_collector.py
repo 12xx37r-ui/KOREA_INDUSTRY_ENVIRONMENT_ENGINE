@@ -184,6 +184,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Collect official KOSIS industry observations into the raw cycle contract")
     parser.add_argument("--root", default=".")
     args = parser.parse_args()
+    print(f"KOSIS_KEY_CONFIGURED={'true' if os.getenv('KOSIS_API_KEY', '').strip() else 'false'}", flush=True)
     result = collect(Path(args.root).resolve())
     print(json.dumps({"status": result.get("status"), "industry_count": len(result.get("industries") or []), "external_calls": result.get("external_calls", 0)}, ensure_ascii=False))
     return 0
