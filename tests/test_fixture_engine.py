@@ -16,7 +16,7 @@ def _runtime(tmp_path: Path) -> Path:
     return root
 
 
-def test_actual_user_fixtures_produce_25_bounded_industries(tmp_path):
+def test_actual_user_fixtures_produce_bounded_industries(tmp_path):
     root = _runtime(tmp_path)
     result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
     assert result["status"] == "ok"
@@ -26,8 +26,9 @@ def test_actual_user_fixtures_produce_25_bounded_industries(tmp_path):
     assert result["call_efficiency"]["per_company_live_calls"] == 0
     for row in result["industries"]:
         for block in ("current", "forecast_3m"):
-            assert 0 <= row[block]["score"] <= 100
-            assert 0 <= row[block]["quality_score"] <= 100
+            assert row[block]["score"] is None
+            assert row[block]["status"] == "insufficient_data"
+            assert row[block]["quality_score"] == 0
             assert set(row[block]["factors"].keys()) == {
                 "earnings_momentum", "demand_cycle", "pricing_margin",
                 "financial_conditions", "market_internals", "valuation",
@@ -52,7 +53,7 @@ def test_media_does_not_invent_industry_boom_theme(tmp_path):
     result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
     row = next(r for r in result["industries"] if r["industry_key"] == "media_entertainment")
     assert row["theme_bridge"]["available"] is False
-    assert row["current"]["factors"]["earnings_momentum"]["proxy"] is True
+    assert row["current"]["status"] == "insufficient_data"
 
 
 def test_prevalidation_theme_is_shrunk_and_quality_capped(tmp_path):
