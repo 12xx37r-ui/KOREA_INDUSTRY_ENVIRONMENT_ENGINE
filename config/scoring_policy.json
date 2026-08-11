@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "engine_version": "1.0.4-industry-environment-valuation-history-visible-integrity",
+  "engine_version": "1.1.0-universe-metric-contract-data-gated-horizons",
   "score_bands": [
     {
       "min": 0,
@@ -84,5 +84,31 @@
   "valuation_history_min_samples": 8,
   "valuation_history_full_samples": 16,
   "valuation_provisional_cross_section_shrinkage": 0.2,
-  "valuation_provisional_quality_cap": 35.0
+  "valuation_provisional_quality_cap": 35.0,
+  "industry_cycle_scoring": {
+    "current_weights": {
+      "production_shipments": 0.20,
+      "sales_earnings": 0.20,
+      "inventory_cycle": 0.15,
+      "utilization": 0.10,
+      "employment": 0.10,
+      "price_margin": 0.15,
+      "pmi_bsi": 0.10
+    },
+    "leading_weights": {
+      "new_orders": 0.20,
+      "inventory_cycle": 0.15,
+      "global_environment": 0.15,
+      "rates_liquidity": 0.10,
+      "raw_material_spread": 0.10,
+      "earnings_revision": 0.15,
+      "relative_strength_flow": 0.10,
+      "policy_special": 0.05
+    },
+    "horizons": ["current", "3m", "3_6m", "6_12m"],
+    "minimum_current_metric_coverage_pct": 60.0,
+    "minimum_leading_metric_coverage_pct": 60.0,
+    "missing_data_policy": "do_not_impute_or_neutral_fill",
+    "cycle_phases": ["침체", "바닥통과", "회복초기", "확장", "호황", "둔화", "하강"]
+  }
 }

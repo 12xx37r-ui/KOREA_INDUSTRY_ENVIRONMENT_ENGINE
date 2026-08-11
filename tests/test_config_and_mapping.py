@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_industry_universe_and_weights():
     industries_cfg, policy, upstreams = load_all(ROOT)
     rows = industries_cfg["industries"]
-    assert len(rows) == 25
+    assert len(rows) >= 100
     keys = {r["key"] for r in rows}
     required = {
         "semiconductor", "electronic_components", "automotive", "battery",

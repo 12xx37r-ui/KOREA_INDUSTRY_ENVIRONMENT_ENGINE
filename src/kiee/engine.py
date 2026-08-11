@@ -8,7 +8,7 @@ from .krx_market import collect_sector_market
 from .prospective import read_summary, update_registry
 from .scoring import score_industry
 from .upstream import SourceResult, UpstreamLoader
-from .util import read_json, roundn, utc_now_iso, write_json
+from .util import finite, read_json, roundn, utc_now_iso, write_json
 
 
 def _freshness_quality(sources: dict[str, SourceResult], upstream_cfg: dict[str, Any]) -> float:
@@ -94,8 +94,16 @@ def run_engine(
     korea_rate = sources["korea_rate_fx"].payload or {}
     korea_equity = sources["korea_equity"].payload or {}
     global_bundle = sources["global_bundle"].payload or {}
+    fed_source = sources.get("fed_futures")
+    fed_futures = (fed_source.payload or {}) if fed_source and fed_source.ok else {}
+    # The forecast collector owns the macro combination. Keep the source available
+    # as an auditable input without allowing it to leak into the current industry score.
+    global_bundle = dict(global_bundle)
+    global_bundle["fed_futures"] = fed_futures
     boom_source = sources.get("industry_boom")
     boom = (boom_source.payload or {}) if boom_source and boom_source.ok else {}
+    cycle_source = sources.get("industry_cycle")
+    industry_cycle = (cycle_source.payload or {}) if cycle_source and cycle_source.ok else {}
 
     direct_market = collect_sector_market(
         root, industries, boom, stock_module=stock_module, allow_live=allow_live_krx,
@@ -106,7 +114,7 @@ def run_engine(
     prospective_before = read_summary(root)
     as_of = utc_now_iso()
     results = [
-        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, direct_market, freshness, prospective_before)
+        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before)
         for industry in industries
     ]
 
@@ -115,7 +123,7 @@ def run_engine(
     # prospective_validation block is synchronized with the just-written registry summary
     # (registered/evaluated counts included). This adds zero network/API calls.
     results = [
-        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, direct_market, freshness, prospective_after)
+        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after)
         for industry in industries
     ]
 
@@ -151,13 +159,46 @@ def run_engine(
         "usage_rule": "기존 산업전망 current/future 값을 이 파일로 대체하되, 개별종목 주가방향에는 bounded_direction_adjustment_points만 보조 입력으로 사용합니다.",
     }
 
+    ranked = [
+        {
+            "industry_key": row["industry_key"],
+            "industry_label": row["industry_label"],
+            "score": row.get("forecast_3m", {}).get("score"),
+            "direction": row.get("forecast_3m", {}).get("direction"),
+            "status": row.get("forecast_3m", {}).get("status"),
+        }
+        for row in results
+        if finite(row.get("forecast_3m", {}).get("score")) is not None
+    ]
+    ranked.sort(key=lambda item: float(item.get("score") or 0.0), reverse=True)
+
     overall = {
         "schema_version": "1.0.0",
         "engine_version": policy["engine_version"],
         "generated_at_utc": as_of,
         "status": "ok",
         "industry_count": len(results),
-        "score_definition": "0~100 산업환경 상대 유불리. 50 중립. 산업별 6축과 품질가중·중립수축 적용.",
+        "industry_universe": {
+            "classification_basis": industries_cfg.get("classification_basis") or ["GICS", "WICS", "KSIC"],
+            "hierarchy_fields": ["parent_sector", "industry_group", "key"],
+            "profile_count": len(industries),
+            "data_gated": True,
+        },
+        "score_definition": "산업실물지표가 연결된 경우 현재 0~100은 생산·출하·매출·재고·가동률·고용·가격·마진·PMI/BSI를 산출하고, 전망은 신규주문·재고사이클·CAPEX·글로벌·한국 경기·실적전망·상대강도를 산업 민감도에 따라 별도 계산합니다. 50 중립.",
+        "score_model": {
+            "current": "industry_observed_metrics_only",
+            "future": "industry_leading_metrics_plus_sensitive_macro",
+            "current_excludes_macro": True,
+            "future_uses_industry_sensitivities": True,
+            "data_gated": True,
+            "horizons": ["current", "3m", "3_6m", "6_12m"],
+            "forecast_macro_sources": ["global_bundle", "korea_rate_fx", "korea_equity", "fed_futures"],
+        },
+        "rankings": {
+            "improvement_potential_3m": ranked,
+            "deterioration_risk_3m": list(reversed(ranked)),
+            "status": "scored" if ranked else "pending_industry_cycle_feed",
+        },
         "forecast_horizon": "향후 약 3개월",
         "industries": results,
         "source_status": _source_status(sources),
@@ -172,7 +213,8 @@ def run_engine(
         },
         "prospective_validation": prospective_after,
         "limitations": [
-            "산업붐 V7 출력은 자체 investment_use_allowed가 false인 동안 전체 산업점수에서 중립방향으로 축소하고 품질 상한을 적용합니다. 소스가 허용 최대연령을 넘으면 테마축을 자동 제외하고 다른 축으로 재가중합니다.",
+            "산업별 생산·출하·재고·주문·가격·마진 원자료가 없으면 현재·전망 점수를 산출하지 않고 데이터 부족으로 표시합니다.",
+            "현재경기와 향후전망은 하나의 점수로 섞지 않습니다. 전망은 3개월·3~6개월·6~12개월을 별도 슬롯으로 둡니다.",
             "산업별 EPS 컨센서스 revision 유료데이터는 사용하지 않습니다. 테마 실물·상업화 또는 한국시장 후행 EPS 대용치를 명확히 구분해 사용합니다.",
             "산업 밸류에이션은 동일 산업의 주간 PER/PBR 이력을 우선 사용합니다. 역사표본이 부족한 초기에는 전체시장 횡단면 값의 산업구조 편향을 막기 위해 중립 방향으로 강하게 축소하고 품질을 제한합니다.",
             "3개월 산업전망의 개별종목 방향예측 영향은 prospective OOS 통과 전 제한됩니다.",
@@ -183,7 +225,7 @@ def run_engine(
     write_json(output_dir / "industry_mapping.json", {
         "schema_version": "1.0.0", "engine_version": policy["engine_version"],
         "generated_at_utc": as_of,
-        "industries": [{k: industry[k] for k in ("key", "label", "aliases", "theme_ids", "krx_basket", "notes")} for industry in industries],
+        "industries": [{k: industry.get(k) for k in ("key", "label", "aliases", "theme_ids", "krx_basket", "notes", "parent_sector", "industry_group", "classification_basis", "industry_profile", "specialized_current_metrics", "specialized_leading_metrics", "current_metric_groups", "leading_metric_groups")} for industry in industries],
         "alias_to_profile_key": alias_lookup,
     })
     write_json(output_dir / "stock_prediction_bridge.json", bridge)

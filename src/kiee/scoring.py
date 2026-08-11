@@ -74,6 +74,8 @@ def _theme_signal(industry: dict[str, Any], boom: dict[str, Any], policy: dict[s
     currents: list[float] = []
     leads: list[float] = []
     qualities: list[float] = []
+    current_components: dict[str, list[float]] = {key: [] for key in ("industrial", "commercialization", "investment", "diffusion", "boom")}
+    leading_components: dict[str, list[float]] = {key: [] for key in ("industrial", "commercialization", "investment", "diffusion", "boom")}
     details: list[dict[str, Any]] = []
     for row in rows:
         industrial = finite(row.get("industrial_signal_score"), 50.0) or 50.0
@@ -89,6 +91,26 @@ def _theme_signal(industry: dict[str, Any], boom: dict[str, Any], policy: dict[s
         # guard prevents a trendy subtheme from standing in for the whole sector cycle.
         current = clamp(50.0 + (current_raw - 50.0) * shrink * relevance, 0.0, 100.0)
         leading = clamp(50.0 + (lead_raw - 50.0) * shrink * relevance, 0.0, 100.0)
+        component_values = {
+            "industrial": industrial,
+            "commercialization": commercialization,
+            "investment": investment,
+            "diffusion": diffusion,
+            "boom": boom_score,
+        }
+        for component_key, component_value in component_values.items():
+            adjusted = clamp(50.0 + (component_value - 50.0) * shrink * relevance, 0.0, 100.0)
+            current_components[component_key].append(adjusted)
+        leading_values = {
+            "industrial": predicted,
+            "commercialization": commercialization,
+            "investment": investment,
+            "diffusion": diffusion,
+            "boom": boom_score,
+        }
+        for component_key, component_value in leading_values.items():
+            adjusted = clamp(50.0 + (component_value - 50.0) * shrink * relevance, 0.0, 100.0)
+            leading_components[component_key].append(adjusted)
         base_quality = min(cap, 45.0 + 0.45 * diffusion)
         quality = min(cap, base_quality * (0.45 + 0.55 * relevance))
         currents.append(current)
@@ -106,6 +128,8 @@ def _theme_signal(industry: dict[str, Any], boom: dict[str, Any], policy: dict[s
         "leading_3m": mean(leads),
         "quality": min(cap, mean(qualities)),
         "themes": details,
+        "current_components": {key: roundn(mean(values), 2) for key, values in current_components.items() if values},
+        "leading_components": {key: roundn(mean(values), 2) for key, values in leading_components.items() if values},
         "prevalidation": boom.get("investment_use_allowed") is not True,
         "relevance_weight": roundn(relevance, 2),
     }
@@ -236,6 +260,70 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     theme = _theme_signal(industry, boom, policy)
     theme_score = theme.get("leading_3m") if future else theme.get("current")
     theme_q = float(theme.get("quality") or 0.0)
+
+    # The current sector score is intentionally industry-only.  Broad Korea/global
+    # macro series are forecast overlays and must not leak into the current reading.
+    # The available industry-native inputs here are the sector theme/leading signal,
+    # the direct KRX sector basket, and sector valuation.  Missing native inputs stay
+    # missing so the aggregate quality/shrinkage exposes the limitation instead of
+    # silently substituting a macro proxy.
+    if not future:
+        current_components = theme.get("current_components") or {}
+        earnings = _combine_factor(
+            [(finite(current_components.get("industrial")), 0.60, theme_q), (finite(current_components.get("commercialization")), 0.40, theme_q)],
+            "산업 고유 실적·상업화 신호",
+            "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용하며 한국경제·글로벌경제·환율·금리·광범위 주가지수 대용치는 제외합니다.",
+            proxy=not theme.get("available"),
+        )
+        demand = _combine_factor(
+            [(finite(current_components.get("industrial")), 0.60, theme_q), (finite(current_components.get("diffusion")), 0.40, theme_q)],
+            "산업 고유 실물·확산 신호",
+            "현재 수요·경기 축은 해당 산업 실물신호와 산업 확산도만 반영합니다.",
+            proxy=not theme.get("available"),
+        )
+        pricing = _combine_factor(
+            [(finite(current_components.get("commercialization")), 0.55, theme_q), (finite(current_components.get("investment")), 0.45, theme_q)],
+            "산업 고유 상업화·투자 신호",
+            "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
+            proxy=not theme.get("available"),
+        )
+        financial = _factor(
+            None,
+            0.0,
+            "산업 고유 금융환경 지표 연결 대기",
+            "한국 금리·환율·유동성·신용은 현재 산업점수에서 제외하고 향후 민감도 오버레이에만 사용합니다.",
+        )
+        direct_score = finite(direct.get("market_internal_score"))
+        direct_q = finite(direct.get("market_internal_quality"), 0.0) or 0.0
+        market_internal = _combine_factor(
+            [(direct_score, 1.0, direct_q)],
+            "해당 산업 KRX 대표바스켓 내부환경",
+            "현재 산업점수에는 해당 산업 대표바스켓의 수익률·상승 breadth·수급만 반영하고 한국·글로벌 전체 주가지수는 제외합니다.",
+            proxy=direct_score is None,
+        )
+        direct_val = finite(direct.get("valuation_score"))
+        direct_val_q = finite(direct.get("valuation_quality"), 0.0) or 0.0
+        valuation = _combine_factor(
+            [(direct_val, 1.0, direct_val_q)],
+            "해당 산업 대표바스켓 PER·PBR",
+            "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
+            proxy=direct_val is None,
+        )
+        factors = {
+            "earnings_momentum": earnings,
+            "demand_cycle": demand,
+            "pricing_margin": pricing,
+            "financial_conditions": financial,
+            "market_internals": market_internal,
+            "valuation": valuation,
+        }
+        return factors, {
+            "theme": theme,
+            "financial_detail": {},
+            "current_definition": "industry_only",
+            "forecast_definition": "industry_plus_sensitive_macro",
+        }
+
     broad_earn, broad_earn_q = _broad_normalized_component(korea_equity, "earnings_revision", shrink)
 
     earnings = _combine_factor(
@@ -279,7 +367,13 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     global_equity = gl["equity_3m"] if future else gl["equity_current"]
     global_eq_q = gl["equity_3m_quality"] if future else 90.0
     if future:
-        market_pieces = [(direct_score, 0.25, direct_q * 0.70), (broad_market, 0.20, 80.0), (global_equity, 0.40, global_eq_q), (theme_score, 0.15 if theme.get("available") else 0.0, theme_q)]
+        global_equity_sens = clamp(abs(float((industry.get("sensitivities") or {}).get("global_equity", 0.0))), 0.0, 1.0)
+        # Reserve 0.15 for the industry's own leading/theme signal. The
+        # remaining weights move toward global equity only when sensitivity is high.
+        global_equity_weight = 0.10 + 0.35 * global_equity_sens
+        direct_weight = 0.60 - 0.25 * global_equity_sens
+        broad_weight = 0.85 - global_equity_weight - direct_weight
+        market_pieces = [(direct_score, direct_weight, direct_q * 0.70), (broad_market, broad_weight, 80.0), (global_equity, global_equity_weight, global_eq_q), (theme_score, 0.15 if theme.get("available") else 0.0, theme_q)]
     else:
         market_pieces = [(direct_score, 0.65, direct_q), (broad_market, 0.25, 90.0), (global_equity, 0.10, 90.0)]
     market_internal = _combine_factor(
@@ -315,7 +409,12 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
         "market_internals": market_internal,
         "valuation": valuation,
     }
-    return factors, {"theme": theme, "financial_detail": fin_detail}
+    return factors, {
+        "theme": theme,
+        "financial_detail": fin_detail,
+        "current_definition": "industry_only",
+        "forecast_definition": "industry_plus_sensitive_macro",
+    }
 
 
 def _aggregate_score(factors: dict[str, Any], weights: dict[str, Any]) -> dict[str, Any]:
@@ -389,6 +488,213 @@ def _top_reasons(contributions: list[dict[str, Any]], positive: bool) -> list[di
     return [{"factor": r["factor"], "label": r["label"], "points": r["contribution_points"], "score": r["score"]} for r in rows[:4]]
 
 
+def _industry_cycle_row(industry_cycle: dict[str, Any], industry_key: str) -> dict[str, Any] | None:
+    if not isinstance(industry_cycle, dict):
+        return None
+    rows = industry_cycle.get("industries") or []
+    if isinstance(rows, dict):
+        candidate = rows.get(industry_key)
+        return candidate if isinstance(candidate, dict) else None
+    for row in rows:
+        if isinstance(row, dict) and str(row.get("industry_key") or row.get("key") or "") == industry_key:
+            return row
+    return None
+
+
+def _pending_stage(reason: str) -> dict[str, Any]:
+    factors = {
+        key: _factor(None, 0.0, "산업실물지표 연결 대기", reason)
+        for key in FACTOR_ORDER
+    }
+    return {
+        "score": None,
+        "band": "데이터 부족",
+        "quality_score": 0.0,
+        "data_coverage_pct": 0.0,
+        "quality_weighted_coverage_pct": 0.0,
+        "factors": factors,
+        "contributions": [],
+        "status": "insufficient_data",
+        "reason": reason,
+    }
+
+
+def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], reason: str) -> dict[str, Any]:
+    current = _pending_stage(reason)
+    future = _pending_stage(reason)
+    future["delta_points"] = None
+    future["change_strength"] = "대기"
+    future["direction"] = "대기"
+    future["top_positive_reasons"] = []
+    future["top_negative_reasons"] = []
+    horizon_pending = {
+        "score": None,
+        "direction": "대기",
+        "status": "insufficient_data",
+        "reason": "해당 기간의 산업 선행지표가 연결되지 않아 전망을 계산하지 않았습니다.",
+        "quality_score": 0.0,
+        "data_coverage_pct": 0.0,
+        "factors": {},
+    }
+    model = {
+        "current": "industry_observed_metrics_only",
+        "future": "industry_leading_metrics_plus_sensitive_macro",
+        "data_status": "insufficient_data",
+        "current_inputs": industry.get("current_metric_groups") or [],
+        "leading_inputs": industry.get("leading_metric_groups") or [],
+        "specialized_current_metrics": industry.get("specialized_current_metrics") or [],
+        "specialized_leading_metrics": industry.get("specialized_leading_metrics") or [],
+    }
+    return {
+        "industry_key": industry["key"],
+        "industry_label": industry["label"],
+        "aliases": industry.get("aliases") or [],
+        "current": current,
+        "forecast_3m": future,
+        "forecast_3_6m": horizon_pending,
+        "forecast_6_12m": horizon_pending,
+        "direct_market": direct,
+        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": []},
+        "stock_prediction_bridge": {
+            "allowed_as_auxiliary": False,
+            "allowed_as_primary": False,
+            "bounded_direction_adjustment_points": 0.0,
+            "max_abs_adjustment_points": 0.0,
+            "signal_normalized": 0.0,
+            "quality_score": 0.0,
+            "validation_status": "PENDING",
+            "rule": "산업실물지표가 연결되기 전에는 종목 신호로 산업경기를 대체하지 않음",
+        },
+        "interpretation": {
+            "headline": "산업실물지표 연결 대기",
+            "beginner": reason,
+            "warning": "생산·출하·재고·주문·가격·마진 등 산업 고유 데이터가 부족해 점수를 표시하지 않습니다.",
+        },
+        "quality": {
+            "sector_specificity_score": 0.0,
+            "forecast_upstream_quality_score": 0.0,
+            "source_freshness_score": 0.0,
+            "data_status": "insufficient_data",
+            "current_metric_coverage": 0.0,
+            "leading_metric_coverage": 0.0,
+        },
+        "score_model": model,
+        "notes": industry.get("notes") or "",
+    }
+
+
+def _feed_stage(stage: dict[str, Any] | None, policy: dict[str, Any], horizon: str, current_score: float | None = None) -> dict[str, Any]:
+    """Render an authoritative industry-cycle feed stage without imputing values."""
+    stage = stage if isinstance(stage, dict) else {}
+    score = finite(stage.get("score"))
+    quality = finite(stage.get("quality_score"))
+    coverage = finite(stage.get("data_coverage_pct"))
+    cycle_policy = policy.get("industry_cycle_scoring") or {}
+    minimum = float(cycle_policy.get("minimum_current_coverage_pct", 60.0)) if horizon == "current" else float(cycle_policy.get("minimum_leading_coverage_pct", 60.0))
+    if score is None or quality is None or coverage is None or quality <= 0 or coverage < minimum:
+        return {
+            "score": None,
+            "direction": "대기" if horizon != "current" else None,
+            "status": "insufficient_data",
+            "reason": f"{horizon} 산업실물지표 품질·커버리지 기준을 충족하지 못해 점수를 표시하지 않습니다.",
+            "quality_score": round(max(0.0, quality or 0.0), 1),
+            "data_coverage_pct": round(max(0.0, coverage or 0.0), 1),
+            "factors": {},
+            "metrics": stage.get("metrics") or [],
+        }
+    score = clamp(score, 0.0, 100.0)
+    factor_scores = stage.get("factor_scores") if isinstance(stage.get("factor_scores"), dict) else {}
+    factors = {}
+    for key in FACTOR_ORDER:
+        factor_value = finite(factor_scores.get(key))
+        factors[key] = _factor(
+            factor_value,
+            quality if factor_value is not None else 0.0,
+            "산업실물지표 피드" if factor_value is not None else "산업실물지표 피드 팩터분해 대기",
+            "원천 산업 피드의 팩터 점수" if factor_value is not None else "총점은 연결됐지만 세부 팩터 분해값은 제공되지 않았습니다.",
+        )
+    delta = round(score - current_score, 1) if current_score is not None and horizon != "current" else None
+    direction = str(stage.get("direction") or ("개선" if delta is not None and delta > 1 else "악화" if delta is not None and delta < -1 else "유지" if delta is not None else "대기"))
+    return {
+        "score": round(score, 1),
+        "band": _score_band(score, policy),
+        "cycle_phase": stage.get("cycle_phase"),
+        "quality_score": round(clamp(quality, 0.0, 100.0), 1),
+        "data_coverage_pct": round(clamp(coverage, 0.0, 100.0), 1),
+        "quality_weighted_coverage_pct": round(clamp(coverage * quality / 100.0, 0.0, 100.0), 1),
+        "factors": factors,
+        "contributions": [],
+        "metrics": stage.get("metrics") or [],
+        "positive_indicators": stage.get("positive_indicators") or [],
+        "negative_indicators": stage.get("negative_indicators") or [],
+        "global_impact_score": finite(stage.get("global_impact_score")),
+        "korea_impact_score": finite(stage.get("korea_impact_score")),
+        "industry_leading_score": finite(stage.get("industry_leading_score")),
+        "sensitivity_used": stage.get("sensitivity_used") or {},
+        "direction": direction if horizon != "current" else None,
+        "delta_points": delta,
+        "change_strength": _delta_strength(delta, policy) if delta is not None else None,
+        "status": "scored",
+    }
+
+
+def _scored_industry_result_from_feed(industry: dict[str, Any], cycle_row: dict[str, Any], direct: dict[str, Any], policy: dict[str, Any], prospective_summary: dict[str, Any]) -> dict[str, Any]:
+    current = _feed_stage(cycle_row.get("current"), policy, "current")
+    current_score = finite(current.get("score"))
+    forecasts = cycle_row.get("forecasts") if isinstance(cycle_row.get("forecasts"), dict) else {}
+    forecast_3m = _feed_stage(forecasts.get("3m"), policy, "3m", current_score)
+    forecast_3_6m = _feed_stage(forecasts.get("3_6m"), policy, "3_6m", current_score)
+    forecast_6_12m = _feed_stage(forecasts.get("6_12m"), policy, "6_12m", current_score)
+    future_score = finite(forecast_3m.get("score"))
+    positive = [{"factor": "industry_feed", "label": str(value), "points": None, "score": future_score} for value in (forecast_3m.get("positive_indicators") or [])]
+    negative = [{"factor": "industry_feed", "label": str(value), "points": None, "score": future_score} for value in (forecast_3m.get("negative_indicators") or [])]
+    model = {
+        "current": "industry_observed_metrics_only",
+        "future": "industry_leading_metrics_plus_sensitive_macro",
+        "data_status": "scored" if current.get("status") == "scored" else "insufficient_data",
+        "current_inputs": industry.get("current_metric_groups") or [],
+        "leading_inputs": industry.get("leading_metric_groups") or [],
+        "specialized_current_metrics": industry.get("specialized_current_metrics") or [],
+        "specialized_leading_metrics": industry.get("specialized_leading_metrics") or [],
+        "feed_generated_at_utc": cycle_row.get("generated_at_utc"),
+    }
+    return {
+        "industry_key": industry["key"], "industry_label": industry["label"], "aliases": industry.get("aliases") or [],
+        "current": current,
+        "forecast_3m": forecast_3m,
+        "forecast_3_6m": forecast_3_6m,
+        "forecast_6_12m": forecast_6_12m,
+        "direct_market": direct,
+        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": []},
+        "stock_prediction_bridge": {
+            "allowed_as_auxiliary": False, "allowed_as_primary": False,
+            "bounded_direction_adjustment_points": 0.0, "max_abs_adjustment_points": 0.0,
+            "signal_normalized": 0.0, "quality_score": float(forecast_3m.get("quality_score") or 0.0),
+            "validation_status": prospective_summary.get("status", "PENDING"),
+            "rule": "산업실물지표 피드가 산업점수의 원천이며 개별종목 신호로 대체하지 않습니다.",
+        },
+        "interpretation": {
+            "headline": f"현재 {current.get('band', '데이터 부족')} {current_score:.0f}/100" if current_score is not None else "산업실물지표 연결 대기",
+            "beginner": "산업 실물지표 피드의 총점과 품질·커버리지를 사용했습니다. 향후 전망은 산업 선행지표에 산업별 민감도에 맞춘 글로벌·한국 경기 변수를 추가합니다." if current_score is not None else "산업 실물지표 품질 기준을 충족하지 못해 점수를 표시하지 않습니다.",
+            "warning": "산업환경 점수는 기업 자체의 주가나 재무가치 점수가 아닙니다.",
+        },
+        "quality": {
+            "sector_specificity_score": 100.0 if current_score is not None else 0.0,
+            "forecast_upstream_quality_score": float(forecast_3m.get("quality_score") or 0.0),
+            "source_freshness_score": 100.0 if cycle_row.get("generated_at_utc") else 0.0,
+            "prospective_validation": prospective_summary,
+            "direct_sector_market_available": finite(direct.get("market_internal_score")) is not None,
+            "industry_specific_valuation_available": finite(direct.get("valuation_score")) is not None,
+            "industry_historical_valuation_available": direct.get("valuation_history_ready") is True,
+            "data_status": model["data_status"],
+            "current_metric_coverage": current.get("data_coverage_pct", 0.0),
+            "leading_metric_coverage": forecast_3m.get("data_coverage_pct", 0.0),
+        },
+        "score_model": model,
+        "notes": industry.get("notes") or "",
+    }
+
+
 def score_industry(
     industry: dict[str, Any],
     policy: dict[str, Any],
@@ -396,6 +702,7 @@ def score_industry(
     korea_equity: dict[str, Any],
     global_bundle: dict[str, Any],
     boom: dict[str, Any],
+    industry_cycle: dict[str, Any],
     direct_market: dict[str, Any],
     freshness_quality: float,
     prospective_summary: dict[str, Any],
@@ -403,6 +710,14 @@ def score_industry(
     kr = _extract_korea(korea_rate, korea_equity)
     gl = _extract_global(global_bundle)
     direct = (direct_market.get("industries") or {}).get(industry["key"]) or {}
+    cycle_row = _industry_cycle_row(industry_cycle, industry["key"])
+    if not cycle_row or not isinstance(cycle_row.get("current"), dict) or not finite(cycle_row.get("current", {}).get("score")):
+        return _pending_industry_result(
+            industry,
+            direct,
+            "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+        )
+    return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
     current_factors, current_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)
     future_factors, future_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, True)
     current_agg = _aggregate_score(current_factors, industry.get("weights_current") or {})
@@ -426,6 +741,7 @@ def score_industry(
     overlay_points = max_points * overlay_signal * (future_quality / 100.0) if stock_overlay_allowed else 0.0
     positive = _top_reasons(future_agg["contributions"], True)
     negative = _top_reasons(future_agg["contributions"], False)
+    sensitivities = industry.get("sensitivities") or {}
     return {
         "industry_key": industry["key"], "industry_label": industry["label"], "aliases": industry.get("aliases") or [],
         "current": {
@@ -472,6 +788,26 @@ def score_industry(
             "industry_historical_valuation_available": direct.get("valuation_history_ready") is True,
             "industry_valuation_history_samples": int(direct.get("valuation_history_samples") or 0),
             "industry_valuation_method": direct.get("valuation_method"),
+        },
+        "score_model": {
+            "current": "industry_only",
+            "future": "industry_plus_sensitive_macro",
+            "current_inputs": [
+                "산업 고유 실물·상업화·투자·확산 신호",
+                "해당 산업 KRX 대표바스켓 내부환경",
+                "해당 산업 대표바스켓 PER·PBR",
+            ],
+            "current_excluded": [
+                "한국 금리·환율·유동성·신용",
+                "한국 종합주가지수",
+                "글로벌 경기·글로벌 주가지수",
+            ],
+            "future_macro_sensitivities": {
+                key: round(float(value), 4)
+                for key, value in sensitivities.items()
+                if finite(value) is not None and abs(float(value)) > 0
+            },
+            "future_rule": "현재 산업 고유 신호를 기준으로 한국·글로벌 거시지표를 산업별 민감도에 따라 향후 3개월 점수에 반영",
         },
         "notes": industry.get("notes") or "",
     }

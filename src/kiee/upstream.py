@@ -60,7 +60,9 @@ class UpstreamLoader:
                 "korea_rate_fx": "korea_rate_fx_outlook_v3.json",
                 "korea_equity": "korea_equity_environment.json",
                 "global_bundle": "cards_8_12_bundle.json",
+                "fed_futures": "fed_futures_latest.json",
                 "industry_boom": "industry_boom_snapshot.json",
+                "industry_cycle": "industry_cycle_latest.json",
             }
             path = self.fixture_dir / fixture_map.get(name, f"{name}.json")
             payload = read_json(path)

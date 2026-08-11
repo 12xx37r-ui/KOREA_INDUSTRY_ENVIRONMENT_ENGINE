@@ -25,14 +25,32 @@
       "cache_ttl_hours": 6,
       "max_stale_hours": 72
     },
+    "fed_futures": {
+      "repo": "fed-futures-collector",
+      "branch": "main",
+      "path": "public/data/latest.json",
+      "cache_ttl_hours": 6,
+      "max_stale_hours": 72,
+      "optional": true,
+      "note": "미국 정책금리·실질금리·FOMC 경로는 산업별 금리·유동성 민감도에 따른 전망 보조 입력입니다. 현재 산업점수에는 사용하지 않습니다."
+    },
     "industry_boom": {
       "repo": "industry-boom-leading-engine",
       "branch": "main",
       "path": "outputs/v70_final_engine/v70_current_operational_snapshot.json",
       "cache_ttl_hours": 24,
       "max_stale_hours": 336
+    },
+    "industry_cycle": {
+      "repo": "KOREA_INDUSTRY_ENVIRONMENT_ENGINE",
+      "branch": "main",
+      "path": "input/industry_cycle_latest.json",
+      "cache_ttl_hours": 24,
+      "max_stale_hours": 240,
+      "optional": true,
+      "note": "산업별 생산·출하·재고·주문·가격·마진·특화지표를 한 번에 발행하는 배치 피드. 미연결 시 점수를 임의 산출하지 않음."
     }
   },
-  "normal_upstream_http_calls_per_run": 4,
+  "normal_upstream_http_calls_per_run": 6,
   "note": "동일 실행에서 각 upstream JSON은 정확히 한 번만 읽고 메모리에서 재사용합니다. 토큰이 있으면 GitHub Contents API 1회/파일, 없으면 raw 1회/파일입니다. 실패 시 커밋된 LKG 캐시를 사용합니다."
 }

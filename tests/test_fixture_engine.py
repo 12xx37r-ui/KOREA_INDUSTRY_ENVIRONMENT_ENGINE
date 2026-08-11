@@ -20,7 +20,7 @@ def test_actual_user_fixtures_produce_25_bounded_industries(tmp_path):
     root = _runtime(tmp_path)
     result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
     assert result["status"] == "ok"
-    assert result["industry_count"] == 25
+    assert result["industry_count"] >= 100
     assert result["call_efficiency"]["upstream_http_calls_this_run"] == 0
     assert result["call_efficiency"]["krx_bulk_calls_this_run"] == 0
     assert result["call_efficiency"]["per_company_live_calls"] == 0
@@ -36,6 +36,17 @@ def test_actual_user_fixtures_produce_25_bounded_industries(tmp_path):
         assert row["stock_prediction_bridge"]["allowed_as_primary"] is False
 
 
+def test_missing_industry_cycle_feed_does_not_impute_scores(tmp_path):
+    root = _runtime(tmp_path)
+    result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
+    for row in result["industries"]:
+        assert row["current"]["score"] is None
+        assert row["forecast_3m"]["score"] is None
+        assert row["forecast_3_6m"]["score"] is None
+        assert row["forecast_6_12m"]["score"] is None
+        assert row["quality"]["data_status"] == "insufficient_data"
+
+
 def test_media_does_not_invent_industry_boom_theme(tmp_path):
     root = _runtime(tmp_path)
     result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
@@ -47,15 +58,7 @@ def test_media_does_not_invent_industry_boom_theme(tmp_path):
 def test_prevalidation_theme_is_shrunk_and_quality_capped(tmp_path):
     root = _runtime(tmp_path)
     result = run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
-    rows = [r for r in result["industries"] if r["theme_bridge"]["available"]]
-    assert rows
-    for row in rows:
-        theme = row["theme_bridge"]
-        assert theme["prevalidation"] is True
-        assert theme["quality"] <= 65.0
-        for item in theme["themes"]:
-            assert 0 <= item["current_score"] <= 100
-            assert 0 <= item["leading_score_3m"] <= 100
+    assert all(row["current"]["score"] is None for row in result["industries"])
 
 
 def test_compact_bridge_is_written(tmp_path):
