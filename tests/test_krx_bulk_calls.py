@@ -78,3 +78,57 @@ def test_krx_flow_fallback_calls_are_counted_exactly(tmp_path):
     assert result["normal_live_calls"] == 12
     assert len(fake.calls) == 12
     assert result["available"] is True
+
+class FakeStockPrimaryPriceEmpty(FakeStock):
+    def __init__(self):
+        super().__init__()
+        self.start_snapshot = self.price.copy()
+        self.start_snapshot["종가"] = [76000, 190000, 52000, 118000, 29500, 3400, 101000]
+        self.end_snapshot = self.price.copy()
+
+    def get_market_price_change_by_ticker(self, start, end, market=None):
+        self.calls.append(("price-empty", market))
+        return pd.DataFrame()
+
+    def get_market_ohlcv_by_ticker(self, day, market=None):
+        self.calls.append(("ohlcv", market, day))
+        # Collector asks start first, end second; exact calendar date is intentionally irrelevant here.
+        same_market_ohlcv_calls = [x for x in self.calls if x[0] == "ohlcv" and x[1] == market]
+        return self.start_snapshot if len(same_market_ohlcv_calls) == 1 else self.end_snapshot
+
+
+def test_empty_price_change_uses_two_bulk_snapshots_and_local_return(tmp_path):
+    industries_cfg, _, _ = load_all(ROOT)
+    boom = read_json(ROOT / "fixtures" / "upstream" / "industry_boom_snapshot.json", {})
+    fake = FakeStockPrimaryPriceEmpty()
+    result = collect_sector_market(tmp_path, industries_cfg["industries"], boom, stock_module=fake, allow_live=True)
+    assert result["available"] is True
+    assert result["normal_live_calls"] == 12  # 2 empty primary + 4 OHLCV snapshots + 2 fundamentals + 4 flows
+    semi = result["industries"]["semiconductor"]
+    assert semi["usable_members"]
+    assert semi["median_return_pct"] is not None
+    assert any("fallback_two_snapshot_local_return" in x for x in result["diagnostics"])
+
+
+class FakeStockFundamentalBacktrack(FakeStock):
+    def __init__(self):
+        super().__init__()
+        self.fund_attempts = {"KOSPI": 0, "KOSDAQ": 0}
+
+    def get_market_fundamental_by_ticker(self, end, market=None):
+        self.calls.append(("fund", market, end))
+        self.fund_attempts[market] += 1
+        if self.fund_attempts[market] == 1:
+            return pd.DataFrame()
+        return self.fund
+
+
+def test_empty_fundamental_backtracks_one_business_day(tmp_path):
+    industries_cfg, _, _ = load_all(ROOT)
+    boom = read_json(ROOT / "fixtures" / "upstream" / "industry_boom_snapshot.json", {})
+    fake = FakeStockFundamentalBacktrack()
+    result = collect_sector_market(tmp_path, industries_cfg["industries"], boom, stock_module=fake, allow_live=True)
+    assert result["available"] is True
+    assert result["normal_live_calls"] == 10  # normal 8 + one extra fundamental attempt per market
+    assert result["industries"]["semiconductor"]["valuation_score"] is not None
+    assert any("fundamental:KOSPI:backtracked" in x for x in result["diagnostics"])
