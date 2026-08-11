@@ -70,6 +70,14 @@ class UpstreamLoader:
             self.memo[name] = result
             return result
 
+        local_path = str(source.get("local_path") or "").strip()
+        if local_path:
+            payload = read_json(self.root / local_path)
+            if isinstance(payload, dict) and payload:
+                result = self._result_from_payload(name, payload, "local", 0, "")
+                self.memo[name] = result
+                return result
+
         cache_path = self.cache_dir / f"{name}.json"
         meta_path = self.cache_dir / f"{name}.meta.json"
         cached = read_json(cache_path)

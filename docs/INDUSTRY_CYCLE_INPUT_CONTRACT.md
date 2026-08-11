@@ -82,3 +82,19 @@ These sources are cached and memoized. They are not used to manufacture the
 current industry score. The industry-cycle collector must publish the
 industry-specific current/leading metrics and its sensitivity mapping in the
 contract above; the renderer then exposes the macro impact fields for audit.
+
+## Raw input and local batch builder
+
+The collection job may write `input/industry_cycle_raw.json`. The Action first
+runs `python -m kiee.industry_cycle_feed --root .`, which normalizes raw
+metrics, groups them by the configured factor weights, and writes
+`input/industry_cycle_latest.json`. Current scoring uses only industry
+observations. Forecast stages may include the explicitly mapped sensitive macro
+observations, but they must remain in the forecast stage provenance.
+
+Each raw metric must include `factor`, a reproducible `score` or
+`long_run_percentile`, positive `quality`, `source`, and `as_of`. A numeric
+`value` without an explicit normalization is not scored. The builder applies
+the coverage gates from `config/scoring_policy.json`; missing factors are not
+replaced with a neutral value. If the raw file is absent or below the gate, the
+feed remains `pending` and the engine reports `insufficient_data`.
