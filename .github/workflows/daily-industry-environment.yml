@@ -80,6 +80,9 @@ jobs:
           ce=data['call_efficiency']
           assert int(ce['per_company_live_calls']) == 0
           assert int(ce['upstream_http_calls_this_run']) <= int(ce['normal_upstream_http_call_target'])
+          cycle_source=data['source_status'].get('industry_cycle') or {}
+          assert cycle_source.get('ok') is True, cycle_source
+          print('INDUSTRY_CYCLE_SOURCE_OK=', cycle_source.get('mode'))
           # KRX 정상경로는 8회. 가격/영업일/빈응답 fallback은 장애시에만 추가되며 20회를 절대 상한으로 둔다.
           assert int(ce['krx_bulk_calls_this_run']) <= 20
           bridge=json.loads(Path('output/stock_prediction_bridge.json').read_text(encoding='utf-8'))
