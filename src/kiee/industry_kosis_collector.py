@@ -12,8 +12,11 @@ from typing import Any
 from .config import load_all
 from .util import read_json, utc_now_iso, write_json
 
-SEARCH_URL = "https://kosis.kr/openapi/statisticsSearch.do"
-DATA_URL = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
+# The official KOSIS developer guide publishes the same Open API under the
+# SSO host. GitHub-hosted runners can time out against kosis.kr while the SSO
+# host remains reachable; keep one host per run to avoid duplicate requests.
+SEARCH_URL = "https://sso.kosis.kr/openapi/statisticsSearch.do"
+DATA_URL = "https://sso.kosis.kr/openapi/Param/statisticsParameterData.do"
 
 
 def _number(value: Any) -> float | None:
