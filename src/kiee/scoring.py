@@ -519,7 +519,7 @@ def _pending_stage(reason: str) -> dict[str, Any]:
     }
 
 
-def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], reason: str) -> dict[str, Any]:
+def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], reason: str, prospective_summary: dict[str, Any] | None = None) -> dict[str, Any]:
     current = _pending_stage(reason)
     future = _pending_stage(reason)
     future["delta_points"] = None
@@ -574,6 +574,7 @@ def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], r
             "sector_specificity_score": 0.0,
             "forecast_upstream_quality_score": 0.0,
             "source_freshness_score": 0.0,
+            "prospective_validation": prospective_summary or {},
             "data_status": "insufficient_data",
             "current_metric_coverage": 0.0,
             "leading_metric_coverage": 0.0,
@@ -716,6 +717,7 @@ def score_industry(
             industry,
             direct,
             "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
+            prospective_summary,
         )
     return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
     current_factors, current_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)

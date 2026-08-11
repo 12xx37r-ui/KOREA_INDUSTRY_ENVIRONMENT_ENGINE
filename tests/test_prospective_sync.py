@@ -41,16 +41,16 @@ def test_per_industry_prospective_metadata_matches_just_updated_registry(tmp_pat
         "normal_target_calls": 8,
         "industries": direct_rows,
         "industry_coverage_pct": 100.0,
-        "fresh_industry_count": 25,
+        "fresh_industry_count": len(industries_cfg["industries"]),
         "lkg_reused_industry_count": 0,
-        "available_industry_count": 25,
+        "available_industry_count": len(industries_cfg["industries"]),
         "valuation_history_ready_industry_count": 0,
-        "valuation_history_total_industry_count": 25,
+        "valuation_history_total_industry_count": len(industries_cfg["industries"]),
     })
 
     result = engine_mod.run_engine(root, fixture_dir=root / "fixtures" / "upstream", allow_live_krx=False)
     expected = result["prospective_validation"]["registered_forecasts"]
-    assert expected == 25
+    assert expected == len(industries_cfg["industries"])
     for row in result["industries"]:
         embedded = row["quality"]["prospective_validation"]
         assert embedded["registered_forecasts"] == expected

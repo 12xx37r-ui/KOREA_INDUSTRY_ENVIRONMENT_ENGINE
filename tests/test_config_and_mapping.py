@@ -21,7 +21,7 @@ def test_industry_universe_and_weights():
         assert abs(sum(row["weights_current"].values()) - 1.0) < 1e-10
         assert abs(sum(row["weights_3m"].values()) - 1.0) < 1e-10
     assert policy["forecast_primary_use_allowed"] is False
-    assert upstreams["normal_upstream_http_calls_per_run"] == 4
+    assert upstreams["normal_upstream_http_calls_per_run"] == 6
 
 
 def test_stock_engine_alias_compatibility():
