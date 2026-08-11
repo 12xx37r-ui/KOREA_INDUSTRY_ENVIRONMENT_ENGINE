@@ -187,13 +187,20 @@ def run_engine(
     write_json(output_dir / "stock_prediction_bridge.json", bridge)
     for row in results:
         write_json(output_dir / "industries" / f"{row['industry_key']}.json", row)
+    direct_krx_available = direct_market.get("available") is True
     write_json(output_dir / "engine_health.json", {
-        "status": "ok" if not missing else "partial",
+        "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
         "source_status": _source_status(sources),
         "freshness_quality_score": round(freshness, 1),
-        "direct_krx_available": direct_market.get("available") is True,
+        "direct_krx_available": direct_krx_available,
         "direct_krx_source_mode": direct_market.get("source_mode"),
+        "direct_krx_credentials_configured": direct_market.get("krx_credentials_configured") is True,
+        "direct_krx_industry_coverage_pct": direct_market.get("industry_coverage_pct", 0.0),
+        "direct_krx_fresh_industry_count": direct_market.get("fresh_industry_count", 0),
+        "direct_krx_lkg_reused_industry_count": direct_market.get("lkg_reused_industry_count", 0),
+        "direct_krx_available_industry_count": direct_market.get("available_industry_count", 0),
+        "direct_krx_actual_periods": direct_market.get("actual_periods") or {},
         "direct_krx_diagnostics": direct_market.get("diagnostics") or [],
         "call_efficiency": overall["call_efficiency"],
         "prospective_validation": prospective_after,
