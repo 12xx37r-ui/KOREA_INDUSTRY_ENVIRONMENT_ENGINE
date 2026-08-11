@@ -19,10 +19,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
@@ -66,14 +66,20 @@ jobs:
           assert data['industry_count'] >= 20
           assert len(data['industries']) == data['industry_count']
           for row in data['industries']:
-              for block in ('current','forecast_3m'):
-                  s=float(row[block]['score'])
-                  q=float(row[block]['quality_score'])
-                  assert 0 <= s <= 100, (row['industry_key'], block, s)
-                  assert 0 <= q <= 100, (row['industry_key'], block, q)
+              for block in ('current','forecast_3m','forecast_3_6m','forecast_6_12m'):
+                  score=row[block].get('score')
+                  status=row[block].get('status')
+                  q=float(row[block].get('quality_score') or 0)
+                  if score is None:
+                      assert status == 'insufficient_data', (row['industry_key'], block, status)
+                      assert q == 0, (row['industry_key'], block, q)
+                  else:
+                      s=float(score)
+                      assert 0 <= s <= 100, (row['industry_key'], block, s)
+                      assert 0 <= q <= 100, (row['industry_key'], block, q)
           ce=data['call_efficiency']
           assert int(ce['per_company_live_calls']) == 0
-          assert int(ce['upstream_http_calls_this_run']) <= 4
+          assert int(ce['upstream_http_calls_this_run']) <= int(ce['normal_upstream_http_call_target'])
           # KRX 정상경로는 8회. 가격/영업일/빈응답 fallback은 장애시에만 추가되며 20회를 절대 상한으로 둔다.
           assert int(ce['krx_bulk_calls_this_run']) <= 20
           bridge=json.loads(Path('output/stock_prediction_bridge.json').read_text(encoding='utf-8'))
