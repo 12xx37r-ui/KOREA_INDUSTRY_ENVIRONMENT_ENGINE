@@ -31,6 +31,7 @@ class _CallBudget:
     scope_limit: int | None = None
     scope_attempts: int = 0
     errors: list[str] | None = None
+    events: list[str] | None = None
 
     def start_scope(self, limit: int) -> None:
         self.scope_limit = max(1, int(limit))
@@ -89,15 +90,9 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
 
 def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
     periods = min(int(spec.get("periods", 24)), 24)
-    for table_id in spec.get("preferred_tables") or []:
-        try:
-            rows = _fetch_table(api_key, "101", str(table_id), periods, budget)
-            if rows:
-                return "101", str(table_id), rows
-        except Exception:
-            continue
     candidates: dict[tuple[str, str], dict[str, Any]] = {}
-    for term in spec.get("search_terms") or []:
+    terms = list(spec.get("search_terms") or [])[:1]
+    for term in terms:
         try:
             search_rows = _search(api_key, str(term), budget)
         except Exception:
@@ -107,13 +102,17 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
             table = str(row.get("TBL_ID") or "").strip()
             if org and table:
                 candidates[(org, table)] = row
-    for (org, table), _ in list(candidates.items())[:2]:
+    if budget.events is not None:
+        budget.events.append(f"search[{terms[0] if terms else ''}]: candidates={len(candidates)}")
+    for (org, table), _ in list(candidates.items())[:1]:
         try:
             rows = _fetch_table(api_key, org, table, periods, budget)
             if rows:
                 return org, table, rows
         except Exception:
             continue
+    if budget.events is not None and candidates:
+        budget.events.append(f"table_probe: no usable rows for {next(iter(candidates))[1]}")
     raise RuntimeError("no usable KOSIS table found")
 
 
@@ -173,8 +172,11 @@ def collect(root: Path) -> dict[str, Any]:
     overrides = config.get("industry_keyword_overrides") or {}
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
-    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[])
+    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[], events=[])
     for name, spec in (config.get("series") or {}).items():
+        if budget.attempts >= budget.limit:
+            diagnostics.append("KOSIS call cap reached before remaining series")
+            break
         budget.start_scope(int(spec.get("max_external_calls", 1)))
         try:
             org_id, table_id, rows = _choose_table(api_key, spec, budget)
@@ -207,7 +209,7 @@ def collect(root: Path) -> dict[str, Any]:
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
         "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
-        "diagnostics": diagnostics + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
+        "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     write_json(output, result)
     return result
