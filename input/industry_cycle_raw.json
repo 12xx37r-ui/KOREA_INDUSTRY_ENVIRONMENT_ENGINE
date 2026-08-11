@@ -1,15 +1,13 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-11T18:23:51.798532+00:00",
+  "generated_at_utc": "2026-08-11T18:28:26.006764+00:00",
   "industries": [],
-  "collector": "kosis-industry-cycle-v1",
-  "external_calls": 0,
+  "collector": "kosis-industry-cycle-v2",
+  "external_calls": 6,
   "diagnostics": [
-    "production_shipments: URLError: <urlopen error timed out>",
-    "inventory_cycle: URLError: <urlopen error timed out>",
-    "utilization: URLError: <urlopen error timed out>",
-    "pmi_bsi: URLError: <urlopen error timed out>"
+    "production_shipments: RuntimeError: no usable KOSIS table found",
+    "KOSIS call cap reached"
   ],
   "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
