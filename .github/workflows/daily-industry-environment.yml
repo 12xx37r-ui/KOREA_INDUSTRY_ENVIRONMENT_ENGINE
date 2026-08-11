@@ -63,6 +63,22 @@ jobs:
         run: |
           PYTHONPATH=src python -m kiee.industry_kosis_collector --root .
           PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          for name in ('input/industry_cycle_raw.json', 'input/industry_cycle_latest.json'):
+              path = Path(name)
+              data = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+              print(f'{name}: exists={path.exists()} status={data.get("status")} generated_at_utc={data.get("generated_at_utc")} industry_count={len(data.get("industries") or [])} external_calls={data.get("external_calls", "n/a")}')
+              if data.get('diagnostics'):
+                  print(f'{name}: diagnostics={json.dumps(data["diagnostics"], ensure_ascii=False)}')
+              if data.get('reason'):
+                  print(f'{name}: reason={data["reason"]}')
+          upstreams = json.loads(Path('config/upstreams.json').read_text(encoding='utf-8'))
+          cycle = (upstreams.get('sources') or {}).get('industry_cycle') or {}
+          print('INDUSTRY_CYCLE_LOCAL_PATH=', cycle.get('local_path'))
+          assert cycle.get('local_path') == 'input/industry_cycle_latest.json'
+          PY
 
       - name: Run industry engine
         env:
