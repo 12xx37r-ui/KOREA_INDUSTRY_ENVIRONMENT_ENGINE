@@ -1,12 +1,15 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-11T18:28:26.006764+00:00",
+  "generated_at_utc": "2026-08-11T18:34:19.446483+00:00",
   "industries": [],
   "collector": "kosis-industry-cycle-v2",
   "external_calls": 6,
   "diagnostics": [
     "production_shipments: RuntimeError: no usable KOSIS table found",
+    "inventory_cycle: RuntimeError: no usable KOSIS table found",
+    "utilization: RuntimeError: no usable KOSIS table found",
+    "pmi_bsi: RuntimeError: no usable KOSIS table found",
     "KOSIS call cap reached"
   ],
   "missing_data_policy": "do_not_impute_or_neutral_fill"
