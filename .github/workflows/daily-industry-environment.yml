@@ -1,1 +1,81 @@
+name: Korea Industry Environment Engine
 
+on:
+  workflow_dispatch:
+  schedule:
+    # KRX 정규장 종료 후 약 1시간 25분: 16:55 KST = 07:55 UTC
+    - cron: '55 7 * * 1-5'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: korea-industry-environment-engine
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Syntax check
+        run: python -m compileall -q src tests
+
+      - name: Unit and contract tests
+        run: pytest -q
+
+      - name: Run industry engine
+        env:
+          UPSTREAM_GITHUB_TOKEN: ${{ secrets.UPSTREAM_GITHUB_TOKEN }}
+          UPSTREAM_GITHUB_OWNER: ${{ vars.UPSTREAM_GITHUB_OWNER || '12xx37r-ui' }}
+        run: PYTHONPATH=src python -m kiee.cli --root .
+
+      - name: Validate output contract
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/industry_environment_latest.json')
+          data=json.loads(p.read_text(encoding='utf-8'))
+          assert data['status']=='ok'
+          assert data['industry_count'] >= 20
+          assert len(data['industries']) == data['industry_count']
+          for row in data['industries']:
+              for block in ('current','forecast_3m'):
+                  s=float(row[block]['score'])
+                  q=float(row[block]['quality_score'])
+                  assert 0 <= s <= 100, (row['industry_key'], block, s)
+                  assert 0 <= q <= 100, (row['industry_key'], block, q)
+          ce=data['call_efficiency']
+          assert int(ce['per_company_live_calls']) == 0
+          assert int(ce['upstream_http_calls_this_run']) <= 4
+          # KRX 정상경로 8회. 장애 fallback은 진단상 추가될 수 있으므로 12회를 상한으로 둔다.
+          assert int(ce['krx_bulk_calls_this_run']) <= 12
+          bridge=json.loads(Path('output/stock_prediction_bridge.json').read_text(encoding='utf-8'))
+          assert len(bridge['by_profile_key']) == data['industry_count']
+          print('OUTPUT_CONTRACT_OK')
+          PY
+
+      - name: Commit generated JSON only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output input_cache/latest || true
+          if git diff --cached --quiet; then
+            echo "No output changes"
+          else
+            git commit -m "chore: update industry environment outputs"
+            git push
+          fi
