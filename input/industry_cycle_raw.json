@@ -1,8 +1,15 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-11T18:03:20.610131+00:00",
+  "generated_at_utc": "2026-08-11T18:18:48.214208+00:00",
   "industries": [],
   "collector": "kosis-industry-cycle-v1",
-  "reason": "KOSIS_API_KEY is not configured"
+  "external_calls": 0,
+  "diagnostics": [
+    "production_shipments: URLError: <urlopen error timed out>",
+    "inventory_cycle: URLError: <urlopen error timed out>",
+    "utilization: URLError: <urlopen error timed out>",
+    "pmi_bsi: URLError: <urlopen error timed out>"
+  ],
+  "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
