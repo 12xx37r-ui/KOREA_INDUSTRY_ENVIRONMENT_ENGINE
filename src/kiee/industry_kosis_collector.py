@@ -5,7 +5,7 @@ import json
 import os
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -24,9 +24,21 @@ def _number(value: Any) -> float | None:
         return None
 
 
-def _get_json(url: str, params: dict[str, Any], timeout: int = 8) -> Any:
+@dataclass
+class _CallBudget:
+    limit: int
+    attempts: int = 0
+
+    def allow(self) -> None:
+        if self.attempts >= self.limit:
+            raise RuntimeError("KOSIS external-call cap reached")
+        self.attempts += 1
+
+
+def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: int = 25) -> Any:
     query = urllib.parse.urlencode({key: value for key, value in params.items() if value not in (None, "")})
     request = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-industry-cycle/1.0"})
+    budget.allow()
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
 
@@ -43,40 +55,45 @@ def _rows(payload: Any) -> list[dict[str, Any]]:
     return []
 
 
-def _search(api_key: str, term: str) -> list[dict[str, Any]]:
+def _search(api_key: str, term: str, budget: _CallBudget) -> list[dict[str, Any]]:
     return _rows(_get_json(SEARCH_URL, {
         "method": "getList", "apiKey": api_key, "searchNm": term,
         "sort": "RANK", "startCount": 1, "resultCount": 20,
         "format": "json", "jsonVD": "Y",
-    }))
+    }, budget))
 
 
-def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int) -> list[dict[str, Any]]:
+def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget) -> list[dict[str, Any]]:
     return _rows(_get_json(DATA_URL, {
         "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
         "itmId": "ALL", "objL1": "ALL", "objL2": "ALL", "objL3": "ALL", "objL4": "ALL",
         "prdSe": "M", "newEstPrdCnt": periods, "format": "json", "jsonVD": "Y",
-    }, timeout=12))
+    }, budget, timeout=25))
 
 
-def _choose_table(api_key: str, spec: dict[str, Any]) -> tuple[str, str, list[dict[str, Any]]]:
+def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
+    periods = min(int(spec.get("periods", 24)), 24)
     for table_id in spec.get("preferred_tables") or []:
         try:
-            rows = _fetch_table(api_key, "101", str(table_id), int(spec.get("periods", 72)))
+            rows = _fetch_table(api_key, "101", str(table_id), periods, budget)
             if rows:
                 return "101", str(table_id), rows
         except Exception:
             continue
     candidates: dict[tuple[str, str], dict[str, Any]] = {}
     for term in spec.get("search_terms") or []:
-        for row in _search(api_key, str(term)):
+        try:
+            search_rows = _search(api_key, str(term), budget)
+        except Exception:
+            continue
+        for row in search_rows:
             org = str(row.get("ORG_ID") or "").strip()
             table = str(row.get("TBL_ID") or "").strip()
             if org and table:
                 candidates[(org, table)] = row
-    for (org, table), _ in list(candidates.items())[:12]:
+    for (org, table), _ in list(candidates.items())[:2]:
         try:
-            rows = _fetch_table(api_key, org, table, int(spec.get("periods", 72)))
+            rows = _fetch_table(api_key, org, table, periods, budget)
             if rows:
                 return org, table, rows
         except Exception:
@@ -140,14 +157,10 @@ def collect(root: Path) -> dict[str, Any]:
     overrides = config.get("industry_keyword_overrides") or {}
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
-    call_count = 0
+    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))))
     for name, spec in (config.get("series") or {}).items():
-        if call_count >= int(config.get("max_external_calls", 6)):
-            diagnostics.append("KOSIS call cap reached")
-            break
         try:
-            org_id, table_id, rows = _choose_table(api_key, spec)
-            call_count += 1
+            org_id, table_id, rows = _choose_table(api_key, spec, budget)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
@@ -164,6 +177,9 @@ def collect(root: Path) -> dict[str, Any]:
             diagnostics.append(f"{name}: table={table_id} rows={len(rows)} matched={len(metric_rows[name])}")
         except Exception as exc:
             diagnostics.append(f"{name}: {type(exc).__name__}: {exc}")
+            if budget.attempts >= budget.limit:
+                diagnostics.append("KOSIS call cap reached")
+                break
     by_key: dict[str, dict[str, Any]] = {}
     for name, metrics in metric_rows.items():
         for metric in metrics:
@@ -173,7 +189,7 @@ def collect(root: Path) -> dict[str, Any]:
     result = {
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
-        "collector": "kosis-industry-cycle-v1", "external_calls": call_count,
+        "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
         "diagnostics": diagnostics, "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     write_json(output, result)
