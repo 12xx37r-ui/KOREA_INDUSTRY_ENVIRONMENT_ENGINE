@@ -48,7 +48,11 @@ jobs:
           test -d input_cache/latest
 
       - name: Validate and build industry cycle feed
-        run: PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
+        env:
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+        run: |
+          PYTHONPATH=src python -m kiee.industry_kosis_collector --root .
+          PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
 
       - name: Run industry engine
         env:
@@ -56,6 +60,7 @@ jobs:
           UPSTREAM_GITHUB_OWNER: ${{ vars.UPSTREAM_GITHUB_OWNER || '12xx37r-ui' }}
           KRX_ID: ${{ secrets.KRX_ID }}
           KRX_PW: ${{ secrets.KRX_PW }}
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
         run: PYTHONPATH=src python -m kiee.cli --root .
 
       - name: Validate output contract
