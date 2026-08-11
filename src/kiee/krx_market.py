@@ -172,6 +172,17 @@ def _valuation_history_path(root: Path) -> Path:
     return root / "output" / "validation" / "industry_valuation_history.json"
 
 
+def _valuation_history_visible_path(root: Path) -> Path:
+    """Mobile-friendly mirror of the canonical valuation-history file.
+
+    The canonical validation path is kept for engine contracts, while this top-level
+    output avoids confusion with ``industry_environment_history.json`` on mobile.
+    Both files are written from the same in-memory payload and therefore stay byte-
+    equivalent at the JSON-object level without any additional external calls.
+    """
+    return root / "output" / "industry_valuation_history.json"
+
+
 def _valuation_week_key(day_text: str) -> str:
     try:
         d = datetime.strptime(str(day_text), "%Y%m%d").date()
@@ -276,7 +287,7 @@ def _calibrated_valuation_score(
     }
 
 
-def _write_valuation_history(root: Path, end: str, industries: dict[str, Any]) -> None:
+def _write_valuation_history(root: Path, end: str, industries: dict[str, Any]) -> dict[str, Any]:
     path = _valuation_history_path(root)
     payload = read_json(path, {}) or {}
     snapshots = payload.get("snapshots") if isinstance(payload, dict) else None
@@ -296,7 +307,20 @@ def _write_valuation_history(root: Path, end: str, industries: dict[str, Any]) -
     if compact:
         snapshots.append({"as_of": end, "week": week, "industries": compact})
     snapshots = sorted(snapshots, key=lambda x: str(x.get("as_of") or ""))[-160:]
-    write_json(path, {"schema_version": "1.0.3", "sampling": "one snapshot per ISO week; no extra KRX calls", "snapshots": snapshots})
+    output = {
+        "schema_version": "1.0.4",
+        "data_kind": "industry_valuation_history",
+        "sampling": "one snapshot per ISO week; no extra KRX calls",
+        "contains": "industry median PER/PBR history; NOT industry current/3m forecast history",
+        "snapshot_count": len(snapshots),
+        "latest_week": str(snapshots[-1].get("week")) if snapshots else None,
+        "snapshots": snapshots,
+    }
+    # Write both canonical and mobile-visible paths from one payload. This is local I/O
+    # only; it does not add KRX/GitHub/API requests.
+    write_json(path, output)
+    write_json(_valuation_history_visible_path(root), output)
+    return output
 
 
 def _fetch_price_change(
@@ -705,8 +729,9 @@ def collect_sector_market(
     # Accumulate one sector-multiple snapshot per ISO week from the same bulk KRX
     # tables. This adds zero external calls and becomes the primary valuation anchor
     # once enough history has accumulated.
+    valuation_history_written: dict[str, Any] = valuation_history if isinstance(valuation_history, dict) else {}
     if fresh_industries > 0:
-        _write_valuation_history(root, end, result_industries)
+        valuation_history_written = _write_valuation_history(root, end, result_industries)
     valuation_history_ready_count = sum(1 for v in result_industries.values() if v.get("valuation_history_ready") is True)
     result = {
         "schema_version": "1.0.2",
@@ -730,6 +755,10 @@ def collect_sector_market(
         "valuation_history_ready_industry_count": valuation_history_ready_count,
         "valuation_history_total_industry_count": len(industries),
         "valuation_history_sampling": "weekly-from-existing-bulk-calls",
+        "valuation_history_snapshot_count": len(valuation_history_written.get("snapshots") or []),
+        "valuation_history_latest_week": valuation_history_written.get("latest_week"),
+        "valuation_history_visible_path": "output/industry_valuation_history.json",
+        "valuation_history_canonical_path": "output/validation/industry_valuation_history.json",
         "industries": result_industries,
         "diagnostics": diagnostics,
         "limitations": [
