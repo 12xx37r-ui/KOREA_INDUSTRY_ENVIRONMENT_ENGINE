@@ -6,11 +6,11 @@
     "construction"
   ],
   "current": {
-    "score": 47.3,
+    "score": 47.9,
     "band": "중립",
-    "quality_score": 78.5,
+    "quality_score": 76.2,
     "data_coverage_pct": 100,
-    "quality_weighted_coverage_pct": 68.1,
+    "quality_weighted_coverage_pct": 64.1,
     "factors": {
       "earnings_momentum": {
         "score": 55.02,
@@ -53,12 +53,12 @@
         "proxy": false
       },
       "valuation": {
-        "score": 44.24,
-        "quality": 78.6,
+        "score": 49.86,
+        "quality": 38.5,
         "available": true,
-        "source": "KRX 대표바스켓 PER·PBR 상대가치 + 한국시장 가치환경",
-        "detail": "업종 장기 역사백분위가 아직 없으면 현재 횡단면 상대가치로만 사용하고 품질가중치를 낮춥니다.",
-        "proxy": false
+        "source": "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
+        "detail": "산업 자체 역사표본이 아직 0개라 초기구간입니다. 전체시장 대비 PER/PBR은 산업구조 차이를 과대평가하지 않도록 50점 방향으로 축소하고 품질을 제한합니다.",
+        "proxy": true
       }
     },
     "contributions": [
@@ -69,8 +69,8 @@
         "quality": 39.5,
         "base_weight": 0.18,
         "effective_weight": 0.0711,
-        "normalized_weight": 0.1043,
-        "contribution_points": 0.52,
+        "normalized_weight": 0.1109,
+        "contribution_points": 0.56,
         "available": true
       },
       {
@@ -80,8 +80,8 @@
         "quality": 44.1,
         "base_weight": 0.2,
         "effective_weight": 0.0882,
-        "normalized_weight": 0.1294,
-        "contribution_points": -0.37,
+        "normalized_weight": 0.1375,
+        "contribution_points": -0.39,
         "available": true
       },
       {
@@ -91,8 +91,8 @@
         "quality": 69.4,
         "base_weight": 0.12,
         "effective_weight": 0.0833,
-        "normalized_weight": 0.1222,
-        "contribution_points": 0.38,
+        "normalized_weight": 0.1299,
+        "contribution_points": 0.4,
         "available": true
       },
       {
@@ -102,8 +102,8 @@
         "quality": 86.2,
         "base_weight": 0.25,
         "effective_weight": 0.2155,
-        "normalized_weight": 0.3162,
-        "contribution_points": -3.81,
+        "normalized_weight": 0.336,
+        "contribution_points": -4.05,
         "available": true
       },
       {
@@ -113,32 +113,32 @@
         "quality": 96.5,
         "base_weight": 0.15,
         "effective_weight": 0.1447,
-        "normalized_weight": 0.2124,
-        "contribution_points": 1.29,
+        "normalized_weight": 0.2257,
+        "contribution_points": 1.37,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 44.24,
-        "quality": 78.6,
+        "score": 49.86,
+        "quality": 38.5,
         "base_weight": 0.1,
-        "effective_weight": 0.0786,
-        "normalized_weight": 0.1153,
-        "contribution_points": -0.66,
+        "effective_weight": 0.0385,
+        "normalized_weight": 0.06,
+        "contribution_points": -0.01,
         "available": true
       }
     ]
   },
   "forecast_3m": {
-    "score": 45.2,
+    "score": 45.5,
     "band": "중립",
-    "delta_points": -2.1,
+    "delta_points": -2.4,
     "direction": "악화",
     "change_strength": "매우 조금",
-    "quality_score": 72.8,
+    "quality_score": 72.2,
     "data_coverage_pct": 100,
-    "quality_weighted_coverage_pct": 62.0,
+    "quality_weighted_coverage_pct": 60.5,
     "factors": {
       "earnings_momentum": {
         "score": 54.3,
@@ -181,12 +181,12 @@
         "proxy": false
       },
       "valuation": {
-        "score": 44.13,
-        "quality": 58.1,
+        "score": 49.76,
+        "quality": 27.3,
         "available": true,
-        "source": "KRX 대표바스켓 PER·PBR 상대가치 + 한국시장 가치환경",
-        "detail": "업종 장기 역사백분위가 아직 없으면 현재 횡단면 상대가치로만 사용하고 품질가중치를 낮춥니다.",
-        "proxy": false
+        "source": "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
+        "detail": "산업 자체 역사표본이 아직 0개라 초기구간입니다. 전체시장 대비 PER/PBR은 산업구조 차이를 과대평가하지 않도록 50점 방향으로 축소하고 품질을 제한합니다.",
+        "proxy": true
       }
     },
     "contributions": [
@@ -197,8 +197,8 @@
         "quality": 37.3,
         "base_weight": 0.12,
         "effective_weight": 0.0448,
-        "normalized_weight": 0.0722,
-        "contribution_points": 0.31,
+        "normalized_weight": 0.074,
+        "contribution_points": 0.32,
         "available": true
       },
       {
@@ -208,8 +208,8 @@
         "quality": 41.2,
         "base_weight": 0.25,
         "effective_weight": 0.103,
-        "normalized_weight": 0.1661,
-        "contribution_points": -0.35,
+        "normalized_weight": 0.1703,
+        "contribution_points": -0.36,
         "available": true
       },
       {
@@ -219,7 +219,7 @@
         "quality": 66.7,
         "base_weight": 0.1,
         "effective_weight": 0.0667,
-        "normalized_weight": 0.1076,
+        "normalized_weight": 0.1103,
         "contribution_points": 0.18,
         "available": true
       },
@@ -230,8 +230,8 @@
         "quality": 80.1,
         "base_weight": 0.32,
         "effective_weight": 0.2563,
-        "normalized_weight": 0.4133,
-        "contribution_points": -5.66,
+        "normalized_weight": 0.4238,
+        "contribution_points": -5.81,
         "available": true
       },
       {
@@ -241,19 +241,19 @@
         "quality": 75.2,
         "base_weight": 0.16,
         "effective_weight": 0.1203,
-        "normalized_weight": 0.194,
-        "contribution_points": 0.8,
+        "normalized_weight": 0.199,
+        "contribution_points": 0.82,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 44.13,
-        "quality": 58.1,
+        "score": 49.76,
+        "quality": 27.3,
         "base_weight": 0.05,
-        "effective_weight": 0.0291,
-        "normalized_weight": 0.0468,
-        "contribution_points": -0.27,
+        "effective_weight": 0.0137,
+        "normalized_weight": 0.0226,
+        "contribution_points": -0.01,
         "available": true
       }
     ],
@@ -261,13 +261,13 @@
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "points": 0.8,
+        "points": 0.82,
         "score": 54.14
       },
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "points": 0.31,
+        "points": 0.32,
         "score": 54.3
       },
       {
@@ -281,20 +281,20 @@
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "points": -5.66,
+        "points": -5.81,
         "score": 36.3
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "points": -0.35,
+        "points": -0.36,
         "score": 47.87
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "points": -0.27,
-        "score": 44.13
+        "points": -0.01,
+        "score": 49.76
       }
     ]
   },
@@ -322,8 +322,15 @@
     "flow_positive_share": 0.8,
     "market_internal_score": 61.42,
     "market_internal_quality": 100.0,
-    "valuation_score": 43.29,
-    "valuation_quality": 87.0,
+    "valuation_score": 48.66,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
+    "valuation_history_ready": false,
+    "valuation_history_samples": 0,
+    "valuation_historical_score": null,
+    "valuation_cross_section_score_raw": 43.29,
+    "valuation_history_median_per": null,
+    "valuation_history_median_pbr": null,
     "median_per": 15.54,
     "median_pbr": 1.32,
     "broad_market_median_per": 12.12,
@@ -379,27 +386,27 @@
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": true,
     "allowed_as_primary": false,
-    "bounded_direction_adjustment_points": -0.41,
+    "bounded_direction_adjustment_points": -0.43,
     "max_abs_adjustment_points": 5.0,
-    "signal_normalized": -0.1137,
-    "quality_score": 72.8,
+    "signal_normalized": -0.1186,
+    "quality_score": 72.2,
     "validation_status": "PENDING",
     "rule": "산업전망은 개별종목 방향예측의 보조 오버레이로만 사용하며, 자체 OOS가 통과하기 전 최대 영향도를 제한합니다."
   },
   "interpretation": {
-    "headline": "현재 중립 47/100 · 3개월 중립 45/100 · -2.1점 매우 조금 악화",
-    "beginner": "현재 건설·인프라 산업환경은 중립 구간입니다. 3개월 예상은 45점으로 현재보다 2.1점 낮아져 불리해질 가능성을 경계합니다.",
+    "headline": "현재 중립 48/100 · 3개월 중립 45/100 · -2.4점 매우 조금 악화",
+    "beginner": "현재 건설·인프라 산업환경은 중립 구간입니다. 3개월 예상은 45점으로 현재보다 2.4점 낮아져 불리해질 가능성을 경계합니다.",
     "warning": "점수는 산업환경의 상대적 유불리이며 해당 산업 모든 종목의 주가 상승·하락을 보장하지 않습니다."
   },
   "quality": {
     "sector_specificity_score": 95.0,
     "forecast_upstream_quality_score": 79.0,
-    "source_freshness_score": 89.1,
+    "source_freshness_score": 88.8,
     "prospective_validation": {
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 0,
+      "registered_forecasts": 25,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -414,10 +421,13 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-11T11:13:39.300133+00:00"
+      "generated_at_utc": "2026-08-11T11:53:55.980145+00:00"
     },
     "direct_sector_market_available": true,
-    "industry_specific_valuation_available": true
+    "industry_specific_valuation_available": true,
+    "industry_historical_valuation_available": false,
+    "industry_valuation_history_samples": 0,
+    "industry_valuation_method": "provisional_cross_section_shrunk"
   },
   "notes": ""
 }
