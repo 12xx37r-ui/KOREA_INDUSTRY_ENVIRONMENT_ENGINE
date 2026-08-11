@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "korea-industry-environment-engine"
+version = "1.0.0"
+description = "Korea industry current environment and 3-month leading forecast engine"
+requires-python = ">=3.11"
+dependencies = [
+  "pandas==2.3.1",
+  "numpy==2.3.1",
+  "pykrx==1.2.8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

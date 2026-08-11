@@ -1,0 +1,53 @@
+Korea Industry Environment Engine V1.0.0 업로드 가이드
+====================================================
+
+[권장]
+새 GitHub 저장소를 하나 만드세요.
+예: korea-industry-environment-engine
+
+ZIP의 폴더 구조를 그대로 저장소 루트에 업로드합니다.
+
+필수 구조:
+.github/workflows/daily-industry-environment.yml
+config/
+src/
+tests/
+fixtures/
+README.md
+pyproject.toml
+requirements.txt
+
+[GitHub Secret]
+기존 3개 upstream 저장소가 모두 public이면 추가 Secret 없이 raw JSON으로 읽습니다.
+비공개 저장소가 하나라도 있으면 다음 Secret만 추가하세요.
+
+UPSTREAM_GITHUB_TOKEN
+
+권한은 해당 upstream 저장소 Contents: Read에 필요한 최소범위만 부여하세요.
+토큰 값을 코드에 직접 넣지 마세요.
+
+선택 변수:
+UPSTREAM_GITHUB_OWNER
+기본값: 12xx37r-ui
+
+[Action]
+업로드 후 Actions에서
+Korea Industry Environment Engine
+을 딱 1회 수동 실행해 최초 output과 KRX LKG를 생성하세요.
+이후 평일 16:55 KST에 자동 실행됩니다.
+
+[정상 실행 호출정책]
+upstream GitHub JSON: 최대 4회/실행
+KRX market-wide bulk: 정상 8회/실행
+기업별 live 호출: 0회
+실패 fallback만 제한적으로 추가 호출 가능
+
+[연결대기/미수집]
+- 한국 금리/환율, 한국증시 직접환경, 글로벌 bundle이 최대 허용연령을 넘으면 새 점수를 억지 계산하지 않고 실행을 실패시킵니다.
+- industry-boom V70은 보조소스라 너무 오래되거나 연결 실패하면 테마축을 제외하고 나머지 축으로 계산합니다.
+- KRX live 실패 시 120시간 이내 마지막 정상 KRX 스냅샷만 재사용합니다.
+- 모든 경우 누락값을 0으로 위조하지 않습니다.
+
+[다음 단계]
+기존 stock-analysis-engine 연결 시 output/stock_prediction_bridge.json을 1회 읽어 기존 산업전망값을 대체하면 됩니다.
+docs/STOCK_ENGINE_INTEGRATION_CONTRACT.md 참조.

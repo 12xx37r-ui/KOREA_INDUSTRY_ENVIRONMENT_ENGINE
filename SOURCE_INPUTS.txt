@@ -1,0 +1,12 @@
+이번 V1.0.0 설계에 실제로 사용한 사용자 제공 입력 엔진
+====================================================
+1. industry-boom-leading-engine-main.zip
+   -> outputs/v70_final_engine/v70_current_operational_snapshot.json
+2. korea-rate-fx-engine-main.zip
+   -> output/korea_rate_fx_outlook_v3.json
+   -> output/korea_equity_environment.json
+3. global-macro-data-collector-main.zip
+   -> public/data/cards_8_12_bundle.json
+
+세 입력 엔진의 소스 파일은 수정하지 않고 read-only upstream으로 취급합니다.
+실제 snapshot 사본은 fixtures/upstream에 schema regression test용으로 포함했습니다.
