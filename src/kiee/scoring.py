@@ -554,7 +554,7 @@ def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], r
         "forecast_3_6m": horizon_pending,
         "forecast_6_12m": horizon_pending,
         "direct_market": direct,
-        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": []},
+        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": [], "relevance_weight": 0.0},
         "stock_prediction_bridge": {
             "allowed_as_auxiliary": False,
             "allowed_as_primary": False,
@@ -665,7 +665,7 @@ def _scored_industry_result_from_feed(industry: dict[str, Any], cycle_row: dict[
         "forecast_3_6m": forecast_3_6m,
         "forecast_6_12m": forecast_6_12m,
         "direct_market": direct,
-        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": []},
+        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": [], "relevance_weight": 0.0},
         "stock_prediction_bridge": {
             "allowed_as_auxiliary": False, "allowed_as_primary": False,
             "bounded_direction_adjustment_points": 0.0, "max_abs_adjustment_points": 0.0,
