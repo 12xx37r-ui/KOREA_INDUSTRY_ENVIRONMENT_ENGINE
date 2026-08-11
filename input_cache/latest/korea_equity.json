@@ -1,0 +1,2414 @@
+{
+  "schema_version": "1.0.0",
+  "engine_version": "korea-equity-environment-v1.2-close-per-earnings-fallback",
+  "generated_at_utc": "2026-08-11T00:03:18.715420+00:00",
+  "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
+  "score": 41,
+  "score_valid": true,
+  "bias": "약불리",
+  "data_coverage_pct": 100,
+  "active_weight": 1.0,
+  "complete_for_market_card": true,
+  "stale_sections": [],
+  "components": {
+    "flow": {
+      "available": true,
+      "score_normalized": -0.938017,
+      "combined_net_bps_of_turnover": -86.064,
+      "foreign_net_bps_of_turnover": -105.004,
+      "institution_net_bps_of_turnover": 18.94,
+      "markets": [
+        "kospi",
+        "kosdaq"
+      ],
+      "detail": "외국인+기관 순매수 / 동기간 전체 매수대금, tanh 완만한 포화 적용"
+    },
+    "breadth": {
+      "available": true,
+      "score_normalized": 0.105529,
+      "advances": 1475,
+      "declines": 1183,
+      "unchanged": 109,
+      "advance_share": 0.533068,
+      "advance_decline_balance": 0.105529,
+      "markets": [
+        "kospi",
+        "kosdaq"
+      ],
+      "detail": "(상승종목수-하락종목수)/유효종목수"
+    },
+    "valuation": {
+      "available": true,
+      "score_normalized": 0.091406,
+      "evidence": [
+        {
+          "index": "kospi200",
+          "per": 16.59,
+          "pbr": 2.04,
+          "per_percentile": 0.439063,
+          "pbr_percentile": 0.725,
+          "history_samples": 320
+        },
+        {
+          "index": "kosdaq150",
+          "per": 63.98,
+          "pbr": 4.35,
+          "per_percentile": 0.076563,
+          "pbr_percentile": 0.576562,
+          "history_samples": 320
+        }
+      ],
+      "detail": "현재 PER·PBR의 최근 약 1.5년 KRX 분포 백분위. 낮을수록 우호."
+    },
+    "earnings_revision": {
+      "available": true,
+      "score_normalized": 0.997467,
+      "current_growth_proxy_pct": 33.352,
+      "baseline_growth_proxy_pct": null,
+      "revision_pct_point": null,
+      "history_samples": 320,
+      "mode": "trailing_eps_proxy_from_existing_krx_close_per",
+      "evidence": [
+        {
+          "index": "kospi200",
+          "samples": 320,
+          "recent_eps_proxy": 59.164311,
+          "baseline_eps_proxy": 42.016586,
+          "growth_pct": 40.812,
+          "available": true
+        },
+        {
+          "index": "kosdaq150",
+          "samples": 320,
+          "recent_eps_proxy": 23.217608,
+          "baseline_eps_proxy": 18.442549,
+          "growth_pct": 25.892,
+          "available": true
+        }
+      ],
+      "detail": "공개 forward 컨센서스 미확보: 기존 KRX 지수 종가/PER로 계산한 후행 EPS 대용치의 최근 20거래일과 이전 구간 추세. 추가 API 호출 없음."
+    },
+    "credit_spread": {
+      "available": true,
+      "score_normalized": -0.915625,
+      "spread_pct_point": 0.698,
+      "percentile": 0.957812,
+      "history_samples": 320,
+      "history_source": "same_run_ecos_history",
+      "detail": "AA- 회사채3년-국고채3년의 동일날짜 스프레드 과거분포 백분위. 좁을수록 우호."
+    }
+  },
+  "weights": {
+    "flow": 0.3,
+    "breadth": 0.25,
+    "valuation": 0.2,
+    "earnings_revision": 0.15,
+    "credit_spread": 0.1
+  },
+  "current_inputs": {
+    "kospi200": {
+      "per": 16.59,
+      "forward_per": null,
+      "eps_growth_pct": null,
+      "growth_adjusted_per": null,
+      "pbr": 2.04,
+      "dividend_yield": 0.93,
+      "available": true,
+      "coverage": 1.0,
+      "forward_data_available": false,
+      "forward_data_is_official": false,
+      "forward_proxy_sample_size": 0,
+      "forward_proxy_market_cap_coverage": 0.0,
+      "forward_proxy_growth_market_cap_coverage": 0.0,
+      "as_of": "2026-08-10",
+      "source": "KRX 지수 투자지표 (pykrx 세션)",
+      "source_url": "https://data.krx.co.kr/",
+      "source_method": "pykrx_authenticated",
+      "proxy_symbols": [],
+      "stale": false,
+      "diagnostics": [
+        "20260811:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "forward_proxy_insufficient:sample=0,coverage=0.000,required_sample=5,required_coverage=0.300"
+      ]
+    },
+    "kosdaq150": {
+      "per": 63.98,
+      "forward_per": null,
+      "eps_growth_pct": null,
+      "growth_adjusted_per": null,
+      "pbr": 4.35,
+      "dividend_yield": 0.36,
+      "available": true,
+      "coverage": 1.0,
+      "forward_data_available": false,
+      "forward_data_is_official": false,
+      "forward_proxy_sample_size": 0,
+      "forward_proxy_market_cap_coverage": 0.0,
+      "forward_proxy_growth_market_cap_coverage": 0.0,
+      "as_of": "2026-08-10",
+      "source": "KRX 지수 투자지표 (pykrx 세션)",
+      "source_url": "https://data.krx.co.kr/",
+      "source_method": "pykrx_authenticated",
+      "proxy_symbols": [],
+      "stale": false,
+      "diagnostics": [
+        "20260811:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "forward_proxy_insufficient:sample=0,coverage=0.000,required_sample=5,required_coverage=0.250"
+      ]
+    },
+    "credit": {
+      "available": true,
+      "corp_aa_minus_3y_pct": 4.476,
+      "corp_as_of": "20260810",
+      "gov_3y_pct": 3.778,
+      "gov_as_of": "20260810",
+      "spread_pct_point": 0.698,
+      "spread_history": [
+        {
+          "date": "20250206",
+          "corp_aa_minus_3y_pct": 3.196,
+          "gov_3y_pct": 2.582,
+          "spread_pct_point": 0.614
+        },
+        {
+          "date": "20250207",
+          "corp_aa_minus_3y_pct": 3.242,
+          "gov_3y_pct": 2.635,
+          "spread_pct_point": 0.607
+        },
+        {
+          "date": "20250210",
+          "corp_aa_minus_3y_pct": 3.239,
+          "gov_3y_pct": 2.638,
+          "spread_pct_point": 0.601
+        },
+        {
+          "date": "20250211",
+          "corp_aa_minus_3y_pct": 3.228,
+          "gov_3y_pct": 2.633,
+          "spread_pct_point": 0.595
+        },
+        {
+          "date": "20250212",
+          "corp_aa_minus_3y_pct": 3.238,
+          "gov_3y_pct": 2.651,
+          "spread_pct_point": 0.587
+        },
+        {
+          "date": "20250213",
+          "corp_aa_minus_3y_pct": 3.227,
+          "gov_3y_pct": 2.631,
+          "spread_pct_point": 0.596
+        },
+        {
+          "date": "20250214",
+          "corp_aa_minus_3y_pct": 3.208,
+          "gov_3y_pct": 2.611,
+          "spread_pct_point": 0.597
+        },
+        {
+          "date": "20250217",
+          "corp_aa_minus_3y_pct": 3.215,
+          "gov_3y_pct": 2.623,
+          "spread_pct_point": 0.592
+        },
+        {
+          "date": "20250218",
+          "corp_aa_minus_3y_pct": 3.224,
+          "gov_3y_pct": 2.641,
+          "spread_pct_point": 0.583
+        },
+        {
+          "date": "20250219",
+          "corp_aa_minus_3y_pct": 3.214,
+          "gov_3y_pct": 2.63,
+          "spread_pct_point": 0.584
+        },
+        {
+          "date": "20250220",
+          "corp_aa_minus_3y_pct": 3.212,
+          "gov_3y_pct": 2.628,
+          "spread_pct_point": 0.584
+        },
+        {
+          "date": "20250221",
+          "corp_aa_minus_3y_pct": 3.2,
+          "gov_3y_pct": 2.618,
+          "spread_pct_point": 0.582
+        },
+        {
+          "date": "20250224",
+          "corp_aa_minus_3y_pct": 3.191,
+          "gov_3y_pct": 2.61,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20250225",
+          "corp_aa_minus_3y_pct": 3.178,
+          "gov_3y_pct": 2.596,
+          "spread_pct_point": 0.582
+        },
+        {
+          "date": "20250226",
+          "corp_aa_minus_3y_pct": 3.168,
+          "gov_3y_pct": 2.591,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20250227",
+          "corp_aa_minus_3y_pct": 3.172,
+          "gov_3y_pct": 2.592,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20250228",
+          "corp_aa_minus_3y_pct": 3.157,
+          "gov_3y_pct": 2.566,
+          "spread_pct_point": 0.591
+        },
+        {
+          "date": "20250304",
+          "corp_aa_minus_3y_pct": 3.132,
+          "gov_3y_pct": 2.541,
+          "spread_pct_point": 0.591
+        },
+        {
+          "date": "20250305",
+          "corp_aa_minus_3y_pct": 3.151,
+          "gov_3y_pct": 2.565,
+          "spread_pct_point": 0.586
+        },
+        {
+          "date": "20250306",
+          "corp_aa_minus_3y_pct": 3.174,
+          "gov_3y_pct": 2.594,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20250307",
+          "corp_aa_minus_3y_pct": 3.144,
+          "gov_3y_pct": 2.565,
+          "spread_pct_point": 0.579
+        },
+        {
+          "date": "20250310",
+          "corp_aa_minus_3y_pct": 3.166,
+          "gov_3y_pct": 2.596,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250311",
+          "corp_aa_minus_3y_pct": 3.131,
+          "gov_3y_pct": 2.56,
+          "spread_pct_point": 0.571
+        },
+        {
+          "date": "20250312",
+          "corp_aa_minus_3y_pct": 3.127,
+          "gov_3y_pct": 2.55,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20250313",
+          "corp_aa_minus_3y_pct": 3.138,
+          "gov_3y_pct": 2.57,
+          "spread_pct_point": 0.568
+        },
+        {
+          "date": "20250314",
+          "corp_aa_minus_3y_pct": 3.161,
+          "gov_3y_pct": 2.596,
+          "spread_pct_point": 0.565
+        },
+        {
+          "date": "20250317",
+          "corp_aa_minus_3y_pct": 3.171,
+          "gov_3y_pct": 2.601,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250318",
+          "corp_aa_minus_3y_pct": 3.168,
+          "gov_3y_pct": 2.598,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250319",
+          "corp_aa_minus_3y_pct": 3.184,
+          "gov_3y_pct": 2.621,
+          "spread_pct_point": 0.563
+        },
+        {
+          "date": "20250320",
+          "corp_aa_minus_3y_pct": 3.168,
+          "gov_3y_pct": 2.598,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250321",
+          "corp_aa_minus_3y_pct": 3.165,
+          "gov_3y_pct": 2.597,
+          "spread_pct_point": 0.568
+        },
+        {
+          "date": "20250324",
+          "corp_aa_minus_3y_pct": 3.171,
+          "gov_3y_pct": 2.604,
+          "spread_pct_point": 0.567
+        },
+        {
+          "date": "20250325",
+          "corp_aa_minus_3y_pct": 3.179,
+          "gov_3y_pct": 2.612,
+          "spread_pct_point": 0.567
+        },
+        {
+          "date": "20250326",
+          "corp_aa_minus_3y_pct": 3.187,
+          "gov_3y_pct": 2.618,
+          "spread_pct_point": 0.569
+        },
+        {
+          "date": "20250327",
+          "corp_aa_minus_3y_pct": 3.182,
+          "gov_3y_pct": 2.622,
+          "spread_pct_point": 0.56
+        },
+        {
+          "date": "20250328",
+          "corp_aa_minus_3y_pct": 3.184,
+          "gov_3y_pct": 2.629,
+          "spread_pct_point": 0.555
+        },
+        {
+          "date": "20250331",
+          "corp_aa_minus_3y_pct": 3.14,
+          "gov_3y_pct": 2.569,
+          "spread_pct_point": 0.571
+        },
+        {
+          "date": "20250401",
+          "corp_aa_minus_3y_pct": 3.153,
+          "gov_3y_pct": 2.581,
+          "spread_pct_point": 0.572
+        },
+        {
+          "date": "20250402",
+          "corp_aa_minus_3y_pct": 3.151,
+          "gov_3y_pct": 2.584,
+          "spread_pct_point": 0.567
+        },
+        {
+          "date": "20250403",
+          "corp_aa_minus_3y_pct": 3.101,
+          "gov_3y_pct": 2.529,
+          "spread_pct_point": 0.572
+        },
+        {
+          "date": "20250404",
+          "corp_aa_minus_3y_pct": 3.035,
+          "gov_3y_pct": 2.461,
+          "spread_pct_point": 0.574
+        },
+        {
+          "date": "20250407",
+          "corp_aa_minus_3y_pct": 2.986,
+          "gov_3y_pct": 2.405,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20250408",
+          "corp_aa_minus_3y_pct": 2.995,
+          "gov_3y_pct": 2.413,
+          "spread_pct_point": 0.582
+        },
+        {
+          "date": "20250409",
+          "corp_aa_minus_3y_pct": 3.01,
+          "gov_3y_pct": 2.434,
+          "spread_pct_point": 0.576
+        },
+        {
+          "date": "20250410",
+          "corp_aa_minus_3y_pct": 3.017,
+          "gov_3y_pct": 2.437,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20250411",
+          "corp_aa_minus_3y_pct": 2.996,
+          "gov_3y_pct": 2.411,
+          "spread_pct_point": 0.585
+        },
+        {
+          "date": "20250414",
+          "corp_aa_minus_3y_pct": 2.998,
+          "gov_3y_pct": 2.408,
+          "spread_pct_point": 0.59
+        },
+        {
+          "date": "20250415",
+          "corp_aa_minus_3y_pct": 2.984,
+          "gov_3y_pct": 2.399,
+          "spread_pct_point": 0.585
+        },
+        {
+          "date": "20250416",
+          "corp_aa_minus_3y_pct": 2.941,
+          "gov_3y_pct": 2.351,
+          "spread_pct_point": 0.59
+        },
+        {
+          "date": "20250417",
+          "corp_aa_minus_3y_pct": 2.968,
+          "gov_3y_pct": 2.385,
+          "spread_pct_point": 0.583
+        },
+        {
+          "date": "20250418",
+          "corp_aa_minus_3y_pct": 2.942,
+          "gov_3y_pct": 2.362,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20250421",
+          "corp_aa_minus_3y_pct": 2.918,
+          "gov_3y_pct": 2.331,
+          "spread_pct_point": 0.587
+        },
+        {
+          "date": "20250422",
+          "corp_aa_minus_3y_pct": 2.923,
+          "gov_3y_pct": 2.33,
+          "spread_pct_point": 0.593
+        },
+        {
+          "date": "20250423",
+          "corp_aa_minus_3y_pct": 2.927,
+          "gov_3y_pct": 2.337,
+          "spread_pct_point": 0.59
+        },
+        {
+          "date": "20250424",
+          "corp_aa_minus_3y_pct": 2.93,
+          "gov_3y_pct": 2.341,
+          "spread_pct_point": 0.589
+        },
+        {
+          "date": "20250425",
+          "corp_aa_minus_3y_pct": 2.901,
+          "gov_3y_pct": 2.305,
+          "spread_pct_point": 0.596
+        },
+        {
+          "date": "20250428",
+          "corp_aa_minus_3y_pct": 2.909,
+          "gov_3y_pct": 2.316,
+          "spread_pct_point": 0.593
+        },
+        {
+          "date": "20250429",
+          "corp_aa_minus_3y_pct": 2.903,
+          "gov_3y_pct": 2.31,
+          "spread_pct_point": 0.593
+        },
+        {
+          "date": "20250430",
+          "corp_aa_minus_3y_pct": 2.868,
+          "gov_3y_pct": 2.267,
+          "spread_pct_point": 0.601
+        },
+        {
+          "date": "20250502",
+          "corp_aa_minus_3y_pct": 2.872,
+          "gov_3y_pct": 2.282,
+          "spread_pct_point": 0.59
+        },
+        {
+          "date": "20250507",
+          "corp_aa_minus_3y_pct": 2.846,
+          "gov_3y_pct": 2.253,
+          "spread_pct_point": 0.593
+        },
+        {
+          "date": "20250508",
+          "corp_aa_minus_3y_pct": 2.867,
+          "gov_3y_pct": 2.281,
+          "spread_pct_point": 0.586
+        },
+        {
+          "date": "20250509",
+          "corp_aa_minus_3y_pct": 2.91,
+          "gov_3y_pct": 2.331,
+          "spread_pct_point": 0.579
+        },
+        {
+          "date": "20250512",
+          "corp_aa_minus_3y_pct": 2.91,
+          "gov_3y_pct": 2.33,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20250513",
+          "corp_aa_minus_3y_pct": 2.939,
+          "gov_3y_pct": 2.37,
+          "spread_pct_point": 0.569
+        },
+        {
+          "date": "20250514",
+          "corp_aa_minus_3y_pct": 2.924,
+          "gov_3y_pct": 2.351,
+          "spread_pct_point": 0.573
+        },
+        {
+          "date": "20250515",
+          "corp_aa_minus_3y_pct": 2.931,
+          "gov_3y_pct": 2.362,
+          "spread_pct_point": 0.569
+        },
+        {
+          "date": "20250516",
+          "corp_aa_minus_3y_pct": 2.896,
+          "gov_3y_pct": 2.319,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20250519",
+          "corp_aa_minus_3y_pct": 2.935,
+          "gov_3y_pct": 2.366,
+          "spread_pct_point": 0.569
+        },
+        {
+          "date": "20250520",
+          "corp_aa_minus_3y_pct": 2.907,
+          "gov_3y_pct": 2.33,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20250521",
+          "corp_aa_minus_3y_pct": 2.921,
+          "gov_3y_pct": 2.345,
+          "spread_pct_point": 0.576
+        },
+        {
+          "date": "20250522",
+          "corp_aa_minus_3y_pct": 2.917,
+          "gov_3y_pct": 2.336,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20250523",
+          "corp_aa_minus_3y_pct": 2.921,
+          "gov_3y_pct": 2.338,
+          "spread_pct_point": 0.583
+        },
+        {
+          "date": "20250526",
+          "corp_aa_minus_3y_pct": 2.926,
+          "gov_3y_pct": 2.348,
+          "spread_pct_point": 0.578
+        },
+        {
+          "date": "20250527",
+          "corp_aa_minus_3y_pct": 2.913,
+          "gov_3y_pct": 2.34,
+          "spread_pct_point": 0.573
+        },
+        {
+          "date": "20250528",
+          "corp_aa_minus_3y_pct": 2.893,
+          "gov_3y_pct": 2.314,
+          "spread_pct_point": 0.579
+        },
+        {
+          "date": "20250529",
+          "corp_aa_minus_3y_pct": 2.914,
+          "gov_3y_pct": 2.341,
+          "spread_pct_point": 0.573
+        },
+        {
+          "date": "20250530",
+          "corp_aa_minus_3y_pct": 2.917,
+          "gov_3y_pct": 2.347,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250602",
+          "corp_aa_minus_3y_pct": 2.916,
+          "gov_3y_pct": 2.34,
+          "spread_pct_point": 0.576
+        },
+        {
+          "date": "20250604",
+          "corp_aa_minus_3y_pct": 2.982,
+          "gov_3y_pct": 2.414,
+          "spread_pct_point": 0.568
+        },
+        {
+          "date": "20250605",
+          "corp_aa_minus_3y_pct": 2.973,
+          "gov_3y_pct": 2.412,
+          "spread_pct_point": 0.561
+        },
+        {
+          "date": "20250609",
+          "corp_aa_minus_3y_pct": 2.96,
+          "gov_3y_pct": 2.405,
+          "spread_pct_point": 0.555
+        },
+        {
+          "date": "20250610",
+          "corp_aa_minus_3y_pct": 2.955,
+          "gov_3y_pct": 2.385,
+          "spread_pct_point": 0.57
+        },
+        {
+          "date": "20250611",
+          "corp_aa_minus_3y_pct": 2.974,
+          "gov_3y_pct": 2.419,
+          "spread_pct_point": 0.555
+        },
+        {
+          "date": "20250612",
+          "corp_aa_minus_3y_pct": 2.972,
+          "gov_3y_pct": 2.429,
+          "spread_pct_point": 0.543
+        },
+        {
+          "date": "20250613",
+          "corp_aa_minus_3y_pct": 2.997,
+          "gov_3y_pct": 2.462,
+          "spread_pct_point": 0.535
+        },
+        {
+          "date": "20250616",
+          "corp_aa_minus_3y_pct": 3.016,
+          "gov_3y_pct": 2.483,
+          "spread_pct_point": 0.533
+        },
+        {
+          "date": "20250617",
+          "corp_aa_minus_3y_pct": 2.986,
+          "gov_3y_pct": 2.448,
+          "spread_pct_point": 0.538
+        },
+        {
+          "date": "20250618",
+          "corp_aa_minus_3y_pct": 3.0,
+          "gov_3y_pct": 2.472,
+          "spread_pct_point": 0.528
+        },
+        {
+          "date": "20250619",
+          "corp_aa_minus_3y_pct": 3.005,
+          "gov_3y_pct": 2.475,
+          "spread_pct_point": 0.53
+        },
+        {
+          "date": "20250620",
+          "corp_aa_minus_3y_pct": 2.996,
+          "gov_3y_pct": 2.463,
+          "spread_pct_point": 0.533
+        },
+        {
+          "date": "20250623",
+          "corp_aa_minus_3y_pct": 3.019,
+          "gov_3y_pct": 2.498,
+          "spread_pct_point": 0.521
+        },
+        {
+          "date": "20250624",
+          "corp_aa_minus_3y_pct": 2.983,
+          "gov_3y_pct": 2.461,
+          "spread_pct_point": 0.522
+        },
+        {
+          "date": "20250625",
+          "corp_aa_minus_3y_pct": 2.981,
+          "gov_3y_pct": 2.46,
+          "spread_pct_point": 0.521
+        },
+        {
+          "date": "20250626",
+          "corp_aa_minus_3y_pct": 2.969,
+          "gov_3y_pct": 2.454,
+          "spread_pct_point": 0.515
+        },
+        {
+          "date": "20250627",
+          "corp_aa_minus_3y_pct": 2.967,
+          "gov_3y_pct": 2.453,
+          "spread_pct_point": 0.514
+        },
+        {
+          "date": "20250630",
+          "corp_aa_minus_3y_pct": 2.963,
+          "gov_3y_pct": 2.452,
+          "spread_pct_point": 0.511
+        },
+        {
+          "date": "20250701",
+          "corp_aa_minus_3y_pct": 2.959,
+          "gov_3y_pct": 2.454,
+          "spread_pct_point": 0.505
+        },
+        {
+          "date": "20250702",
+          "corp_aa_minus_3y_pct": 2.981,
+          "gov_3y_pct": 2.483,
+          "spread_pct_point": 0.498
+        },
+        {
+          "date": "20250703",
+          "corp_aa_minus_3y_pct": 2.952,
+          "gov_3y_pct": 2.449,
+          "spread_pct_point": 0.503
+        },
+        {
+          "date": "20250704",
+          "corp_aa_minus_3y_pct": 2.965,
+          "gov_3y_pct": 2.467,
+          "spread_pct_point": 0.498
+        },
+        {
+          "date": "20250707",
+          "corp_aa_minus_3y_pct": 2.973,
+          "gov_3y_pct": 2.482,
+          "spread_pct_point": 0.491
+        },
+        {
+          "date": "20250708",
+          "corp_aa_minus_3y_pct": 2.968,
+          "gov_3y_pct": 2.477,
+          "spread_pct_point": 0.491
+        },
+        {
+          "date": "20250709",
+          "corp_aa_minus_3y_pct": 2.967,
+          "gov_3y_pct": 2.478,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20250710",
+          "corp_aa_minus_3y_pct": 2.928,
+          "gov_3y_pct": 2.433,
+          "spread_pct_point": 0.495
+        },
+        {
+          "date": "20250711",
+          "corp_aa_minus_3y_pct": 2.938,
+          "gov_3y_pct": 2.448,
+          "spread_pct_point": 0.49
+        },
+        {
+          "date": "20250714",
+          "corp_aa_minus_3y_pct": 2.959,
+          "gov_3y_pct": 2.474,
+          "spread_pct_point": 0.485
+        },
+        {
+          "date": "20250715",
+          "corp_aa_minus_3y_pct": 2.953,
+          "gov_3y_pct": 2.463,
+          "spread_pct_point": 0.49
+        },
+        {
+          "date": "20250716",
+          "corp_aa_minus_3y_pct": 2.95,
+          "gov_3y_pct": 2.459,
+          "spread_pct_point": 0.491
+        },
+        {
+          "date": "20250717",
+          "corp_aa_minus_3y_pct": 2.968,
+          "gov_3y_pct": 2.479,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20250718",
+          "corp_aa_minus_3y_pct": 2.961,
+          "gov_3y_pct": 2.474,
+          "spread_pct_point": 0.487
+        },
+        {
+          "date": "20250721",
+          "corp_aa_minus_3y_pct": 2.948,
+          "gov_3y_pct": 2.456,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250722",
+          "corp_aa_minus_3y_pct": 2.952,
+          "gov_3y_pct": 2.463,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20250723",
+          "corp_aa_minus_3y_pct": 2.95,
+          "gov_3y_pct": 2.458,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250724",
+          "corp_aa_minus_3y_pct": 2.96,
+          "gov_3y_pct": 2.467,
+          "spread_pct_point": 0.493
+        },
+        {
+          "date": "20250725",
+          "corp_aa_minus_3y_pct": 2.974,
+          "gov_3y_pct": 2.485,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20250728",
+          "corp_aa_minus_3y_pct": 2.958,
+          "gov_3y_pct": 2.464,
+          "spread_pct_point": 0.494
+        },
+        {
+          "date": "20250729",
+          "corp_aa_minus_3y_pct": 2.952,
+          "gov_3y_pct": 2.46,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250730",
+          "corp_aa_minus_3y_pct": 2.946,
+          "gov_3y_pct": 2.454,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250731",
+          "corp_aa_minus_3y_pct": 2.952,
+          "gov_3y_pct": 2.46,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250801",
+          "corp_aa_minus_3y_pct": 2.97,
+          "gov_3y_pct": 2.478,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250804",
+          "corp_aa_minus_3y_pct": 2.917,
+          "gov_3y_pct": 2.421,
+          "spread_pct_point": 0.496
+        },
+        {
+          "date": "20250805",
+          "corp_aa_minus_3y_pct": 2.917,
+          "gov_3y_pct": 2.425,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250806",
+          "corp_aa_minus_3y_pct": 2.918,
+          "gov_3y_pct": 2.43,
+          "spread_pct_point": 0.488
+        },
+        {
+          "date": "20250807",
+          "corp_aa_minus_3y_pct": 2.901,
+          "gov_3y_pct": 2.408,
+          "spread_pct_point": 0.493
+        },
+        {
+          "date": "20250808",
+          "corp_aa_minus_3y_pct": 2.902,
+          "gov_3y_pct": 2.409,
+          "spread_pct_point": 0.493
+        },
+        {
+          "date": "20250811",
+          "corp_aa_minus_3y_pct": 2.909,
+          "gov_3y_pct": 2.42,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20250812",
+          "corp_aa_minus_3y_pct": 2.917,
+          "gov_3y_pct": 2.431,
+          "spread_pct_point": 0.486
+        },
+        {
+          "date": "20250813",
+          "corp_aa_minus_3y_pct": 2.907,
+          "gov_3y_pct": 2.417,
+          "spread_pct_point": 0.49
+        },
+        {
+          "date": "20250814",
+          "corp_aa_minus_3y_pct": 2.896,
+          "gov_3y_pct": 2.404,
+          "spread_pct_point": 0.492
+        },
+        {
+          "date": "20250818",
+          "corp_aa_minus_3y_pct": 2.912,
+          "gov_3y_pct": 2.426,
+          "spread_pct_point": 0.486
+        },
+        {
+          "date": "20250819",
+          "corp_aa_minus_3y_pct": 2.924,
+          "gov_3y_pct": 2.444,
+          "spread_pct_point": 0.48
+        },
+        {
+          "date": "20250820",
+          "corp_aa_minus_3y_pct": 2.923,
+          "gov_3y_pct": 2.441,
+          "spread_pct_point": 0.482
+        },
+        {
+          "date": "20250821",
+          "corp_aa_minus_3y_pct": 2.921,
+          "gov_3y_pct": 2.438,
+          "spread_pct_point": 0.483
+        },
+        {
+          "date": "20250822",
+          "corp_aa_minus_3y_pct": 2.932,
+          "gov_3y_pct": 2.456,
+          "spread_pct_point": 0.476
+        },
+        {
+          "date": "20250825",
+          "corp_aa_minus_3y_pct": 2.915,
+          "gov_3y_pct": 2.434,
+          "spread_pct_point": 0.481
+        },
+        {
+          "date": "20250826",
+          "corp_aa_minus_3y_pct": 2.902,
+          "gov_3y_pct": 2.422,
+          "spread_pct_point": 0.48
+        },
+        {
+          "date": "20250827",
+          "corp_aa_minus_3y_pct": 2.887,
+          "gov_3y_pct": 2.402,
+          "spread_pct_point": 0.485
+        },
+        {
+          "date": "20250828",
+          "corp_aa_minus_3y_pct": 2.898,
+          "gov_3y_pct": 2.416,
+          "spread_pct_point": 0.482
+        },
+        {
+          "date": "20250829",
+          "corp_aa_minus_3y_pct": 2.906,
+          "gov_3y_pct": 2.426,
+          "spread_pct_point": 0.48
+        },
+        {
+          "date": "20250901",
+          "corp_aa_minus_3y_pct": 2.913,
+          "gov_3y_pct": 2.435,
+          "spread_pct_point": 0.478
+        },
+        {
+          "date": "20250902",
+          "corp_aa_minus_3y_pct": 2.924,
+          "gov_3y_pct": 2.45,
+          "spread_pct_point": 0.474
+        },
+        {
+          "date": "20250903",
+          "corp_aa_minus_3y_pct": 2.946,
+          "gov_3y_pct": 2.475,
+          "spread_pct_point": 0.471
+        },
+        {
+          "date": "20250904",
+          "corp_aa_minus_3y_pct": 2.943,
+          "gov_3y_pct": 2.472,
+          "spread_pct_point": 0.471
+        },
+        {
+          "date": "20250905",
+          "corp_aa_minus_3y_pct": 2.931,
+          "gov_3y_pct": 2.46,
+          "spread_pct_point": 0.471
+        },
+        {
+          "date": "20250908",
+          "corp_aa_minus_3y_pct": 2.918,
+          "gov_3y_pct": 2.448,
+          "spread_pct_point": 0.47
+        },
+        {
+          "date": "20250909",
+          "corp_aa_minus_3y_pct": 2.898,
+          "gov_3y_pct": 2.425,
+          "spread_pct_point": 0.473
+        },
+        {
+          "date": "20250910",
+          "corp_aa_minus_3y_pct": 2.902,
+          "gov_3y_pct": 2.43,
+          "spread_pct_point": 0.472
+        },
+        {
+          "date": "20250911",
+          "corp_aa_minus_3y_pct": 2.892,
+          "gov_3y_pct": 2.42,
+          "spread_pct_point": 0.472
+        },
+        {
+          "date": "20250912",
+          "corp_aa_minus_3y_pct": 2.901,
+          "gov_3y_pct": 2.431,
+          "spread_pct_point": 0.47
+        },
+        {
+          "date": "20250915",
+          "corp_aa_minus_3y_pct": 2.909,
+          "gov_3y_pct": 2.443,
+          "spread_pct_point": 0.466
+        },
+        {
+          "date": "20250916",
+          "corp_aa_minus_3y_pct": 2.885,
+          "gov_3y_pct": 2.417,
+          "spread_pct_point": 0.468
+        },
+        {
+          "date": "20250917",
+          "corp_aa_minus_3y_pct": 2.881,
+          "gov_3y_pct": 2.418,
+          "spread_pct_point": 0.463
+        },
+        {
+          "date": "20250918",
+          "corp_aa_minus_3y_pct": 2.868,
+          "gov_3y_pct": 2.403,
+          "spread_pct_point": 0.465
+        },
+        {
+          "date": "20250919",
+          "corp_aa_minus_3y_pct": 2.898,
+          "gov_3y_pct": 2.441,
+          "spread_pct_point": 0.457
+        },
+        {
+          "date": "20250922",
+          "corp_aa_minus_3y_pct": 2.912,
+          "gov_3y_pct": 2.459,
+          "spread_pct_point": 0.453
+        },
+        {
+          "date": "20250923",
+          "corp_aa_minus_3y_pct": 2.912,
+          "gov_3y_pct": 2.46,
+          "spread_pct_point": 0.452
+        },
+        {
+          "date": "20250924",
+          "corp_aa_minus_3y_pct": 2.935,
+          "gov_3y_pct": 2.489,
+          "spread_pct_point": 0.446
+        },
+        {
+          "date": "20250925",
+          "corp_aa_minus_3y_pct": 2.969,
+          "gov_3y_pct": 2.528,
+          "spread_pct_point": 0.441
+        },
+        {
+          "date": "20250926",
+          "corp_aa_minus_3y_pct": 3.001,
+          "gov_3y_pct": 2.562,
+          "spread_pct_point": 0.439
+        },
+        {
+          "date": "20250929",
+          "corp_aa_minus_3y_pct": 3.004,
+          "gov_3y_pct": 2.563,
+          "spread_pct_point": 0.441
+        },
+        {
+          "date": "20250930",
+          "corp_aa_minus_3y_pct": 3.022,
+          "gov_3y_pct": 2.582,
+          "spread_pct_point": 0.44
+        },
+        {
+          "date": "20251001",
+          "corp_aa_minus_3y_pct": 3.033,
+          "gov_3y_pct": 2.596,
+          "spread_pct_point": 0.437
+        },
+        {
+          "date": "20251002",
+          "corp_aa_minus_3y_pct": 3.019,
+          "gov_3y_pct": 2.581,
+          "spread_pct_point": 0.438
+        },
+        {
+          "date": "20251010",
+          "corp_aa_minus_3y_pct": 3.026,
+          "gov_3y_pct": 2.591,
+          "spread_pct_point": 0.435
+        },
+        {
+          "date": "20251013",
+          "corp_aa_minus_3y_pct": 2.995,
+          "gov_3y_pct": 2.554,
+          "spread_pct_point": 0.441
+        },
+        {
+          "date": "20251014",
+          "corp_aa_minus_3y_pct": 2.975,
+          "gov_3y_pct": 2.533,
+          "spread_pct_point": 0.442
+        },
+        {
+          "date": "20251015",
+          "corp_aa_minus_3y_pct": 2.966,
+          "gov_3y_pct": 2.52,
+          "spread_pct_point": 0.446
+        },
+        {
+          "date": "20251016",
+          "corp_aa_minus_3y_pct": 3.004,
+          "gov_3y_pct": 2.569,
+          "spread_pct_point": 0.435
+        },
+        {
+          "date": "20251017",
+          "corp_aa_minus_3y_pct": 2.99,
+          "gov_3y_pct": 2.555,
+          "spread_pct_point": 0.435
+        },
+        {
+          "date": "20251020",
+          "corp_aa_minus_3y_pct": 3.004,
+          "gov_3y_pct": 2.569,
+          "spread_pct_point": 0.435
+        },
+        {
+          "date": "20251021",
+          "corp_aa_minus_3y_pct": 3.024,
+          "gov_3y_pct": 2.6,
+          "spread_pct_point": 0.424
+        },
+        {
+          "date": "20251022",
+          "corp_aa_minus_3y_pct": 2.999,
+          "gov_3y_pct": 2.572,
+          "spread_pct_point": 0.427
+        },
+        {
+          "date": "20251023",
+          "corp_aa_minus_3y_pct": 3.027,
+          "gov_3y_pct": 2.605,
+          "spread_pct_point": 0.422
+        },
+        {
+          "date": "20251024",
+          "corp_aa_minus_3y_pct": 3.013,
+          "gov_3y_pct": 2.591,
+          "spread_pct_point": 0.422
+        },
+        {
+          "date": "20251027",
+          "corp_aa_minus_3y_pct": 3.036,
+          "gov_3y_pct": 2.62,
+          "spread_pct_point": 0.416
+        },
+        {
+          "date": "20251028",
+          "corp_aa_minus_3y_pct": 3.047,
+          "gov_3y_pct": 2.633,
+          "spread_pct_point": 0.414
+        },
+        {
+          "date": "20251029",
+          "corp_aa_minus_3y_pct": 3.085,
+          "gov_3y_pct": 2.677,
+          "spread_pct_point": 0.408
+        },
+        {
+          "date": "20251030",
+          "corp_aa_minus_3y_pct": 3.135,
+          "gov_3y_pct": 2.732,
+          "spread_pct_point": 0.403
+        },
+        {
+          "date": "20251031",
+          "corp_aa_minus_3y_pct": 3.122,
+          "gov_3y_pct": 2.716,
+          "spread_pct_point": 0.406
+        },
+        {
+          "date": "20251103",
+          "corp_aa_minus_3y_pct": 3.147,
+          "gov_3y_pct": 2.741,
+          "spread_pct_point": 0.406
+        },
+        {
+          "date": "20251104",
+          "corp_aa_minus_3y_pct": 3.136,
+          "gov_3y_pct": 2.729,
+          "spread_pct_point": 0.407
+        },
+        {
+          "date": "20251105",
+          "corp_aa_minus_3y_pct": 3.169,
+          "gov_3y_pct": 2.767,
+          "spread_pct_point": 0.402
+        },
+        {
+          "date": "20251106",
+          "corp_aa_minus_3y_pct": 3.232,
+          "gov_3y_pct": 2.834,
+          "spread_pct_point": 0.398
+        },
+        {
+          "date": "20251107",
+          "corp_aa_minus_3y_pct": 3.286,
+          "gov_3y_pct": 2.894,
+          "spread_pct_point": 0.392
+        },
+        {
+          "date": "20251110",
+          "corp_aa_minus_3y_pct": 3.261,
+          "gov_3y_pct": 2.865,
+          "spread_pct_point": 0.396
+        },
+        {
+          "date": "20251111",
+          "corp_aa_minus_3y_pct": 3.236,
+          "gov_3y_pct": 2.831,
+          "spread_pct_point": 0.405
+        },
+        {
+          "date": "20251112",
+          "corp_aa_minus_3y_pct": 3.331,
+          "gov_3y_pct": 2.923,
+          "spread_pct_point": 0.408
+        },
+        {
+          "date": "20251113",
+          "corp_aa_minus_3y_pct": 3.345,
+          "gov_3y_pct": 2.932,
+          "spread_pct_point": 0.413
+        },
+        {
+          "date": "20251114",
+          "corp_aa_minus_3y_pct": 3.365,
+          "gov_3y_pct": 2.944,
+          "spread_pct_point": 0.421
+        },
+        {
+          "date": "20251117",
+          "corp_aa_minus_3y_pct": 3.342,
+          "gov_3y_pct": 2.914,
+          "spread_pct_point": 0.428
+        },
+        {
+          "date": "20251118",
+          "corp_aa_minus_3y_pct": 3.309,
+          "gov_3y_pct": 2.872,
+          "spread_pct_point": 0.437
+        },
+        {
+          "date": "20251119",
+          "corp_aa_minus_3y_pct": 3.308,
+          "gov_3y_pct": 2.869,
+          "spread_pct_point": 0.439
+        },
+        {
+          "date": "20251120",
+          "corp_aa_minus_3y_pct": 3.34,
+          "gov_3y_pct": 2.908,
+          "spread_pct_point": 0.432
+        },
+        {
+          "date": "20251121",
+          "corp_aa_minus_3y_pct": 3.308,
+          "gov_3y_pct": 2.872,
+          "spread_pct_point": 0.436
+        },
+        {
+          "date": "20251124",
+          "corp_aa_minus_3y_pct": 3.338,
+          "gov_3y_pct": 2.904,
+          "spread_pct_point": 0.434
+        },
+        {
+          "date": "20251125",
+          "corp_aa_minus_3y_pct": 3.334,
+          "gov_3y_pct": 2.902,
+          "spread_pct_point": 0.432
+        },
+        {
+          "date": "20251126",
+          "corp_aa_minus_3y_pct": 3.328,
+          "gov_3y_pct": 2.895,
+          "spread_pct_point": 0.433
+        },
+        {
+          "date": "20251127",
+          "corp_aa_minus_3y_pct": 3.446,
+          "gov_3y_pct": 3.013,
+          "spread_pct_point": 0.433
+        },
+        {
+          "date": "20251128",
+          "corp_aa_minus_3y_pct": 3.428,
+          "gov_3y_pct": 2.991,
+          "spread_pct_point": 0.437
+        },
+        {
+          "date": "20251201",
+          "corp_aa_minus_3y_pct": 3.481,
+          "gov_3y_pct": 3.045,
+          "spread_pct_point": 0.436
+        },
+        {
+          "date": "20251202",
+          "corp_aa_minus_3y_pct": 3.463,
+          "gov_3y_pct": 3.022,
+          "spread_pct_point": 0.441
+        },
+        {
+          "date": "20251203",
+          "corp_aa_minus_3y_pct": 3.484,
+          "gov_3y_pct": 3.041,
+          "spread_pct_point": 0.443
+        },
+        {
+          "date": "20251204",
+          "corp_aa_minus_3y_pct": 3.474,
+          "gov_3y_pct": 3.025,
+          "spread_pct_point": 0.449
+        },
+        {
+          "date": "20251205",
+          "corp_aa_minus_3y_pct": 3.453,
+          "gov_3y_pct": 2.994,
+          "spread_pct_point": 0.459
+        },
+        {
+          "date": "20251208",
+          "corp_aa_minus_3y_pct": 3.492,
+          "gov_3y_pct": 3.034,
+          "spread_pct_point": 0.458
+        },
+        {
+          "date": "20251209",
+          "corp_aa_minus_3y_pct": 3.545,
+          "gov_3y_pct": 3.084,
+          "spread_pct_point": 0.461
+        },
+        {
+          "date": "20251210",
+          "corp_aa_minus_3y_pct": 3.574,
+          "gov_3y_pct": 3.095,
+          "spread_pct_point": 0.479
+        },
+        {
+          "date": "20251211",
+          "corp_aa_minus_3y_pct": 3.585,
+          "gov_3y_pct": 3.101,
+          "spread_pct_point": 0.484
+        },
+        {
+          "date": "20251212",
+          "corp_aa_minus_3y_pct": 3.582,
+          "gov_3y_pct": 3.093,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20251215",
+          "corp_aa_minus_3y_pct": 3.499,
+          "gov_3y_pct": 3.0,
+          "spread_pct_point": 0.499
+        },
+        {
+          "date": "20251216",
+          "corp_aa_minus_3y_pct": 3.507,
+          "gov_3y_pct": 2.999,
+          "spread_pct_point": 0.508
+        },
+        {
+          "date": "20251217",
+          "corp_aa_minus_3y_pct": 3.507,
+          "gov_3y_pct": 2.996,
+          "spread_pct_point": 0.511
+        },
+        {
+          "date": "20251218",
+          "corp_aa_minus_3y_pct": 3.484,
+          "gov_3y_pct": 2.967,
+          "spread_pct_point": 0.517
+        },
+        {
+          "date": "20251219",
+          "corp_aa_minus_3y_pct": 3.523,
+          "gov_3y_pct": 3.01,
+          "spread_pct_point": 0.513
+        },
+        {
+          "date": "20251222",
+          "corp_aa_minus_3y_pct": 3.513,
+          "gov_3y_pct": 2.999,
+          "spread_pct_point": 0.514
+        },
+        {
+          "date": "20251223",
+          "corp_aa_minus_3y_pct": 3.5,
+          "gov_3y_pct": 2.963,
+          "spread_pct_point": 0.537
+        },
+        {
+          "date": "20251224",
+          "corp_aa_minus_3y_pct": 3.475,
+          "gov_3y_pct": 2.939,
+          "spread_pct_point": 0.536
+        },
+        {
+          "date": "20251226",
+          "corp_aa_minus_3y_pct": 3.489,
+          "gov_3y_pct": 2.958,
+          "spread_pct_point": 0.531
+        },
+        {
+          "date": "20251229",
+          "corp_aa_minus_3y_pct": 3.47,
+          "gov_3y_pct": 2.939,
+          "spread_pct_point": 0.531
+        },
+        {
+          "date": "20251230",
+          "corp_aa_minus_3y_pct": 3.476,
+          "gov_3y_pct": 2.952,
+          "spread_pct_point": 0.524
+        },
+        {
+          "date": "20251231",
+          "corp_aa_minus_3y_pct": 3.476,
+          "gov_3y_pct": 2.953,
+          "spread_pct_point": 0.523
+        },
+        {
+          "date": "20260102",
+          "corp_aa_minus_3y_pct": 3.459,
+          "gov_3y_pct": 2.935,
+          "spread_pct_point": 0.524
+        },
+        {
+          "date": "20260105",
+          "corp_aa_minus_3y_pct": 3.457,
+          "gov_3y_pct": 2.933,
+          "spread_pct_point": 0.524
+        },
+        {
+          "date": "20260106",
+          "corp_aa_minus_3y_pct": 3.46,
+          "gov_3y_pct": 2.948,
+          "spread_pct_point": 0.512
+        },
+        {
+          "date": "20260107",
+          "corp_aa_minus_3y_pct": 3.423,
+          "gov_3y_pct": 2.91,
+          "spread_pct_point": 0.513
+        },
+        {
+          "date": "20260108",
+          "corp_aa_minus_3y_pct": 3.418,
+          "gov_3y_pct": 2.902,
+          "spread_pct_point": 0.516
+        },
+        {
+          "date": "20260109",
+          "corp_aa_minus_3y_pct": 3.445,
+          "gov_3y_pct": 2.942,
+          "spread_pct_point": 0.503
+        },
+        {
+          "date": "20260112",
+          "corp_aa_minus_3y_pct": 3.469,
+          "gov_3y_pct": 2.98,
+          "spread_pct_point": 0.489
+        },
+        {
+          "date": "20260113",
+          "corp_aa_minus_3y_pct": 3.486,
+          "gov_3y_pct": 3.003,
+          "spread_pct_point": 0.483
+        },
+        {
+          "date": "20260114",
+          "corp_aa_minus_3y_pct": 3.481,
+          "gov_3y_pct": 2.996,
+          "spread_pct_point": 0.485
+        },
+        {
+          "date": "20260115",
+          "corp_aa_minus_3y_pct": 3.565,
+          "gov_3y_pct": 3.09,
+          "spread_pct_point": 0.475
+        },
+        {
+          "date": "20260116",
+          "corp_aa_minus_3y_pct": 3.56,
+          "gov_3y_pct": 3.08,
+          "spread_pct_point": 0.48
+        },
+        {
+          "date": "20260119",
+          "corp_aa_minus_3y_pct": 3.599,
+          "gov_3y_pct": 3.13,
+          "spread_pct_point": 0.469
+        },
+        {
+          "date": "20260120",
+          "corp_aa_minus_3y_pct": 3.653,
+          "gov_3y_pct": 3.191,
+          "spread_pct_point": 0.462
+        },
+        {
+          "date": "20260121",
+          "corp_aa_minus_3y_pct": 3.624,
+          "gov_3y_pct": 3.138,
+          "spread_pct_point": 0.486
+        },
+        {
+          "date": "20260122",
+          "corp_aa_minus_3y_pct": 3.615,
+          "gov_3y_pct": 3.109,
+          "spread_pct_point": 0.506
+        },
+        {
+          "date": "20260123",
+          "corp_aa_minus_3y_pct": 3.644,
+          "gov_3y_pct": 3.137,
+          "spread_pct_point": 0.507
+        },
+        {
+          "date": "20260126",
+          "corp_aa_minus_3y_pct": 3.611,
+          "gov_3y_pct": 3.096,
+          "spread_pct_point": 0.515
+        },
+        {
+          "date": "20260127",
+          "corp_aa_minus_3y_pct": 3.607,
+          "gov_3y_pct": 3.094,
+          "spread_pct_point": 0.513
+        },
+        {
+          "date": "20260128",
+          "corp_aa_minus_3y_pct": 3.589,
+          "gov_3y_pct": 3.067,
+          "spread_pct_point": 0.522
+        },
+        {
+          "date": "20260129",
+          "corp_aa_minus_3y_pct": 3.626,
+          "gov_3y_pct": 3.106,
+          "spread_pct_point": 0.52
+        },
+        {
+          "date": "20260130",
+          "corp_aa_minus_3y_pct": 3.658,
+          "gov_3y_pct": 3.138,
+          "spread_pct_point": 0.52
+        },
+        {
+          "date": "20260202",
+          "corp_aa_minus_3y_pct": 3.668,
+          "gov_3y_pct": 3.152,
+          "spread_pct_point": 0.516
+        },
+        {
+          "date": "20260203",
+          "corp_aa_minus_3y_pct": 3.708,
+          "gov_3y_pct": 3.189,
+          "spread_pct_point": 0.519
+        },
+        {
+          "date": "20260204",
+          "corp_aa_minus_3y_pct": 3.731,
+          "gov_3y_pct": 3.212,
+          "spread_pct_point": 0.519
+        },
+        {
+          "date": "20260205",
+          "corp_aa_minus_3y_pct": 3.724,
+          "gov_3y_pct": 3.204,
+          "spread_pct_point": 0.52
+        },
+        {
+          "date": "20260206",
+          "corp_aa_minus_3y_pct": 3.755,
+          "gov_3y_pct": 3.233,
+          "spread_pct_point": 0.522
+        },
+        {
+          "date": "20260209",
+          "corp_aa_minus_3y_pct": 3.787,
+          "gov_3y_pct": 3.267,
+          "spread_pct_point": 0.52
+        },
+        {
+          "date": "20260210",
+          "corp_aa_minus_3y_pct": 3.759,
+          "gov_3y_pct": 3.224,
+          "spread_pct_point": 0.535
+        },
+        {
+          "date": "20260211",
+          "corp_aa_minus_3y_pct": 3.746,
+          "gov_3y_pct": 3.2,
+          "spread_pct_point": 0.546
+        },
+        {
+          "date": "20260212",
+          "corp_aa_minus_3y_pct": 3.716,
+          "gov_3y_pct": 3.154,
+          "spread_pct_point": 0.562
+        },
+        {
+          "date": "20260213",
+          "corp_aa_minus_3y_pct": 3.705,
+          "gov_3y_pct": 3.142,
+          "spread_pct_point": 0.563
+        },
+        {
+          "date": "20260219",
+          "corp_aa_minus_3y_pct": 3.735,
+          "gov_3y_pct": 3.178,
+          "spread_pct_point": 0.557
+        },
+        {
+          "date": "20260220",
+          "corp_aa_minus_3y_pct": 3.718,
+          "gov_3y_pct": 3.143,
+          "spread_pct_point": 0.575
+        },
+        {
+          "date": "20260223",
+          "corp_aa_minus_3y_pct": 3.725,
+          "gov_3y_pct": 3.154,
+          "spread_pct_point": 0.571
+        },
+        {
+          "date": "20260224",
+          "corp_aa_minus_3y_pct": 3.73,
+          "gov_3y_pct": 3.158,
+          "spread_pct_point": 0.572
+        },
+        {
+          "date": "20260225",
+          "corp_aa_minus_3y_pct": 3.705,
+          "gov_3y_pct": 3.124,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20260226",
+          "corp_aa_minus_3y_pct": 3.653,
+          "gov_3y_pct": 3.062,
+          "spread_pct_point": 0.591
+        },
+        {
+          "date": "20260227",
+          "corp_aa_minus_3y_pct": 3.637,
+          "gov_3y_pct": 3.041,
+          "spread_pct_point": 0.596
+        },
+        {
+          "date": "20260303",
+          "corp_aa_minus_3y_pct": 3.769,
+          "gov_3y_pct": 3.18,
+          "spread_pct_point": 0.589
+        },
+        {
+          "date": "20260304",
+          "corp_aa_minus_3y_pct": 3.8,
+          "gov_3y_pct": 3.223,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20260305",
+          "corp_aa_minus_3y_pct": 3.777,
+          "gov_3y_pct": 3.189,
+          "spread_pct_point": 0.588
+        },
+        {
+          "date": "20260306",
+          "corp_aa_minus_3y_pct": 3.815,
+          "gov_3y_pct": 3.227,
+          "spread_pct_point": 0.588
+        },
+        {
+          "date": "20260309",
+          "corp_aa_minus_3y_pct": 3.997,
+          "gov_3y_pct": 3.42,
+          "spread_pct_point": 0.577
+        },
+        {
+          "date": "20260310",
+          "corp_aa_minus_3y_pct": 3.874,
+          "gov_3y_pct": 3.283,
+          "spread_pct_point": 0.591
+        },
+        {
+          "date": "20260311",
+          "corp_aa_minus_3y_pct": 3.845,
+          "gov_3y_pct": 3.253,
+          "spread_pct_point": 0.592
+        },
+        {
+          "date": "20260312",
+          "corp_aa_minus_3y_pct": 3.866,
+          "gov_3y_pct": 3.271,
+          "spread_pct_point": 0.595
+        },
+        {
+          "date": "20260313",
+          "corp_aa_minus_3y_pct": 3.919,
+          "gov_3y_pct": 3.338,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20260316",
+          "corp_aa_minus_3y_pct": 3.887,
+          "gov_3y_pct": 3.3,
+          "spread_pct_point": 0.587
+        },
+        {
+          "date": "20260317",
+          "corp_aa_minus_3y_pct": 3.906,
+          "gov_3y_pct": 3.324,
+          "spread_pct_point": 0.582
+        },
+        {
+          "date": "20260318",
+          "corp_aa_minus_3y_pct": 3.855,
+          "gov_3y_pct": 3.261,
+          "spread_pct_point": 0.594
+        },
+        {
+          "date": "20260319",
+          "corp_aa_minus_3y_pct": 3.915,
+          "gov_3y_pct": 3.329,
+          "spread_pct_point": 0.586
+        },
+        {
+          "date": "20260320",
+          "corp_aa_minus_3y_pct": 3.991,
+          "gov_3y_pct": 3.41,
+          "spread_pct_point": 0.581
+        },
+        {
+          "date": "20260323",
+          "corp_aa_minus_3y_pct": 4.197,
+          "gov_3y_pct": 3.617,
+          "spread_pct_point": 0.58
+        },
+        {
+          "date": "20260324",
+          "corp_aa_minus_3y_pct": 4.121,
+          "gov_3y_pct": 3.523,
+          "spread_pct_point": 0.598
+        },
+        {
+          "date": "20260325",
+          "corp_aa_minus_3y_pct": 4.158,
+          "gov_3y_pct": 3.558,
+          "spread_pct_point": 0.6
+        },
+        {
+          "date": "20260326",
+          "corp_aa_minus_3y_pct": 4.156,
+          "gov_3y_pct": 3.552,
+          "spread_pct_point": 0.604
+        },
+        {
+          "date": "20260327",
+          "corp_aa_minus_3y_pct": 4.182,
+          "gov_3y_pct": 3.582,
+          "spread_pct_point": 0.6
+        },
+        {
+          "date": "20260330",
+          "corp_aa_minus_3y_pct": 4.157,
+          "gov_3y_pct": 3.542,
+          "spread_pct_point": 0.615
+        },
+        {
+          "date": "20260331",
+          "corp_aa_minus_3y_pct": 4.166,
+          "gov_3y_pct": 3.552,
+          "spread_pct_point": 0.614
+        },
+        {
+          "date": "20260401",
+          "corp_aa_minus_3y_pct": 4.011,
+          "gov_3y_pct": 3.37,
+          "spread_pct_point": 0.641
+        },
+        {
+          "date": "20260402",
+          "corp_aa_minus_3y_pct": 4.114,
+          "gov_3y_pct": 3.477,
+          "spread_pct_point": 0.637
+        },
+        {
+          "date": "20260403",
+          "corp_aa_minus_3y_pct": 4.093,
+          "gov_3y_pct": 3.448,
+          "spread_pct_point": 0.645
+        },
+        {
+          "date": "20260406",
+          "corp_aa_minus_3y_pct": 4.081,
+          "gov_3y_pct": 3.432,
+          "spread_pct_point": 0.649
+        },
+        {
+          "date": "20260407",
+          "corp_aa_minus_3y_pct": 4.107,
+          "gov_3y_pct": 3.451,
+          "spread_pct_point": 0.656
+        },
+        {
+          "date": "20260408",
+          "corp_aa_minus_3y_pct": 3.973,
+          "gov_3y_pct": 3.315,
+          "spread_pct_point": 0.658
+        },
+        {
+          "date": "20260409",
+          "corp_aa_minus_3y_pct": 3.999,
+          "gov_3y_pct": 3.338,
+          "spread_pct_point": 0.661
+        },
+        {
+          "date": "20260410",
+          "corp_aa_minus_3y_pct": 4.018,
+          "gov_3y_pct": 3.36,
+          "spread_pct_point": 0.658
+        },
+        {
+          "date": "20260413",
+          "corp_aa_minus_3y_pct": 4.043,
+          "gov_3y_pct": 3.382,
+          "spread_pct_point": 0.661
+        },
+        {
+          "date": "20260414",
+          "corp_aa_minus_3y_pct": 4.005,
+          "gov_3y_pct": 3.339,
+          "spread_pct_point": 0.666
+        },
+        {
+          "date": "20260415",
+          "corp_aa_minus_3y_pct": 3.995,
+          "gov_3y_pct": 3.328,
+          "spread_pct_point": 0.667
+        },
+        {
+          "date": "20260416",
+          "corp_aa_minus_3y_pct": 4.005,
+          "gov_3y_pct": 3.34,
+          "spread_pct_point": 0.665
+        },
+        {
+          "date": "20260417",
+          "corp_aa_minus_3y_pct": 4.037,
+          "gov_3y_pct": 3.371,
+          "spread_pct_point": 0.666
+        },
+        {
+          "date": "20260420",
+          "corp_aa_minus_3y_pct": 4.016,
+          "gov_3y_pct": 3.348,
+          "spread_pct_point": 0.668
+        },
+        {
+          "date": "20260421",
+          "corp_aa_minus_3y_pct": 3.994,
+          "gov_3y_pct": 3.33,
+          "spread_pct_point": 0.664
+        },
+        {
+          "date": "20260422",
+          "corp_aa_minus_3y_pct": 4.028,
+          "gov_3y_pct": 3.365,
+          "spread_pct_point": 0.663
+        },
+        {
+          "date": "20260423",
+          "corp_aa_minus_3y_pct": 4.107,
+          "gov_3y_pct": 3.458,
+          "spread_pct_point": 0.649
+        },
+        {
+          "date": "20260424",
+          "corp_aa_minus_3y_pct": 4.145,
+          "gov_3y_pct": 3.496,
+          "spread_pct_point": 0.649
+        },
+        {
+          "date": "20260427",
+          "corp_aa_minus_3y_pct": 4.147,
+          "gov_3y_pct": 3.492,
+          "spread_pct_point": 0.655
+        },
+        {
+          "date": "20260428",
+          "corp_aa_minus_3y_pct": 4.182,
+          "gov_3y_pct": 3.529,
+          "spread_pct_point": 0.653
+        },
+        {
+          "date": "20260429",
+          "corp_aa_minus_3y_pct": 4.185,
+          "gov_3y_pct": 3.525,
+          "spread_pct_point": 0.66
+        },
+        {
+          "date": "20260430",
+          "corp_aa_minus_3y_pct": 4.248,
+          "gov_3y_pct": 3.595,
+          "spread_pct_point": 0.653
+        },
+        {
+          "date": "20260504",
+          "corp_aa_minus_3y_pct": 4.268,
+          "gov_3y_pct": 3.615,
+          "spread_pct_point": 0.653
+        },
+        {
+          "date": "20260506",
+          "corp_aa_minus_3y_pct": 4.249,
+          "gov_3y_pct": 3.595,
+          "spread_pct_point": 0.654
+        },
+        {
+          "date": "20260507",
+          "corp_aa_minus_3y_pct": 4.199,
+          "gov_3y_pct": 3.546,
+          "spread_pct_point": 0.653
+        },
+        {
+          "date": "20260508",
+          "corp_aa_minus_3y_pct": 4.218,
+          "gov_3y_pct": 3.569,
+          "spread_pct_point": 0.649
+        },
+        {
+          "date": "20260511",
+          "corp_aa_minus_3y_pct": 4.245,
+          "gov_3y_pct": 3.598,
+          "spread_pct_point": 0.647
+        },
+        {
+          "date": "20260512",
+          "corp_aa_minus_3y_pct": 4.311,
+          "gov_3y_pct": 3.674,
+          "spread_pct_point": 0.637
+        },
+        {
+          "date": "20260513",
+          "corp_aa_minus_3y_pct": 4.273,
+          "gov_3y_pct": 3.635,
+          "spread_pct_point": 0.638
+        },
+        {
+          "date": "20260514",
+          "corp_aa_minus_3y_pct": 4.284,
+          "gov_3y_pct": 3.654,
+          "spread_pct_point": 0.63
+        },
+        {
+          "date": "20260515",
+          "corp_aa_minus_3y_pct": 4.391,
+          "gov_3y_pct": 3.766,
+          "spread_pct_point": 0.625
+        },
+        {
+          "date": "20260518",
+          "corp_aa_minus_3y_pct": 4.381,
+          "gov_3y_pct": 3.757,
+          "spread_pct_point": 0.624
+        },
+        {
+          "date": "20260519",
+          "corp_aa_minus_3y_pct": 4.377,
+          "gov_3y_pct": 3.751,
+          "spread_pct_point": 0.626
+        },
+        {
+          "date": "20260520",
+          "corp_aa_minus_3y_pct": 4.386,
+          "gov_3y_pct": 3.76,
+          "spread_pct_point": 0.626
+        },
+        {
+          "date": "20260521",
+          "corp_aa_minus_3y_pct": 4.381,
+          "gov_3y_pct": 3.753,
+          "spread_pct_point": 0.628
+        },
+        {
+          "date": "20260522",
+          "corp_aa_minus_3y_pct": 4.361,
+          "gov_3y_pct": 3.736,
+          "spread_pct_point": 0.625
+        },
+        {
+          "date": "20260526",
+          "corp_aa_minus_3y_pct": 4.295,
+          "gov_3y_pct": 3.664,
+          "spread_pct_point": 0.631
+        },
+        {
+          "date": "20260527",
+          "corp_aa_minus_3y_pct": 4.336,
+          "gov_3y_pct": 3.711,
+          "spread_pct_point": 0.625
+        },
+        {
+          "date": "20260528",
+          "corp_aa_minus_3y_pct": 4.384,
+          "gov_3y_pct": 3.766,
+          "spread_pct_point": 0.618
+        },
+        {
+          "date": "20260529",
+          "corp_aa_minus_3y_pct": 4.353,
+          "gov_3y_pct": 3.731,
+          "spread_pct_point": 0.622
+        },
+        {
+          "date": "20260601",
+          "corp_aa_minus_3y_pct": 4.41,
+          "gov_3y_pct": 3.79,
+          "spread_pct_point": 0.62
+        },
+        {
+          "date": "20260602",
+          "corp_aa_minus_3y_pct": 4.397,
+          "gov_3y_pct": 3.773,
+          "spread_pct_point": 0.624
+        },
+        {
+          "date": "20260604",
+          "corp_aa_minus_3y_pct": 4.48,
+          "gov_3y_pct": 3.858,
+          "spread_pct_point": 0.622
+        },
+        {
+          "date": "20260605",
+          "corp_aa_minus_3y_pct": 4.501,
+          "gov_3y_pct": 3.882,
+          "spread_pct_point": 0.619
+        },
+        {
+          "date": "20260608",
+          "corp_aa_minus_3y_pct": 4.565,
+          "gov_3y_pct": 3.94,
+          "spread_pct_point": 0.625
+        },
+        {
+          "date": "20260609",
+          "corp_aa_minus_3y_pct": 4.492,
+          "gov_3y_pct": 3.856,
+          "spread_pct_point": 0.636
+        },
+        {
+          "date": "20260610",
+          "corp_aa_minus_3y_pct": 4.499,
+          "gov_3y_pct": 3.881,
+          "spread_pct_point": 0.618
+        },
+        {
+          "date": "20260611",
+          "corp_aa_minus_3y_pct": 4.515,
+          "gov_3y_pct": 3.904,
+          "spread_pct_point": 0.611
+        },
+        {
+          "date": "20260612",
+          "corp_aa_minus_3y_pct": 4.433,
+          "gov_3y_pct": 3.808,
+          "spread_pct_point": 0.625
+        },
+        {
+          "date": "20260615",
+          "corp_aa_minus_3y_pct": 4.373,
+          "gov_3y_pct": 3.744,
+          "spread_pct_point": 0.629
+        },
+        {
+          "date": "20260616",
+          "corp_aa_minus_3y_pct": 4.348,
+          "gov_3y_pct": 3.717,
+          "spread_pct_point": 0.631
+        },
+        {
+          "date": "20260617",
+          "corp_aa_minus_3y_pct": 4.345,
+          "gov_3y_pct": 3.71,
+          "spread_pct_point": 0.635
+        },
+        {
+          "date": "20260618",
+          "corp_aa_minus_3y_pct": 4.381,
+          "gov_3y_pct": 3.75,
+          "spread_pct_point": 0.631
+        },
+        {
+          "date": "20260619",
+          "corp_aa_minus_3y_pct": 4.419,
+          "gov_3y_pct": 3.784,
+          "spread_pct_point": 0.635
+        },
+        {
+          "date": "20260622",
+          "corp_aa_minus_3y_pct": 4.442,
+          "gov_3y_pct": 3.81,
+          "spread_pct_point": 0.632
+        },
+        {
+          "date": "20260623",
+          "corp_aa_minus_3y_pct": 4.417,
+          "gov_3y_pct": 3.77,
+          "spread_pct_point": 0.647
+        },
+        {
+          "date": "20260624",
+          "corp_aa_minus_3y_pct": 4.428,
+          "gov_3y_pct": 3.772,
+          "spread_pct_point": 0.656
+        },
+        {
+          "date": "20260625",
+          "corp_aa_minus_3y_pct": 4.403,
+          "gov_3y_pct": 3.757,
+          "spread_pct_point": 0.646
+        },
+        {
+          "date": "20260626",
+          "corp_aa_minus_3y_pct": 4.38,
+          "gov_3y_pct": 3.722,
+          "spread_pct_point": 0.658
+        },
+        {
+          "date": "20260629",
+          "corp_aa_minus_3y_pct": 4.396,
+          "gov_3y_pct": 3.733,
+          "spread_pct_point": 0.663
+        },
+        {
+          "date": "20260630",
+          "corp_aa_minus_3y_pct": 4.375,
+          "gov_3y_pct": 3.703,
+          "spread_pct_point": 0.672
+        },
+        {
+          "date": "20260701",
+          "corp_aa_minus_3y_pct": 4.466,
+          "gov_3y_pct": 3.791,
+          "spread_pct_point": 0.675
+        },
+        {
+          "date": "20260702",
+          "corp_aa_minus_3y_pct": 4.431,
+          "gov_3y_pct": 3.747,
+          "spread_pct_point": 0.684
+        },
+        {
+          "date": "20260703",
+          "corp_aa_minus_3y_pct": 4.433,
+          "gov_3y_pct": 3.748,
+          "spread_pct_point": 0.685
+        },
+        {
+          "date": "20260706",
+          "corp_aa_minus_3y_pct": 4.459,
+          "gov_3y_pct": 3.776,
+          "spread_pct_point": 0.683
+        },
+        {
+          "date": "20260707",
+          "corp_aa_minus_3y_pct": 4.472,
+          "gov_3y_pct": 3.78,
+          "spread_pct_point": 0.692
+        },
+        {
+          "date": "20260708",
+          "corp_aa_minus_3y_pct": 4.473,
+          "gov_3y_pct": 3.775,
+          "spread_pct_point": 0.698
+        },
+        {
+          "date": "20260709",
+          "corp_aa_minus_3y_pct": 4.478,
+          "gov_3y_pct": 3.778,
+          "spread_pct_point": 0.7
+        },
+        {
+          "date": "20260710",
+          "corp_aa_minus_3y_pct": 4.466,
+          "gov_3y_pct": 3.768,
+          "spread_pct_point": 0.698
+        },
+        {
+          "date": "20260713",
+          "corp_aa_minus_3y_pct": 4.506,
+          "gov_3y_pct": 3.809,
+          "spread_pct_point": 0.697
+        },
+        {
+          "date": "20260714",
+          "corp_aa_minus_3y_pct": 4.582,
+          "gov_3y_pct": 3.887,
+          "spread_pct_point": 0.695
+        },
+        {
+          "date": "20260715",
+          "corp_aa_minus_3y_pct": 4.563,
+          "gov_3y_pct": 3.866,
+          "spread_pct_point": 0.697
+        },
+        {
+          "date": "20260716",
+          "corp_aa_minus_3y_pct": 4.544,
+          "gov_3y_pct": 3.848,
+          "spread_pct_point": 0.696
+        },
+        {
+          "date": "20260720",
+          "corp_aa_minus_3y_pct": 4.59,
+          "gov_3y_pct": 3.895,
+          "spread_pct_point": 0.695
+        },
+        {
+          "date": "20260721",
+          "corp_aa_minus_3y_pct": 4.571,
+          "gov_3y_pct": 3.867,
+          "spread_pct_point": 0.704
+        },
+        {
+          "date": "20260722",
+          "corp_aa_minus_3y_pct": 4.604,
+          "gov_3y_pct": 3.913,
+          "spread_pct_point": 0.691
+        },
+        {
+          "date": "20260723",
+          "corp_aa_minus_3y_pct": 4.609,
+          "gov_3y_pct": 3.917,
+          "spread_pct_point": 0.692
+        },
+        {
+          "date": "20260724",
+          "corp_aa_minus_3y_pct": 4.653,
+          "gov_3y_pct": 3.959,
+          "spread_pct_point": 0.694
+        },
+        {
+          "date": "20260727",
+          "corp_aa_minus_3y_pct": 4.576,
+          "gov_3y_pct": 3.865,
+          "spread_pct_point": 0.711
+        },
+        {
+          "date": "20260728",
+          "corp_aa_minus_3y_pct": 4.545,
+          "gov_3y_pct": 3.829,
+          "spread_pct_point": 0.716
+        },
+        {
+          "date": "20260729",
+          "corp_aa_minus_3y_pct": 4.512,
+          "gov_3y_pct": 3.8,
+          "spread_pct_point": 0.712
+        },
+        {
+          "date": "20260730",
+          "corp_aa_minus_3y_pct": 4.541,
+          "gov_3y_pct": 3.831,
+          "spread_pct_point": 0.71
+        },
+        {
+          "date": "20260731",
+          "corp_aa_minus_3y_pct": 4.478,
+          "gov_3y_pct": 3.758,
+          "spread_pct_point": 0.72
+        },
+        {
+          "date": "20260803",
+          "corp_aa_minus_3y_pct": 4.462,
+          "gov_3y_pct": 3.742,
+          "spread_pct_point": 0.72
+        },
+        {
+          "date": "20260804",
+          "corp_aa_minus_3y_pct": 4.458,
+          "gov_3y_pct": 3.74,
+          "spread_pct_point": 0.718
+        },
+        {
+          "date": "20260805",
+          "corp_aa_minus_3y_pct": 4.392,
+          "gov_3y_pct": 3.669,
+          "spread_pct_point": 0.723
+        },
+        {
+          "date": "20260806",
+          "corp_aa_minus_3y_pct": 4.445,
+          "gov_3y_pct": 3.742,
+          "spread_pct_point": 0.703
+        },
+        {
+          "date": "20260807",
+          "corp_aa_minus_3y_pct": 4.448,
+          "gov_3y_pct": 3.746,
+          "spread_pct_point": 0.702
+        },
+        {
+          "date": "20260810",
+          "corp_aa_minus_3y_pct": 4.476,
+          "gov_3y_pct": 3.778,
+          "spread_pct_point": 0.698
+        }
+      ],
+      "history_samples": 370,
+      "stale": false,
+      "source": "한국은행 ECOS 시장금리(일별)",
+      "source_url": "https://ecos.bok.or.kr/",
+      "diagnostics": []
+    }
+  },
+  "interpretation": {
+    "score_scale": "0~15 매우 불리 · 16~30 불리 · 31~42 약불리 · 43~57 중립 · 58~69 약우호 · 70~84 우호 · 85~100 매우 우호",
+    "meaning": "객관적 시장 입력을 규칙기반으로 합성한 직접시장 환경점수이며 수익률 확률이나 보장이 아닙니다.",
+    "coverage_rule": "활성 가중치 합이 55% 미만이면 점수를 계산하지 않습니다."
+  },
+  "call_efficiency": {
+    "reuses_existing_asset_fundamentals": true,
+    "reuses_existing_raw_ecos_gov3y": true,
+    "new_live_calls_target_per_run": 7,
+    "gas_extra_api_calls_required": 0,
+    "history_is_local_committed_json": true
+  },
+  "limitations": [
+    "이익환경은 공개 forward 성장 대용치를 우선 사용합니다. 비어 있으면 기존 KRX 지수 종가/PER에서 계산한 후행 EPS 대용치 추세를 사용하며 실제 증권사 forward revision으로 오인하지 않습니다.",
+    "외국인·기관 수급은 KRX 거래대금 기준이며 기관합계가 없으면 기관 세부주체를 합산합니다.",
+    "breadth는 기간 상승/하락 종목 비율을 사용합니다. 호출량이 큰 종목별 200일 이동평균 breadth는 의도적으로 제외했습니다.",
+    "밸류에이션과 신용스프레드는 절대 임의 기준보다 각자의 실제 과거분포 백분위를 우선 사용합니다.",
+    "모든 신규 기능은 이 전용 JSON에만 기록되며 기존 korea_rate_fx_outlook 계열 스키마는 변경하지 않습니다."
+  ]
+}

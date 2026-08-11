@@ -8,7 +8,7 @@
   "current": {
     "score": 48.6,
     "band": "중립",
-    "quality_score": 66.1,
+    "quality_score": 66.0,
     "data_coverage_pct": 100,
     "quality_weighted_coverage_pct": 69.7,
     "factors": {
@@ -136,7 +136,7 @@
     "delta_points": -0.3,
     "direction": "유지",
     "change_strength": "거의 변화 없음",
-    "quality_score": 62.6,
+    "quality_score": 62.5,
     "data_coverage_pct": 100,
     "quality_weighted_coverage_pct": 63.6,
     "factors": {
@@ -292,7 +292,33 @@
       }
     ]
   },
-  "direct_market": {},
+  "direct_market": {
+    "label": "증권",
+    "requested_basket": [
+      "006800",
+      "039490",
+      "016360",
+      "005940"
+    ],
+    "usable_members": [],
+    "member_coverage": 0.0,
+    "period_start": "20260707",
+    "period_end": "20260811",
+    "median_return_pct": null,
+    "positive_breadth": null,
+    "flow_positive_share": null,
+    "market_internal_score": null,
+    "market_internal_quality": 0.0,
+    "valuation_score": null,
+    "valuation_quality": 0.0,
+    "median_per": null,
+    "median_pbr": null,
+    "broad_market_median_per": null,
+    "broad_market_median_pbr": null,
+    "member_closes": {},
+    "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
+    "source_type": "direct_sector_basket"
+  },
   "theme_bridge": {
     "available": false,
     "current": null,
@@ -307,7 +333,7 @@
     "bounded_direction_adjustment_points": -0.09,
     "max_abs_adjustment_points": 5.0,
     "signal_normalized": -0.0283,
-    "quality_score": 62.6,
+    "quality_score": 62.5,
     "validation_status": "PENDING",
     "rule": "산업전망은 개별종목 방향예측의 보조 오버레이로만 사용하며, 자체 OOS가 통과하기 전 최대 영향도를 제한합니다."
   },
@@ -319,11 +345,27 @@
   "quality": {
     "sector_specificity_score": 45.0,
     "forecast_upstream_quality_score": 79.0,
-    "source_freshness_score": 90.0,
+    "source_freshness_score": 89.5,
     "prospective_validation": {
+      "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "evaluated_cases": 0
+      "registered_forecasts": 0,
+      "evaluated_cases": 0,
+      "directional_cases": 0,
+      "direction_accuracy": null,
+      "positive_signal_mean_return_pct": null,
+      "negative_signal_mean_return_pct": null,
+      "return_spread_pct_point": null,
+      "requirements": {
+        "min_evaluated_cases": 24,
+        "direction_accuracy_min": 0.55,
+        "return_spread_min_pct_point": 2.0,
+        "evaluation_horizon_calendar_days_min": 75,
+        "same_forecast_month_deduplicated": true
+      },
+      "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
+      "generated_at_utc": "2026-08-11T09:17:14.884898+00:00"
     },
     "direct_sector_market_available": false,
     "industry_specific_valuation_available": false

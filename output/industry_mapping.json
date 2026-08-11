@@ -1,0 +1,594 @@
+{
+  "schema_version": "1.0.0",
+  "engine_version": "1.0.0-industry-environment-six-axis-oos-gated",
+  "generated_at_utc": "2026-08-11T10:28:05.977307+00:00",
+  "industries": [
+    {
+      "key": "semiconductor",
+      "label": "반도체",
+      "aliases": [
+        "반도체",
+        "memory_semiconductor",
+        "AI 반도체"
+      ],
+      "theme_ids": [
+        "AI_SEMICONDUCTORS",
+        "ADVANCED_PACKAGING_HBM",
+        "SEMICONDUCTOR_EQUIPMENT",
+        "POWER_SEMICONDUCTORS"
+      ],
+      "krx_basket": [
+        "005930",
+        "000660",
+        "000990",
+        "042700",
+        "089030"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "electronic_components",
+      "label": "전자부품·MLCC·기판",
+      "aliases": [
+        "전자부품·MLCC·패키지기판",
+        "전자부품·MLCC·기판",
+        "electronic_components"
+      ],
+      "theme_ids": [
+        "ADVANCED_PACKAGING_HBM",
+        "PHOTONICS_OPTICAL_INTERCONNECT",
+        "EDGE_AI"
+      ],
+      "krx_basket": [
+        "009150"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "display",
+      "label": "디스플레이",
+      "aliases": [
+        "디스플레이",
+        "display"
+      ],
+      "theme_ids": [
+        "PHOTONICS_OPTICAL_INTERCONNECT",
+        "ADVANCED_MATERIALS"
+      ],
+      "krx_basket": [
+        "034220"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "automotive",
+      "label": "자동차",
+      "aliases": [
+        "자동차",
+        "automotive",
+        "automobile"
+      ],
+      "theme_ids": [
+        "AUTONOMOUS_DRIVING",
+        "POWER_SEMICONDUCTORS"
+      ],
+      "krx_basket": [
+        "005380",
+        "000270",
+        "012330",
+        "204320"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "battery",
+      "label": "2차전지·배터리",
+      "aliases": [
+        "2차전지",
+        "배터리·전기장비",
+        "battery"
+      ],
+      "theme_ids": [
+        "ENERGY_STORAGE",
+        "BATTERY_RECYCLING",
+        "CRITICAL_MINERALS"
+      ],
+      "krx_basket": [
+        "373220",
+        "006400",
+        "003670",
+        "247540",
+        "096770"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "shipbuilding",
+      "label": "조선·해양·선박",
+      "aliases": [
+        "조선·해양·선박",
+        "조선·운송장비",
+        "shipbuilding"
+      ],
+      "theme_ids": [
+        "MARITIME_AUTONOMY",
+        "LNG_INFRASTRUCTURE",
+        "OFFSHORE_WIND"
+      ],
+      "krx_basket": [
+        "009540",
+        "010620",
+        "042660",
+        "329180"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "construction",
+      "label": "건설·인프라",
+      "aliases": [
+        "건설·인프라",
+        "construction"
+      ],
+      "theme_ids": [
+        "CONSTRUCTION_AUTOMATION",
+        "POWER_GRID_ELECTRIFICATION",
+        "WATER_INFRASTRUCTURE"
+      ],
+      "krx_basket": [
+        "000720",
+        "028050",
+        "047040",
+        "006360",
+        "375500"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "industrial_machinery",
+      "label": "기계·산업자동화",
+      "aliases": [
+        "산업재·기계",
+        "기계",
+        "산업자동화"
+      ],
+      "theme_ids": [
+        "INDUSTRIAL_ROBOTICS",
+        "SMART_FACTORY",
+        "ADDITIVE_MANUFACTURING"
+      ],
+      "krx_basket": [
+        "034020",
+        "267260",
+        "010120"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "defense_aerospace",
+      "label": "방산·항공우주",
+      "aliases": [
+        "방산",
+        "항공우주",
+        "defense"
+      ],
+      "theme_ids": [
+        "DEFENSE_AUTONOMOUS_SYSTEMS",
+        "COMMERCIAL_DRONES",
+        "SPACE_ECONOMY"
+      ],
+      "krx_basket": [
+        "012450",
+        "079550",
+        "047810",
+        "064350"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "steel_materials",
+      "label": "철강·금속",
+      "aliases": [
+        "철강",
+        "철강·금속"
+      ],
+      "theme_ids": [
+        "POWER_GRID_ELECTRIFICATION",
+        "RAIL_MODERNIZATION",
+        "OFFSHORE_WIND",
+        "COPPER_INFRASTRUCTURE"
+      ],
+      "krx_basket": [
+        "005490",
+        "004020",
+        "010130"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "chemicals",
+      "label": "화학·정밀소재",
+      "aliases": [
+        "소재·정밀화학",
+        "화학"
+      ],
+      "theme_ids": [
+        "ADVANCED_MATERIALS",
+        "HYDROGEN_ECONOMY",
+        "CARBON_CAPTURE"
+      ],
+      "krx_basket": [
+        "051910",
+        "011170",
+        "009830"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "refining_energy",
+      "label": "정유·에너지",
+      "aliases": [
+        "에너지·정유",
+        "정유",
+        "에너지"
+      ],
+      "theme_ids": [
+        "LNG_INFRASTRUCTURE",
+        "HYDROGEN_ECONOMY",
+        "CARBON_CAPTURE",
+        "GEOTHERMAL_ENERGY"
+      ],
+      "krx_basket": [
+        "010950",
+        "096770"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "finance",
+      "label": "은행·금융지주",
+      "aliases": [
+        "금융",
+        "은행",
+        "은행·금융지주",
+        "finance"
+      ],
+      "theme_ids": [
+        "FINTECH_INFRASTRUCTURE"
+      ],
+      "krx_basket": [
+        "105560",
+        "055550",
+        "086790",
+        "316140"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "insurance",
+      "label": "보험",
+      "aliases": [
+        "보험",
+        "insurance"
+      ],
+      "theme_ids": [
+        "FINTECH_INFRASTRUCTURE"
+      ],
+      "krx_basket": [
+        "032830",
+        "000810",
+        "005830"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "securities",
+      "label": "증권",
+      "aliases": [
+        "증권",
+        "securities"
+      ],
+      "theme_ids": [
+        "FINTECH_INFRASTRUCTURE"
+      ],
+      "krx_basket": [
+        "006800",
+        "039490",
+        "016360",
+        "005940"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "biotechnology",
+      "label": "바이오·제약",
+      "aliases": [
+        "바이오·제약·헬스케어",
+        "바이오",
+        "제약",
+        "biotechnology"
+      ],
+      "theme_ids": [
+        "AI_DRUG_DISCOVERY",
+        "GENE_CELL_THERAPY",
+        "PRECISION_ONCOLOGY",
+        "OBESITY_METABOLIC"
+      ],
+      "krx_basket": [
+        "207940",
+        "068270",
+        "326030",
+        "000100",
+        "128940"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "medical_devices",
+      "label": "의료기기·헬스테크",
+      "aliases": [
+        "의료기기·헬스테크",
+        "medical_devices"
+      ],
+      "theme_ids": [
+        "SURGICAL_ROBOTICS",
+        "ADVANCED_DIAGNOSTICS"
+      ],
+      "krx_basket": [
+        "085370",
+        "199550",
+        "328130"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "software_platform",
+      "label": "소프트웨어·플랫폼",
+      "aliases": [
+        "정보기술·소프트웨어",
+        "소프트웨어·플랫폼",
+        "technology",
+        "software_platform"
+      ],
+      "theme_ids": [
+        "CLOUD_INFRASTRUCTURE",
+        "CYBERSECURITY",
+        "DIGITAL_IDENTITY",
+        "EDGE_AI"
+      ],
+      "krx_basket": [
+        "035420",
+        "041460",
+        "042510",
+        "053300",
+        "158430",
+        "203650",
+        "301300"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "gaming",
+      "label": "게임",
+      "aliases": [
+        "게임",
+        "gaming"
+      ],
+      "theme_ids": [
+        "CLOUD_INFRASTRUCTURE",
+        "EDGE_AI"
+      ],
+      "krx_basket": [
+        "036570",
+        "251270",
+        "263750"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "media_entertainment",
+      "label": "미디어·엔터테인먼트·콘텐츠",
+      "aliases": [
+        "미디어·엔터테인먼트·콘텐츠",
+        "출판·미디어·콘텐츠",
+        "media_entertainment"
+      ],
+      "theme_ids": [],
+      "krx_basket": [
+        "035760",
+        "035900",
+        "037270",
+        "041510",
+        "122870",
+        "253450",
+        "352820",
+        "376300",
+        "048550"
+      ],
+      "notes": "전용 붐 테마가 없어 소비·유동성·직접 KRX 시장내부 데이터 비중을 높이고 테마신호를 억지로 만들지 않습니다."
+    },
+    {
+      "key": "retail",
+      "label": "유통·소매",
+      "aliases": [
+        "유통·소매",
+        "유통",
+        "retail"
+      ],
+      "theme_ids": [],
+      "krx_basket": [
+        "008770",
+        "139480",
+        "023530",
+        "282330"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "food_beverage",
+      "label": "음식료·필수소비재",
+      "aliases": [
+        "음식료",
+        "필수소비재",
+        "건강기능식품·필수소비재"
+      ],
+      "theme_ids": [
+        "AGRITECH_FOODTECH"
+      ],
+      "krx_basket": [
+        "097950",
+        "271560",
+        "005300",
+        "004370"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "transport_logistics",
+      "label": "운송·물류",
+      "aliases": [
+        "운송·물류",
+        "transport"
+      ],
+      "theme_ids": [
+        "LOGISTICS_AUTOMATION",
+        "RAIL_MODERNIZATION",
+        "MARITIME_AUTONOMY"
+      ],
+      "krx_basket": [
+        "003490",
+        "086280",
+        "028670",
+        "011200"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "utilities_power",
+      "label": "전력·유틸리티",
+      "aliases": [
+        "전력",
+        "유틸리티",
+        "utilities"
+      ],
+      "theme_ids": [
+        "POWER_GRID_ELECTRIFICATION",
+        "NUCLEAR_ENERGY",
+        "SMALL_MODULAR_REACTORS",
+        "SOLAR_ENERGY",
+        "OFFSHORE_WIND"
+      ],
+      "krx_basket": [
+        "015760",
+        "036460",
+        "052690"
+      ],
+      "notes": ""
+    },
+    {
+      "key": "telecom",
+      "label": "통신",
+      "aliases": [
+        "통신",
+        "telecom"
+      ],
+      "theme_ids": [
+        "DATA_CENTER_INFRASTRUCTURE",
+        "EDGE_AI"
+      ],
+      "krx_basket": [
+        "017670",
+        "030200",
+        "032640"
+      ],
+      "notes": ""
+    }
+  ],
+  "alias_to_profile_key": {
+    "semiconductor": "semiconductor",
+    "반도체": "semiconductor",
+    "memory_semiconductor": "semiconductor",
+    "AI 반도체": "semiconductor",
+    "electronic_components": "electronic_components",
+    "전자부품·MLCC·기판": "electronic_components",
+    "전자부품·MLCC·패키지기판": "electronic_components",
+    "display": "display",
+    "디스플레이": "display",
+    "automotive": "automotive",
+    "자동차": "automotive",
+    "automobile": "automotive",
+    "battery": "battery",
+    "2차전지·배터리": "battery",
+    "2차전지": "battery",
+    "배터리·전기장비": "battery",
+    "shipbuilding": "shipbuilding",
+    "조선·해양·선박": "shipbuilding",
+    "조선·운송장비": "shipbuilding",
+    "construction": "construction",
+    "건설·인프라": "construction",
+    "industrial_machinery": "industrial_machinery",
+    "기계·산업자동화": "industrial_machinery",
+    "산업재·기계": "industrial_machinery",
+    "기계": "industrial_machinery",
+    "산업자동화": "industrial_machinery",
+    "defense_aerospace": "defense_aerospace",
+    "방산·항공우주": "defense_aerospace",
+    "방산": "defense_aerospace",
+    "항공우주": "defense_aerospace",
+    "defense": "defense_aerospace",
+    "steel_materials": "steel_materials",
+    "철강·금속": "steel_materials",
+    "철강": "steel_materials",
+    "chemicals": "chemicals",
+    "화학·정밀소재": "chemicals",
+    "소재·정밀화학": "chemicals",
+    "화학": "chemicals",
+    "refining_energy": "refining_energy",
+    "정유·에너지": "refining_energy",
+    "에너지·정유": "refining_energy",
+    "정유": "refining_energy",
+    "에너지": "refining_energy",
+    "finance": "finance",
+    "은행·금융지주": "finance",
+    "금융": "finance",
+    "은행": "finance",
+    "insurance": "insurance",
+    "보험": "insurance",
+    "securities": "securities",
+    "증권": "securities",
+    "biotechnology": "biotechnology",
+    "바이오·제약": "biotechnology",
+    "바이오·제약·헬스케어": "biotechnology",
+    "바이오": "biotechnology",
+    "제약": "biotechnology",
+    "medical_devices": "medical_devices",
+    "의료기기·헬스테크": "medical_devices",
+    "software_platform": "software_platform",
+    "소프트웨어·플랫폼": "software_platform",
+    "정보기술·소프트웨어": "software_platform",
+    "technology": "software_platform",
+    "gaming": "gaming",
+    "게임": "gaming",
+    "media_entertainment": "media_entertainment",
+    "미디어·엔터테인먼트·콘텐츠": "media_entertainment",
+    "출판·미디어·콘텐츠": "media_entertainment",
+    "retail": "retail",
+    "유통·소매": "retail",
+    "유통": "retail",
+    "food_beverage": "food_beverage",
+    "음식료·필수소비재": "food_beverage",
+    "음식료": "food_beverage",
+    "필수소비재": "food_beverage",
+    "건강기능식품·필수소비재": "food_beverage",
+    "transport_logistics": "transport_logistics",
+    "운송·물류": "transport_logistics",
+    "transport": "transport_logistics",
+    "utilities_power": "utilities_power",
+    "전력·유틸리티": "utilities_power",
+    "전력": "utilities_power",
+    "유틸리티": "utilities_power",
+    "utilities": "utilities_power",
+    "telecom": "telecom",
+    "통신": "telecom"
+  }
+}
