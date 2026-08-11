@@ -28,19 +28,35 @@ def _number(value: Any) -> float | None:
 class _CallBudget:
     limit: int
     attempts: int = 0
+    scope_limit: int | None = None
+    scope_attempts: int = 0
+    errors: list[str] | None = None
+
+    def start_scope(self, limit: int) -> None:
+        self.scope_limit = max(1, int(limit))
+        self.scope_attempts = 0
 
     def allow(self) -> None:
         if self.attempts >= self.limit:
             raise RuntimeError("KOSIS external-call cap reached")
+        if self.scope_limit is not None and self.scope_attempts >= self.scope_limit:
+            raise RuntimeError("KOSIS series-call cap reached")
         self.attempts += 1
+        self.scope_attempts += 1
 
 
 def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: int = 25) -> Any:
     query = urllib.parse.urlencode({key: value for key, value in params.items() if value not in (None, "")})
     request = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-industry-cycle/1.0"})
     budget.allow()
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        if budget.errors is not None:
+            table = params.get("tblId") or params.get("searchNm") or ""
+            budget.errors.append(f"{url.rsplit('/', 1)[-1]}[{table}]: {type(exc).__name__}: {exc}")
+        raise
 
 
 def _rows(payload: Any) -> list[dict[str, Any]]:
@@ -157,8 +173,9 @@ def collect(root: Path) -> dict[str, Any]:
     overrides = config.get("industry_keyword_overrides") or {}
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
-    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))))
+    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[])
     for name, spec in (config.get("series") or {}).items():
+        budget.start_scope(int(spec.get("max_external_calls", 1)))
         try:
             org_id, table_id, rows = _choose_table(api_key, spec, budget)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
@@ -190,7 +207,7 @@ def collect(root: Path) -> dict[str, Any]:
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
         "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
-        "diagnostics": diagnostics, "missing_data_policy": "do_not_impute_or_neutral_fill",
+        "diagnostics": diagnostics + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     write_json(output, result)
     return result
