@@ -47,6 +47,9 @@ jobs:
           mkdir -p input_cache/latest
           test -d input_cache/latest
 
+      - name: Validate and build industry cycle feed
+        run: PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
+
       - name: Run industry engine
         env:
           UPSTREAM_GITHUB_TOKEN: ${{ secrets.UPSTREAM_GITHUB_TOKEN }}
