@@ -86,7 +86,8 @@ contract above; the renderer then exposes the macro impact fields for audit.
 ## Raw input and local batch builder
 
 The collection job may write `input/industry_cycle_raw.json`. The Action first
-runs `python -m kiee.industry_cycle_feed --root .`, which normalizes raw
+runs `python -m kiee.industry_kosis_collector --root .` with the optional
+`KOSIS_API_KEY` secret, then runs `python -m kiee.industry_cycle_feed --root .`, which normalizes raw
 metrics, groups them by the configured factor weights, and writes
 `input/industry_cycle_latest.json`. Current scoring uses only industry
 observations. Forecast stages may include the explicitly mapped sensitive macro
