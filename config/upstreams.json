@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "owner_env": "UPSTREAM_GITHUB_OWNER",
+  "default_owner": "12xx37r-ui",
+  "token_env": "UPSTREAM_GITHUB_TOKEN",
+  "sources": {
+    "korea_rate_fx": {
+      "repo": "korea-rate-fx-engine",
+      "branch": "main",
+      "path": "output/korea_rate_fx_outlook_v3.json",
+      "cache_ttl_hours": 6,
+      "max_stale_hours": 72
+    },
+    "korea_equity": {
+      "repo": "korea-rate-fx-engine",
+      "branch": "main",
+      "path": "output/korea_equity_environment.json",
+      "cache_ttl_hours": 3,
+      "max_stale_hours": 120
+    },
+    "global_bundle": {
+      "repo": "global-macro-data-collector",
+      "branch": "main",
+      "path": "public/data/cards_8_12_bundle.json",
+      "cache_ttl_hours": 6,
+      "max_stale_hours": 72
+    },
+    "industry_boom": {
+      "repo": "industry-boom-leading-engine",
+      "branch": "main",
+      "path": "outputs/v70_final_engine/v70_current_operational_snapshot.json",
+      "cache_ttl_hours": 24,
+      "max_stale_hours": 336
+    }
+  },
+  "normal_upstream_http_calls_per_run": 4,
+  "note": "동일 실행에서 각 upstream JSON은 정확히 한 번만 읽고 메모리에서 재사용합니다. 토큰이 있으면 GitHub Contents API 1회/파일, 없으면 raw 1회/파일입니다. 실패 시 커밋된 LKG 캐시를 사용합니다."
+}

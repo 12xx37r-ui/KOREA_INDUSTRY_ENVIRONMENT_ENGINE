@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "engine_version": "1.0.0-industry-environment-six-axis-oos-gated",
+  "score_bands": [
+    {
+      "min": 0,
+      "max": 15,
+      "label": "매우 불리"
+    },
+    {
+      "min": 16,
+      "max": 30,
+      "label": "불리"
+    },
+    {
+      "min": 31,
+      "max": 42,
+      "label": "약불리"
+    },
+    {
+      "min": 43,
+      "max": 57,
+      "label": "중립"
+    },
+    {
+      "min": 58,
+      "max": 69,
+      "label": "약우호"
+    },
+    {
+      "min": 70,
+      "max": 84,
+      "label": "우호"
+    },
+    {
+      "min": 85,
+      "max": 100,
+      "label": "매우 우호"
+    }
+  ],
+  "delta_bands": [
+    {
+      "abs_max": 1.0,
+      "label": "거의 변화 없음"
+    },
+    {
+      "abs_max": 3.0,
+      "label": "매우 조금"
+    },
+    {
+      "abs_max": 7.0,
+      "label": "조금"
+    },
+    {
+      "abs_max": 12.0,
+      "label": "꽤"
+    },
+    {
+      "abs_max": 20.0,
+      "label": "많이"
+    },
+    {
+      "abs_max": 999,
+      "label": "매우 많이"
+    }
+  ],
+  "theme_prevalidation_shrinkage": 0.55,
+  "theme_prevalidation_quality_cap": 65,
+  "broad_proxy_deviation_shrinkage": 0.35,
+  "minimum_display_quality": 50,
+  "minimum_stock_overlay_quality": 60,
+  "stock_overlay_max_points_pending_oos": 5.0,
+  "stock_overlay_max_points_validated": 10.0,
+  "forecast_primary_use_allowed": false,
+  "prospective_min_cases": 24,
+  "prospective_direction_accuracy_min": 0.55,
+  "prospective_mean_return_spread_min_pct": 2.0,
+  "upstream_max_age_hours": {
+    "korea": 36,
+    "global": 36,
+    "industry_boom": 240,
+    "krx_market": 120
+  }
+}
