@@ -36,10 +36,23 @@ jobs:
       - name: Unit and contract tests
         run: pytest -q
 
+      - name: Normalize cache path
+        shell: bash
+        run: |
+          # Git cannot track an empty directory. If a mobile/manual upload created
+          # input_cache/latest as a file, normalize it before the first live run.
+          if [ -e input_cache/latest ] && [ ! -d input_cache/latest ]; then
+            rm -f input_cache/latest
+          fi
+          mkdir -p input_cache/latest
+          test -d input_cache/latest
+
       - name: Run industry engine
         env:
           UPSTREAM_GITHUB_TOKEN: ${{ secrets.UPSTREAM_GITHUB_TOKEN }}
           UPSTREAM_GITHUB_OWNER: ${{ vars.UPSTREAM_GITHUB_OWNER || '12xx37r-ui' }}
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
         run: PYTHONPATH=src python -m kiee.cli --root .
 
       - name: Validate output contract
@@ -61,10 +74,16 @@ jobs:
           ce=data['call_efficiency']
           assert int(ce['per_company_live_calls']) == 0
           assert int(ce['upstream_http_calls_this_run']) <= 4
-          # KRX 정상경로 8회. 장애 fallback은 진단상 추가될 수 있으므로 12회를 상한으로 둔다.
-          assert int(ce['krx_bulk_calls_this_run']) <= 12
+          # KRX 정상경로는 8회. 가격/영업일/빈응답 fallback은 장애시에만 추가되며 20회를 절대 상한으로 둔다.
+          assert int(ce['krx_bulk_calls_this_run']) <= 20
           bridge=json.loads(Path('output/stock_prediction_bridge.json').read_text(encoding='utf-8'))
           assert len(bridge['by_profile_key']) == data['industry_count']
+          health=json.loads(Path('output/engine_health.json').read_text(encoding='utf-8'))
+          print('KRX_DIRECT_AVAILABLE=', health.get('direct_krx_available'))
+          print('KRX_CREDENTIALS_CONFIGURED=', health.get('direct_krx_credentials_configured'))
+          print('KRX_INDUSTRY_COVERAGE_PCT=', health.get('direct_krx_industry_coverage_pct'))
+          if not health.get('direct_krx_available'):
+              print('WARNING: direct KRX sector data unavailable; engine kept running with quality-gated proxy/LKG data.')
           print('OUTPUT_CONTRACT_OK')
           PY
 
