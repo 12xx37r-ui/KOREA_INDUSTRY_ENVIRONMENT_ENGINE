@@ -148,32 +148,42 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
     # query uses ALL for the first classifier and item, so use that first and
     # reserve selector retries for tables that explicitly require them.
     period = _meta_period(api_key, org_id, table_id, budget)
-    base_params = {
-        "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
-        "prdSe": period, "newEstPrdCnt": periods, "format": "json", "jsonVD": "Y",
-    }
     selector_variants = (("ALL", "ALL"),)
     last_error: Exception | None = None
-    for variant_index, (obj_selector, itm_selector) in enumerate(selector_variants):
-        params = dict(base_params)
-        params["itmId"] = itm_selector
-        params["objL1"] = obj_selector
-        for depth in range(0, 4):
-            probe_params = dict(params)
-            for level in range(2, 2 + depth):
-                probe_params[f"objL{level}"] = "ALL"
-            try:
-                rows = _rows(_get_data_json(probe_params, budget, allow_fallback=(depth == 0)))
-                if rows:
-                    if budget.events is not None and depth:
-                        budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth}")
-                    return rows
-            except RuntimeError as exc:
-                last_error = exc
-                text = str(exc)
-                if "KOSIS error 20" not in text and "KOSIS error 21" not in text:
-                    raise
-                continue
+    period_ladder = [periods]
+    if periods > 12:
+        period_ladder.append(12)
+    if periods > 7:
+        period_ladder.append(7)
+    for requested_periods in period_ladder:
+        base_params = {
+            "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
+            "prdSe": period, "newEstPrdCnt": requested_periods, "format": "json", "jsonVD": "Y",
+        }
+        for variant_index, (obj_selector, itm_selector) in enumerate(selector_variants):
+            params = dict(base_params)
+            params["itmId"] = itm_selector
+            params["objL1"] = obj_selector
+            for depth in range(0, 4):
+                probe_params = dict(params)
+                for level in range(2, 2 + depth):
+                    probe_params[f"objL{level}"] = "ALL"
+                try:
+                    rows = _rows(_get_data_json(probe_params, budget, allow_fallback=(depth == 0)))
+                    if rows:
+                        if budget.events is not None and (depth or requested_periods != periods):
+                            budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth} periods={requested_periods}")
+                        return rows
+                except RuntimeError as exc:
+                    last_error = exc
+                    text = str(exc)
+                    if "KOSIS error 31" in text:
+                        # The table is valid but the ALL×ALL cell set is too
+                        # large. Retry with fewer periods before abandoning it.
+                        break
+                    if "KOSIS error 20" not in text and "KOSIS error 21" not in text:
+                        raise
+                    continue
     if last_error is not None:
         raise last_error
     return []
