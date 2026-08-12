@@ -2,6 +2,12 @@ name: Korea Industry Environment Engine
 
 on:
   workflow_dispatch:
+    inputs:
+      force_kosis:
+        description: "Force one KOSIS collection even when committed raw data exists"
+        required: false
+        default: false
+        type: boolean
   schedule:
     # KRX 정규장 종료 후 약 1시간 25분: 16:55 KST = 07:55 UTC
     - cron: '55 7 * * 1-5'
@@ -72,7 +78,9 @@ jobs:
           print('true' if data.get('status') in {'raw', 'scored'} and data.get('industries') else 'false')
           PY
           )
-          if [ "$USE_COMMITTED_RAW" = "true" ]; then
+          FORCE_KOSIS="${{ inputs.force_kosis || 'false' }}"
+          echo "FORCE_KOSIS=$FORCE_KOSIS"
+          if [ "$USE_COMMITTED_RAW" = "true" ] && [ "$FORCE_KOSIS" != "true" ]; then
             echo "INDUSTRY_CYCLE_INPUT_MODE=committed-local"
             echo "KOSIS collector skipped: committed raw industry observations are available"
           else
