@@ -61,7 +61,24 @@ jobs:
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
         run: |
-          PYTHONPATH=src python -m kiee.industry_kosis_collector --root .
+          USE_COMMITTED_RAW=$(PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('input/industry_cycle_raw.json')
+          try:
+              data = json.loads(path.read_text(encoding='utf-8'))
+          except Exception:
+              data = {}
+          print('true' if data.get('status') in {'raw', 'scored'} and data.get('industries') else 'false')
+          PY
+          )
+          if [ "$USE_COMMITTED_RAW" = "true" ]; then
+            echo "INDUSTRY_CYCLE_INPUT_MODE=committed-local"
+            echo "KOSIS collector skipped: committed raw industry observations are available"
+          else
+            echo "INDUSTRY_CYCLE_INPUT_MODE=kosis-collector"
+            PYTHONPATH=src python -m kiee.industry_kosis_collector --root .
+          fi
           PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
           PYTHONPATH=src python - <<'PY'
           import json
