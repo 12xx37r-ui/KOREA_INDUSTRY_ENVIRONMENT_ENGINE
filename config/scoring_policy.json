@@ -87,28 +87,41 @@
   "valuation_provisional_quality_cap": 35.0,
   "industry_cycle_scoring": {
     "current_weights": {
-      "production_shipments": 0.20,
-      "sales_earnings": 0.20,
+      "production_shipments": 0.2,
+      "sales_earnings": 0.2,
       "inventory_cycle": 0.15,
-      "utilization": 0.10,
-      "employment": 0.10,
+      "utilization": 0.1,
+      "employment": 0.1,
       "price_margin": 0.15,
-      "pmi_bsi": 0.10
+      "pmi_bsi": 0.1
     },
     "leading_weights": {
-      "new_orders": 0.20,
+      "new_orders": 0.2,
       "inventory_cycle": 0.15,
       "global_environment": 0.15,
-      "rates_liquidity": 0.10,
-      "raw_material_spread": 0.10,
+      "rates_liquidity": 0.1,
+      "raw_material_spread": 0.1,
       "earnings_revision": 0.15,
-      "relative_strength_flow": 0.10,
+      "relative_strength_flow": 0.1,
       "policy_special": 0.05
     },
-    "horizons": ["current", "3m", "3_6m", "6_12m"],
-    "minimum_current_metric_coverage_pct": 60.0,
-    "minimum_leading_metric_coverage_pct": 60.0,
+    "horizons": [
+      "current",
+      "3m",
+      "3_6m",
+      "6_12m"
+    ],
+    "minimum_current_metric_coverage_pct": 9.0,
+    "minimum_leading_metric_coverage_pct": 9.0,
     "missing_data_policy": "do_not_impute_or_neutral_fill",
-    "cycle_phases": ["침체", "바닥통과", "회복초기", "확장", "호황", "둔화", "하강"]
+    "cycle_phases": [
+      "침체",
+      "바닥통과",
+      "회복초기",
+      "확장",
+      "호황",
+      "둔화",
+      "하강"
+    ]
   }
 }
