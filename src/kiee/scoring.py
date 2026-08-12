@@ -519,7 +519,7 @@ def _pending_stage(reason: str) -> dict[str, Any]:
     }
 
 
-def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], reason: str, prospective_summary: dict[str, Any] | None = None) -> dict[str, Any]:
+def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], reason: str, prospective_summary: dict[str, Any] | None = None, boom: dict[str, Any] | None = None, policy: dict[str, Any] | None = None) -> dict[str, Any]:
     current = _pending_stage(reason)
     future = _pending_stage(reason)
     future["delta_points"] = None
@@ -554,7 +554,7 @@ def _pending_industry_result(industry: dict[str, Any], direct: dict[str, Any], r
         "forecast_3_6m": horizon_pending,
         "forecast_6_12m": horizon_pending,
         "direct_market": direct,
-        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": [], "relevance_weight": 0.0},
+        "theme_bridge": _theme_signal(industry, boom or {}, policy or {}),
         "stock_prediction_bridge": {
             "allowed_as_auxiliary": False,
             "allowed_as_primary": False,
@@ -718,6 +718,8 @@ def score_industry(
             direct,
             "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
             prospective_summary,
+            boom=boom,
+            policy=policy,
         )
     return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
     current_factors, current_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)
