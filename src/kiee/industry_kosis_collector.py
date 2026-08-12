@@ -12,11 +12,19 @@ from typing import Any
 from .config import load_all
 from .util import read_json, utc_now_iso, write_json
 
-# The official KOSIS developer guide publishes the same Open API under the
-# SSO host. GitHub-hosted runners can time out against kosis.kr while the SSO
-# host remains reachable; keep one host per run to avoid duplicate requests.
+# Search is available on the SSO host, while the official parameter-data and
+# metadata examples use the main KOSIS host. Keep search and data endpoints
+# separate; using the SSO host for parameter data can return empty rows.
 SEARCH_URL = "https://sso.kosis.kr/openapi/statisticsSearch.do"
-DATA_URL = "https://sso.kosis.kr/openapi/Param/statisticsParameterData.do"
+META_URL = "https://kosis.kr/openapi/statisticsData.do"
+DATA_URL = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
+
+DEFAULT_TABLE_TITLE_HINTS = {
+    "production_shipments": ("산업생산", "생산지수", "출하지수"),
+    "inventory_cycle": ("재고", "재고율"),
+    "utilization": ("가동률", "설비가동"),
+    "pmi_bsi": ("경기실사지수", "BSI", "기업경기"),
+}
 
 
 def _number(value: Any) -> float | None:
@@ -83,12 +91,79 @@ def _search(api_key: str, term: str, budget: _CallBudget) -> list[dict[str, Any]
     }, budget))
 
 
+def _table_name(row: dict[str, Any]) -> str:
+    for key in ("TBL_NM", "tblNm", "tableName", "STAT_NM", "statNm"):
+        value = str(row.get(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _meta_codes(api_key: str, org_id: str, table_id: str, budget: _CallBudget) -> tuple[str, str]:
+    rows = _rows(_get_json(META_URL, {
+        "method": "getMeta", "type": "ITM", "apiKey": api_key,
+        "orgId": org_id, "tblId": table_id, "format": "json", "jsonVD": "Y",
+    }, budget))
+    obj_ids: list[str] = []
+    itm_ids: list[str] = []
+    for row in rows:
+        obj_id = str(row.get("objId") or row.get("OBJ_ID") or "").strip()
+        itm_id = str(row.get("itmId") or row.get("ITM_ID") or "").strip()
+        if obj_id and obj_id not in obj_ids:
+            obj_ids.append(obj_id)
+        if itm_id and itm_id not in itm_ids:
+            itm_ids.append(itm_id)
+    return " ".join(obj_ids) or "ALL", " ".join(itm_ids) or "ALL"
+
+
+def _meta_period(api_key: str, org_id: str, table_id: str, budget: _CallBudget) -> str:
+    rows = _rows(_get_json(META_URL, {
+        "method": "getMeta", "type": "PRD", "apiKey": api_key,
+        "orgId": org_id, "tblId": table_id, "format": "json", "jsonVD": "Y",
+    }, budget))
+    for row in rows:
+        value = str(row.get("PRD_SE") or row.get("prdSe") or "").strip().upper()
+        if value in {"M", "Q", "Y", "H", "A"}:
+            return value
+    return "M"
+
+
 def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget) -> list[dict[str, Any]]:
-    return _rows(_get_json(DATA_URL, {
+    # KOSIS ITM metadata's objId is the classifier identifier, not a valid
+    # objL1 selector value. Sending that identifier as objL1 produces empty
+    # tables (or error 20/21) for otherwise valid tables. The official sample
+    # query uses ALL for the first classifier and item, so use that first and
+    # reserve selector retries for tables that explicitly require them.
+    period = _meta_period(api_key, org_id, table_id, budget)
+    base_params = {
         "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
-        "itmId": "ALL", "objL1": "ALL", "objL2": "ALL", "objL3": "ALL", "objL4": "ALL",
-        "prdSe": "M", "newEstPrdCnt": periods, "format": "json", "jsonVD": "Y",
-    }, budget, timeout=25))
+        "prdSe": period, "newEstPrdCnt": periods, "format": "json", "jsonVD": "Y",
+    }
+    selector_variants = (("ALL", "ALL"),)
+    last_error: Exception | None = None
+    for variant_index, (obj_selector, itm_selector) in enumerate(selector_variants):
+        params = dict(base_params)
+        params["itmId"] = itm_selector
+        params["objL1"] = obj_selector
+        for depth in range(0, 4):
+            probe_params = dict(params)
+            for level in range(2, 2 + depth):
+                probe_params[f"objL{level}"] = "ALL"
+            try:
+                rows = _rows(_get_json(DATA_URL, probe_params, budget, timeout=25))
+                if rows:
+                    if budget.events is not None and depth:
+                        budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth}")
+                    return rows
+            except RuntimeError as exc:
+                last_error = exc
+                text = str(exc)
+                if "KOSIS error 20" not in text and "KOSIS error 21" not in text:
+                    raise
+                continue
+    if last_error is not None:
+        raise last_error
+    return []
 
 
 def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
@@ -107,15 +182,36 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
                 candidates[(org, table)] = row
     if budget.events is not None:
         budget.events.append(f"search[{terms[0] if terms else ''}]: candidates={len(candidates)}")
-    for (org, table), _ in list(candidates.items())[:1]:
+    preferred = {
+        str(table).strip(): index
+        for index, table in enumerate(spec.get("preferred_tables") or [])
+        if str(table).strip()
+    }
+    hints = tuple(str(value) for value in (spec.get("table_title_hints") or DEFAULT_TABLE_TITLE_HINTS.get(str(spec.get("factor") or ""), ())) if str(value))
+    title_matches = [
+        item for item in candidates.items()
+        if not hints or any(hint in _table_name(item[1]) for hint in hints)
+    ]
+    ordered_candidates = title_matches or list(candidates.items())
+    if budget.events is not None:
+        preview = " | ".join(f"{table}:{_table_name(row)[:60]}" for (org, table), row in list(candidates.items())[:8])
+        budget.events.append(f"search_titles: {preview}")
+    ordered_candidates.sort(key=lambda item: (0 if item[0][1] in preferred else 1, preferred.get(item[0][1], 999)))
+    probe_limit = max(1, int(spec.get("probe_candidates", 2)))
+    probed: list[str] = []
+    probe_errors: list[str] = []
+    for (org, table), _ in ordered_candidates[:probe_limit]:
+        probed.append(table)
         try:
             rows = _fetch_table(api_key, org, table, periods, budget)
             if rows:
                 return org, table, rows
-        except Exception:
+        except Exception as exc:
+            probe_errors.append(f"{table}: {type(exc).__name__}: {exc}")
             continue
     if budget.events is not None and candidates:
-        budget.events.append(f"table_probe: no usable rows for {next(iter(candidates))[1]}")
+        budget.events.append(f"table_probe: no usable rows for {','.join(probed)}")
+        budget.events.extend(f"table_probe_error: {error}" for error in probe_errors)
     raise RuntimeError("no usable KOSIS table found")
 
 
