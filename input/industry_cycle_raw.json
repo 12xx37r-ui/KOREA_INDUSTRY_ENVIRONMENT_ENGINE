@@ -1,30 +1,445 @@
 {
   "schema_version": "1.0.0",
-  "status": "pending",
-  "generated_at_utc": "2026-08-12T02:03:39.698431+00:00",
-  "industries": [],
+  "status": "raw",
+  "generated_at_utc": "2026-08-12T02:06:45.641639+00:00",
+  "industries": [
+    {
+      "industry_key": "semiconductor",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 94.6,
+            "unit": "KOSIS index",
+            "change_1m": -6.9813,
+            "change_3m": 2.7144,
+            "change_6m": -7.7073,
+            "long_run_percentile": 18.0556,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "automotive",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 70.1,
+            "unit": "KOSIS index",
+            "change_1m": -3.4435,
+            "change_3m": -42.4466,
+            "change_6m": -34.0546,
+            "long_run_percentile": 8.6111,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 90.0,
+            "unit": "KOSIS index",
+            "change_1m": -31.2977,
+            "change_3m": -12.6214,
+            "change_6m": -10.0,
+            "long_run_percentile": 52.6786,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "battery",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 81.0,
+            "unit": "KOSIS index",
+            "change_1m": -2.994,
+            "change_3m": 1.7588,
+            "change_6m": 6.7194,
+            "long_run_percentile": 65.2778,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "shipbuilding",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 184.3,
+            "unit": "KOSIS index",
+            "change_1m": 0.931,
+            "change_3m": 13.9061,
+            "change_6m": 6.6551,
+            "long_run_percentile": 88.8889,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 93.0,
+            "unit": "KOSIS index",
+            "change_1m": -30.0752,
+            "change_3m": 1.087,
+            "change_6m": 0.0,
+            "long_run_percentile": 32.4405,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "chemicals",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 58.8,
+            "unit": "KOSIS index",
+            "change_1m": -2.8099,
+            "change_3m": -31.6279,
+            "change_6m": -32.8,
+            "long_run_percentile": 2.0833,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 84.0,
+            "unit": "KOSIS index",
+            "change_1m": -1.1765,
+            "change_3m": -30.0,
+            "change_6m": -12.5,
+            "long_run_percentile": 44.9405,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "food_beverage",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 107.5,
+            "unit": "KOSIS index",
+            "change_1m": -4.6986,
+            "change_3m": 3.6644,
+            "change_6m": 2.1863,
+            "long_run_percentile": 70.4861,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 86.0,
+            "unit": "KOSIS index",
+            "change_1m": 16.2162,
+            "change_3m": -39.0071,
+            "change_6m": 22.8571,
+            "long_run_percentile": 53.5714,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "telecom",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 142.8,
+            "unit": "KOSIS index",
+            "change_1m": 22.9974,
+            "change_3m": 47.6732,
+            "change_6m": -14.7463,
+            "long_run_percentile": 87.5,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 86.0,
+            "unit": "KOSIS index",
+            "change_1m": 7.5,
+            "change_3m": -14.0,
+            "change_6m": 6.1728,
+            "long_run_percentile": 34.2105,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "food",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 103.3,
+            "unit": "KOSIS index",
+            "change_1m": 2.991,
+            "change_3m": -14.8392,
+            "change_6m": 7.3805,
+            "long_run_percentile": 65.9722,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "machinery",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 110.5,
+            "unit": "KOSIS index",
+            "change_1m": -6.1969,
+            "change_3m": -0.2708,
+            "change_6m": -0.3607,
+            "long_run_percentile": 80.2083,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 85.0,
+            "unit": "KOSIS index",
+            "change_1m": -35.1145,
+            "change_3m": -8.6022,
+            "change_6m": -8.6022,
+            "long_run_percentile": 54.1667,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    },
+    {
+      "industry_key": "power_equipment",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 170.8,
+            "unit": "KOSIS index",
+            "change_1m": -6.6156,
+            "change_3m": 31.5871,
+            "change_6m": 45.7338,
+            "long_run_percentile": 97.2222,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01"
+          },
+          {
+            "id": "pmi_bsi",
+            "factor": "pmi_bsi",
+            "value": 83.0,
+            "unit": "KOSIS index",
+            "change_1m": -35.1562,
+            "change_3m": -12.6316,
+            "change_6m": -14.433,
+            "long_run_percentile": 29.7619,
+            "quality": 85.0,
+            "source": "KOSIS org=301 table=DT_512Y007 factor=pmi_bsi",
+            "series_id": "pmi_bsi",
+            "as_of": "2026-07-01"
+          }
+        ]
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": []
+        },
+        "3_6m": {
+          "metrics": []
+        },
+        "6_12m": {
+          "metrics": []
+        }
+      }
+    }
+  ],
   "collector": "kosis-industry-cycle-v2",
-  "external_calls": 7,
+  "external_calls": 17,
   "diagnostics": [
     "production_shipments: RuntimeError: no usable KOSIS table found",
-    "inventory_cycle: RuntimeError: no usable KOSIS table found",
-    "utilization: RuntimeError: no usable KOSIS table found",
-    "pmi_bsi: RuntimeError: no usable KOSIS table found",
-    "search[시도/산업별 광공업생산지수]: candidates=0",
-    "search_titles: ",
-    "search[제조업 재고지수]: candidates=0",
-    "search_titles: ",
-    "search[제조업가동률지수]: candidates=0",
-    "search_titles: ",
-    "search[업종별 기업경기실사지수 실적]: candidates=0",
-    "search_titles: ",
-    "statisticsData.do[DT_1F02001]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[시도/산업별 광공업생산지수]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[제조업 재고지수]: URLError: <urlopen error timed out>",
-    "statisticsData.do[DT_1F32001]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[제조업가동률지수]: URLError: <urlopen error timed out>",
-    "statisticsData.do[DT_512Y007]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[업종별 기업경기실사지수 실적]: URLError: <urlopen error timed out>"
+    "inventory_cycle: table=DT_1F02013 rows=24 matched=0",
+    "utilization: table=DT_1F32001 rows=6480 matched=10",
+    "pmi_bsi: table=DT_512Y007 rows=12000 matched=7",
+    "search[시도/산업별 광공업생산지수]: candidates=4",
+    "search_titles: DT_1JH20202:전산업생산지수(계절조정지수) | DT_1JH20201:전산업생산지수(원지수) | DT_1F02001:시도/산업별 광공업생산지수(2020=100) | INH_1F02001:광공업생산지수(시도)",
+    "table_probe: no usable rows for DT_1F02001",
+    "table_probe_error: DT_1F02001: RuntimeError: KOSIS error 31:  40,000셀을 초과한 결과값은 요청하실 수 없습니다.",
+    "direct_table_error: DT_1F02001: RuntimeError: KOSIS error 31:  40,000셀을 초과한 결과값은 요청하실 수 없습니다.",
+    "search[제조업 재고지수]: candidates=20",
+    "search_titles: DT_1F02007:기업규모별 제조업생산지수(매출액 기준)(2020=100) | DT_1F02013:제조업 재고율 | DT_512Y019:지역별 기업경기조사(실적(2013.1~)) | DT_1JH20201:전산업생산지수(원지수) | DT_1JH20202:전산업생산지수(계절조정지수) | DT_1F02031:광역경제권/산업별지수(2020=100) | DT_1F02011:기본분류 일부항목 제외 광공업생산지수(2020=100) | DT_1F02001:시도/산업별 광공업생산지수(2020=100)",
+    "direct_table: 101/DT_1F32001 rows=6480",
+    "search[업종별 기업경기실사지수 실적]: candidates=20",
+    "search_titles: DT_512Y007:업종별 기업경기실사지수, 2009.8~(실적) | DT_512Y015:기업경기조사(매출액가중 실적) | DT_512Y013:기업경기조사(실적) | DT_115100006:업종별 매출 BSI 실적 및 전망 | DT_512Y017:기업경기실사지수((구)실적(~2012.6)) | DT_115100003:업종별 매출 BSI 실적 및 전망 | DT_S0001N_002:소상공인 업종별 실적 및 전망 | DT_S0001N_004:전통시장 업종별 실적 및 전망",
+    "table_probe_selector: DT_512Y007 ALL obj_depth=1"
   ],
   "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
