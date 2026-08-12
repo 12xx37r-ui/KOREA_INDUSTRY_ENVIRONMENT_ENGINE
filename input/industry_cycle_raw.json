@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "status": "raw",
-  "generated_at_utc": "2026-08-12T08:08:25.825224+00:00",
+  "generated_at_utc": "2026-08-12T02:36:03.303921+00:00",
   "industries": [
     {
       "industry_key": "semiconductor",
@@ -337,19 +337,5 @@
     "direct_table: 101/DT_1F32001 rows=6480",
     "direct_table_only: preferred table query failed; search skipped"
   ],
-  "missing_data_policy": "do_not_impute_or_neutral_fill",
-  "last_attempt_status": "pending",
-  "last_attempt_external_calls": 1,
-  "last_attempt_diagnostics": [
-    "production_shipments: RuntimeError: DT_1F02001: NameError: name '_meta_period' is not defined",
-    "inventory_cycle: RuntimeError: no usable KOSIS table found",
-    "utilization: RuntimeError: DT_1F32001: NameError: name '_meta_period' is not defined",
-    "pmi_bsi: RuntimeError: DT_512Y007: NameError: name '_meta_period' is not defined",
-    "direct_table_only: preferred table query failed; search skipped",
-    "search[제조업 재고지수]: candidates=0",
-    "search_titles: ",
-    "direct_table_only: preferred table query failed; search skipped",
-    "direct_table_only: preferred table query failed; search skipped",
-    "statisticsSearch.do[제조업 재고지수]: URLError: <urlopen error timed out>"
-  ]
+  "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
