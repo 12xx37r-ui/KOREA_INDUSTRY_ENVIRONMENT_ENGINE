@@ -8,146 +8,64 @@
   ],
   "current": {
     "score": null,
-    "band": "데이터 부족",
-    "quality_score": 0.0,
-    "data_coverage_pct": 0.0,
-    "quality_weighted_coverage_pct": 0.0,
-    "factors": {
-      "earnings_momentum": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "demand_cycle": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "pricing_margin": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "financial_conditions": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "market_internals": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "valuation": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      }
-    },
-    "contributions": [],
+    "direction": null,
     "status": "insufficient_data",
-    "reason": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다."
+    "reason": "current 산업실물지표 품질·커버리지 기준을 충족하지 못해 점수를 표시하지 않습니다.",
+    "quality_score": 0.0,
+    "data_coverage_pct": 10.0,
+    "factors": {},
+    "metrics": [
+      {
+        "id": "utilization",
+        "factor": "utilization",
+        "value": 184.3,
+        "unit": "KOSIS index",
+        "change_1m": 0.931,
+        "change_3m": 13.9061,
+        "change_6m": 6.6551,
+        "long_run_percentile": 88.8889,
+        "quality": 85.0,
+        "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+        "series_id": "utilization",
+        "as_of": "2026-06-01",
+        "score": 88.8889,
+        "available": true
+      }
+    ],
+    "quality_weighted_coverage_pct": 0.0
   },
   "forecast_3m": {
     "score": null,
-    "band": "데이터 부족",
+    "direction": "대기",
+    "status": "insufficient_data",
+    "reason": "3m 산업실물지표 품질·커버리지 기준을 충족하지 못해 점수를 표시하지 않습니다.",
     "quality_score": 0.0,
     "data_coverage_pct": 0.0,
-    "quality_weighted_coverage_pct": 0.0,
-    "factors": {
-      "earnings_momentum": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "demand_cycle": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "pricing_margin": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "financial_conditions": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "market_internals": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      },
-      "valuation": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업실물지표 연결 대기",
-        "detail": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-        "proxy": false
-      }
-    },
-    "contributions": [],
-    "status": "insufficient_data",
-    "reason": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-    "delta_points": null,
-    "change_strength": "대기",
-    "direction": "대기",
-    "top_positive_reasons": [],
-    "top_negative_reasons": []
+    "factors": {},
+    "metrics": [],
+    "quality_weighted_coverage_pct": 0.0
   },
   "forecast_3_6m": {
     "score": null,
     "direction": "대기",
     "status": "insufficient_data",
-    "reason": "해당 기간의 산업 선행지표가 연결되지 않아 전망을 계산하지 않았습니다.",
+    "reason": "3_6m 산업실물지표 품질·커버리지 기준을 충족하지 못해 점수를 표시하지 않습니다.",
     "quality_score": 0.0,
     "data_coverage_pct": 0.0,
-    "factors": {}
+    "factors": {},
+    "metrics": [],
+    "quality_weighted_coverage_pct": 0.0
   },
   "forecast_6_12m": {
     "score": null,
     "direction": "대기",
     "status": "insufficient_data",
-    "reason": "해당 기간의 산업 선행지표가 연결되지 않아 전망을 계산하지 않았습니다.",
+    "reason": "6_12m 산업실물지표 품질·커버리지 기준을 충족하지 못해 점수를 표시하지 않습니다.",
     "quality_score": 0.0,
     "data_coverage_pct": 0.0,
-    "factors": {}
+    "factors": {},
+    "metrics": [],
+    "quality_weighted_coverage_pct": 0.0
   },
   "direct_market": {
     "label": "조선·해양·선박",
@@ -163,30 +81,30 @@
       "329180"
     ],
     "member_coverage": 0.75,
-    "period_start": "20260707",
-    "period_end": "20260811",
-    "median_return_pct": -13.72,
-    "positive_breadth": 0.3333,
+    "period_start": "20260708",
+    "period_end": "20260812",
+    "median_return_pct": 0.33,
+    "positive_breadth": 0.6667,
     "flow_positive_share": 0.6667,
-    "market_internal_score": 34.93,
+    "market_internal_score": 59.01,
     "market_internal_quality": 75.0,
-    "valuation_score": 45.98,
+    "valuation_score": 45.93,
     "valuation_quality": 35.0,
     "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": 29.88,
+    "valuation_cross_section_score_raw": 29.65,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": 22.21,
-    "median_pbr": 4.42,
-    "broad_market_median_per": 12.12,
+    "median_per": 22.49,
+    "median_pbr": 4.47,
+    "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
     "member_closes": {
-      "009540": 398000.0,
-      "042660": 89000.0,
-      "329180": 503000.0
+      "009540": 380500.0,
+      "042660": 90100.0,
+      "329180": 496000.0
     },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
@@ -208,12 +126,12 @@
     "signal_normalized": 0.0,
     "quality_score": 0.0,
     "validation_status": "PENDING",
-    "rule": "산업실물지표가 연결되기 전에는 종목 신호로 산업경기를 대체하지 않음"
+    "rule": "산업실물지표 피드가 산업점수의 원천이며 개별종목 신호로 대체하지 않습니다."
   },
   "interpretation": {
     "headline": "산업실물지표 연결 대기",
-    "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-    "warning": "생산·출하·재고·주문·가격·마진 등 산업 고유 데이터가 부족해 점수를 표시하지 않습니다."
+    "beginner": "산업 실물지표 품질 기준을 충족하지 못해 점수를 표시하지 않습니다.",
+    "warning": "산업환경 점수는 기업 자체의 주가나 재무가치 점수가 아닙니다."
   },
   "quality": {
     "sector_specificity_score": 0.0,
@@ -238,10 +156,13 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-12T09:37:56.740728+00:00"
+      "generated_at_utc": "2026-08-12T10:19:52.645227+00:00"
     },
+    "direct_sector_market_available": true,
+    "industry_specific_valuation_available": true,
+    "industry_historical_valuation_available": false,
     "data_status": "insufficient_data",
-    "current_metric_coverage": 0.0,
+    "current_metric_coverage": 10.0,
     "leading_metric_coverage": 0.0
   },
   "score_model": {
@@ -251,7 +172,8 @@
     "current_inputs": [],
     "leading_inputs": [],
     "specialized_current_metrics": [],
-    "specialized_leading_metrics": []
+    "specialized_leading_metrics": [],
+    "feed_generated_at_utc": null
   },
   "notes": ""
 }
