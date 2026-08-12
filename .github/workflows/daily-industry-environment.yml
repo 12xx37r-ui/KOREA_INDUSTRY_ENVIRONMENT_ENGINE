@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      probe_kosis:
+        description: "Print KOSIS table metadata needed to fix objL mappings"
+        required: false
+        default: false
+        type: boolean
   schedule:
     # KRX 정규장 종료 후 약 1시간 25분: 16:55 KST = 07:55 UTC
     - cron: '55 7 * * 1-5'
@@ -62,6 +67,12 @@ jobs:
           else
             echo "KOSIS_KEY_CONFIGURED=false"
           fi
+
+      - name: Probe KOSIS table metadata
+        if: ${{ inputs.probe_kosis == true }}
+        env:
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+        run: PYTHONPATH=src python -m kiee.kosis_table_probe
 
       - name: Validate and build industry cycle feed
         env:
