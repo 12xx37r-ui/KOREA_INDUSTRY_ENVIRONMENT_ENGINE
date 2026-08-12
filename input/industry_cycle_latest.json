@@ -1,8 +1,631 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-12T02:31:00.376291+00:00",
-  "industries": [],
+  "generated_at_utc": "2026-08-12T02:33:29.130070+00:00",
   "collector": "local-industry-cycle-batch-v1",
-  "reason": "input/industry_cycle_raw.json is absent or not marked raw/scored; no industry score was generated"
+  "industries": [
+    {
+      "industry_key": "semiconductor",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 94.6,
+            "unit": "KOSIS index",
+            "change_1m": -6.9813,
+            "change_3m": 2.7144,
+            "change_6m": -7.7073,
+            "long_run_percentile": 18.0556,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 18.0556,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 18.0556
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "automotive",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 70.1,
+            "unit": "KOSIS index",
+            "change_1m": -3.4435,
+            "change_3m": -42.4466,
+            "change_6m": -34.0546,
+            "long_run_percentile": 8.6111,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 8.6111,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 8.6111
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "battery",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 81.0,
+            "unit": "KOSIS index",
+            "change_1m": -2.994,
+            "change_3m": 1.7588,
+            "change_6m": 6.7194,
+            "long_run_percentile": 65.2778,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 65.2778,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 65.2778
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "shipbuilding",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 184.3,
+            "unit": "KOSIS index",
+            "change_1m": 0.931,
+            "change_3m": 13.9061,
+            "change_6m": 6.6551,
+            "long_run_percentile": 88.8889,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 88.8889,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 88.8889
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "chemicals",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 58.8,
+            "unit": "KOSIS index",
+            "change_1m": -2.8099,
+            "change_3m": -31.6279,
+            "change_6m": -32.8,
+            "long_run_percentile": 2.0833,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 2.0833,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 2.0833
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "food_beverage",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 107.5,
+            "unit": "KOSIS index",
+            "change_1m": -4.6986,
+            "change_3m": 3.6644,
+            "change_6m": 2.1863,
+            "long_run_percentile": 70.4861,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 70.4861,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 70.4861
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "telecom",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 142.8,
+            "unit": "KOSIS index",
+            "change_1m": 22.9974,
+            "change_3m": 47.6732,
+            "change_6m": -14.7463,
+            "long_run_percentile": 87.5,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 87.5,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 87.5
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "food",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 103.3,
+            "unit": "KOSIS index",
+            "change_1m": 2.991,
+            "change_3m": -14.8392,
+            "change_6m": 7.3805,
+            "long_run_percentile": 65.9722,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 65.9722,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 65.9722
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "machinery",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 110.5,
+            "unit": "KOSIS index",
+            "change_1m": -6.1969,
+            "change_3m": -0.2708,
+            "change_6m": -0.3607,
+            "long_run_percentile": 80.2083,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 80.2083,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 80.2083
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    },
+    {
+      "industry_key": "power_equipment",
+      "current": {
+        "metrics": [
+          {
+            "id": "utilization",
+            "factor": "utilization",
+            "value": 170.8,
+            "unit": "KOSIS index",
+            "change_1m": -6.6156,
+            "change_3m": 31.5871,
+            "change_6m": 45.7338,
+            "long_run_percentile": 97.2222,
+            "quality": 85.0,
+            "source": "KOSIS org=101 table=DT_1F32001 factor=utilization",
+            "series_id": "utilization",
+            "as_of": "2026-06-01",
+            "score": 97.2222,
+            "available": true
+          }
+        ],
+        "factor_scores": {
+          "utilization": 97.2222
+        },
+        "data_coverage_pct": 10.0,
+        "quality_score": 85.0,
+        "score": null,
+        "status": "insufficient_data",
+        "reason": "current: normalized industry metrics are below the 60% coverage gate"
+      },
+      "forecasts": {
+        "3m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "3_6m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "3_6m: normalized industry metrics are below the 60% coverage gate"
+        },
+        "6_12m": {
+          "metrics": [],
+          "factor_scores": {},
+          "data_coverage_pct": 0.0,
+          "quality_score": 0.0,
+          "score": null,
+          "status": "insufficient_data",
+          "reason": "6_12m: normalized industry metrics are below the 60% coverage gate"
+        }
+      },
+      "specialized_metrics": [],
+      "source_provenance": {}
+    }
+  ],
+  "scored_industry_count": 0,
+  "raw_input_generated_at_utc": "2026-08-12T02:33:29.130070+00:00",
+  "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
