@@ -1,14 +1,14 @@
 {
   "status": "ok",
-  "generated_at_utc": "2026-08-12T10:27:29.460634+00:00",
+  "generated_at_utc": "2026-08-12T10:54:53.271777+00:00",
   "source_status": {
     "korea_rate_fx": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.31,
+      "age_hours": 3.76,
       "source_generated_at": "2026-08-12T13:30:01.431766+09:00",
-      "source_age_hours": 5.96,
+      "source_age_hours": 6.41,
       "http_calls": 0,
       "error": ""
     },
@@ -16,9 +16,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 0.13,
+      "age_hours": 0.58,
       "source_generated_at": "2026-08-12T04:32:20.545018+00:00",
-      "source_age_hours": 5.92,
+      "source_age_hours": 6.37,
       "http_calls": 0,
       "error": ""
     },
@@ -26,9 +26,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.31,
+      "age_hours": 3.76,
       "source_generated_at": "2026-08-11T18:12:21.911615+00:00",
-      "source_age_hours": 16.25,
+      "source_age_hours": 16.71,
       "http_calls": 0,
       "error": ""
     },
@@ -36,20 +36,20 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.31,
+      "age_hours": 3.76,
       "source_generated_at": "2026-08-12T05:50:04.525824+00:00",
-      "source_age_hours": 4.62,
+      "source_age_hours": 5.08,
       "http_calls": 0,
       "error": ""
     },
     "industry_boom": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "raw-public",
       "stale": false,
-      "age_hours": 23.99,
+      "age_hours": null,
       "source_generated_at": "2026-08-02",
-      "source_age_hours": 250.46,
-      "http_calls": 0,
+      "source_age_hours": 250.91,
+      "http_calls": 1,
       "error": ""
     },
     "industry_cycle": {
@@ -58,14 +58,14 @@
       "stale": false,
       "age_hours": null,
       "source_generated_at": "2026-08-12T09:09:06.147728+00:00",
-      "source_age_hours": 1.31,
+      "source_age_hours": 1.76,
       "http_calls": 0,
       "error": ""
     }
   },
-  "freshness_quality_score": 93.2,
+  "freshness_quality_score": 93.1,
   "direct_krx_available": true,
-  "direct_krx_source_mode": "lkg-no-pykrx",
+  "direct_krx_source_mode": "live-pykrx-bulk",
   "direct_krx_credentials_configured": true,
   "direct_krx_industry_coverage_pct": 33.7,
   "direct_krx_fresh_industry_count": 34,
@@ -90,13 +90,11 @@
       "fundamental_date": "20260812"
     }
   },
-  "direct_krx_diagnostics": [
-    "pykrx_import:JSONDecodeError:Expecting value: line 1 column 1 (char 0)"
-  ],
+  "direct_krx_diagnostics": [],
   "call_efficiency": {
-    "upstream_http_calls_this_run": 0,
+    "upstream_http_calls_this_run": 1,
     "normal_upstream_http_call_target": 6,
-    "krx_bulk_calls_this_run": 0,
+    "krx_bulk_calls_this_run": 8,
     "krx_normal_target_calls": 8,
     "per_company_live_calls": 0,
     "duplicate_upstream_reads_in_same_run": 0,
@@ -121,6 +119,6 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-12T10:27:29.466111+00:00"
+    "generated_at_utc": "2026-08-12T10:54:53.275199+00:00"
   }
 }
