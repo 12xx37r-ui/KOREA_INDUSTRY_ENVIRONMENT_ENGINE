@@ -1,8 +1,21 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-11T18:03:20.610131+00:00",
+  "generated_at_utc": "2026-08-12T01:06:55.848103+00:00",
   "industries": [],
-  "collector": "kosis-industry-cycle-v1",
-  "reason": "KOSIS_API_KEY is not configured"
+  "collector": "kosis-industry-cycle-v2",
+  "external_calls": 6,
+  "diagnostics": [
+    "production_shipments: RuntimeError: no usable KOSIS table found",
+    "inventory_cycle: RuntimeError: no usable KOSIS table found",
+    "utilization: RuntimeError: no usable KOSIS table found",
+    "KOSIS call cap reached",
+    "search[산업생산지수]: candidates=20",
+    "table_probe: no usable rows for DT_1JH20201",
+    "search[재고지수]: candidates=20",
+    "table_probe: no usable rows for DT_1F02003",
+    "search[제조업 가동률]: candidates=20",
+    "table_probe: no usable rows for DT_1F32002"
+  ],
+  "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
