@@ -180,7 +180,8 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
     # also saves one external request for the normal path.
     direct_org = str(spec.get("org_id") or "101").strip()
     direct_errors: list[str] = []
-    for table_id in preferred:
+    direct_limit = max(1, int(spec.get("direct_probe_candidates", 1)))
+    for table_id in list(preferred)[:direct_limit]:
         try:
             rows = _fetch_table(api_key, direct_org, table_id, periods, budget)
             if rows:
