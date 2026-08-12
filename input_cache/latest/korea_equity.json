@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0.0",
   "engine_version": "korea-equity-environment-v1.2-close-per-earnings-fallback",
-  "generated_at_utc": "2026-08-11T00:03:18.715420+00:00",
+  "generated_at_utc": "2026-08-12T04:32:20.545018+00:00",
   "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
-  "score": 41,
+  "score": 43,
   "score_valid": true,
-  "bias": "약불리",
+  "bias": "중립",
   "data_coverage_pct": 100,
   "active_weight": 1.0,
   "complete_for_market_card": true,
@@ -13,10 +13,10 @@
   "components": {
     "flow": {
       "available": true,
-      "score_normalized": -0.938017,
-      "combined_net_bps_of_turnover": -86.064,
-      "foreign_net_bps_of_turnover": -105.004,
-      "institution_net_bps_of_turnover": 18.94,
+      "score_normalized": -0.82709,
+      "combined_net_bps_of_turnover": -58.943,
+      "foreign_net_bps_of_turnover": -94.843,
+      "institution_net_bps_of_turnover": 35.9,
       "markets": [
         "kospi",
         "kosdaq"
@@ -25,12 +25,12 @@
     },
     "breadth": {
       "available": true,
-      "score_normalized": 0.105529,
-      "advances": 1475,
-      "declines": 1183,
-      "unchanged": 109,
-      "advance_share": 0.533068,
-      "advance_decline_balance": 0.105529,
+      "score_normalized": 0.163774,
+      "advances": 1554,
+      "declines": 1101,
+      "unchanged": 111,
+      "advance_share": 0.561822,
+      "advance_decline_balance": 0.163774,
       "markets": [
         "kospi",
         "kosdaq"
@@ -39,22 +39,22 @@
     },
     "valuation": {
       "available": true,
-      "score_normalized": 0.091406,
+      "score_normalized": 0.06875,
       "evidence": [
         {
           "index": "kospi200",
-          "per": 16.59,
-          "pbr": 2.04,
-          "per_percentile": 0.439063,
-          "pbr_percentile": 0.725,
+          "per": 16.75,
+          "pbr": 2.06,
+          "per_percentile": 0.464062,
+          "pbr_percentile": 0.745313,
           "history_samples": 320
         },
         {
           "index": "kosdaq150",
           "per": 63.98,
           "pbr": 4.35,
-          "per_percentile": 0.076563,
-          "pbr_percentile": 0.576562,
+          "per_percentile": 0.078125,
+          "pbr_percentile": 0.575,
           "history_samples": 320
         }
       ],
@@ -62,8 +62,8 @@
     },
     "earnings_revision": {
       "available": true,
-      "score_normalized": 0.997467,
-      "current_growth_proxy_pct": 33.352,
+      "score_normalized": 0.995926,
+      "current_growth_proxy_pct": 30.972,
       "baseline_growth_proxy_pct": null,
       "revision_pct_point": null,
       "history_samples": 320,
@@ -72,17 +72,17 @@
         {
           "index": "kospi200",
           "samples": 320,
-          "recent_eps_proxy": 59.164311,
-          "baseline_eps_proxy": 42.016586,
-          "growth_pct": 40.812,
+          "recent_eps_proxy": 59.144832,
+          "baseline_eps_proxy": 42.929847,
+          "growth_pct": 37.771,
           "available": true
         },
         {
           "index": "kosdaq150",
           "samples": 320,
-          "recent_eps_proxy": 23.217608,
-          "baseline_eps_proxy": 18.442549,
-          "growth_pct": 25.892,
+          "recent_eps_proxy": 23.215815,
+          "baseline_eps_proxy": 18.696416,
+          "growth_pct": 24.173,
           "available": true
         }
       ],
@@ -90,9 +90,9 @@
     },
     "credit_spread": {
       "available": true,
-      "score_normalized": -0.915625,
-      "spread_pct_point": 0.698,
-      "percentile": 0.957812,
+      "score_normalized": -0.8875,
+      "spread_pct_point": 0.696,
+      "percentile": 0.94375,
       "history_samples": 320,
       "history_source": "same_run_ecos_history",
       "detail": "AA- 회사채3년-국고채3년의 동일날짜 스프레드 과거분포 백분위. 좁을수록 우호."
@@ -107,12 +107,12 @@
   },
   "current_inputs": {
     "kospi200": {
-      "per": 16.59,
+      "per": 16.75,
       "forward_per": null,
       "eps_growth_pct": null,
       "growth_adjusted_per": null,
-      "pbr": 2.04,
-      "dividend_yield": 0.93,
+      "pbr": 2.06,
+      "dividend_yield": 0.92,
       "available": true,
       "coverage": 1.0,
       "forward_data_available": false,
@@ -120,13 +120,15 @@
       "forward_proxy_sample_size": 0,
       "forward_proxy_market_cap_coverage": 0.0,
       "forward_proxy_growth_market_cap_coverage": 0.0,
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "source": "KRX 지수 투자지표 (pykrx 세션)",
       "source_url": "https://data.krx.co.kr/",
       "source_method": "pykrx_authenticated",
       "proxy_symbols": [],
       "stale": false,
       "diagnostics": [
+        "20260812:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "20260812:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "20260811:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "forward_proxy_insufficient:sample=0,coverage=0.000,required_sample=5,required_coverage=0.300"
       ]
@@ -145,24 +147,26 @@
       "forward_proxy_sample_size": 0,
       "forward_proxy_market_cap_coverage": 0.0,
       "forward_proxy_growth_market_cap_coverage": 0.0,
-      "as_of": "2026-08-10",
+      "as_of": "2026-08-11",
       "source": "KRX 지수 투자지표 (pykrx 세션)",
       "source_url": "https://data.krx.co.kr/",
       "source_method": "pykrx_authenticated",
       "proxy_symbols": [],
       "stale": false,
       "diagnostics": [
+        "20260812:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "20260812:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "20260811:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "forward_proxy_insufficient:sample=0,coverage=0.000,required_sample=5,required_coverage=0.250"
       ]
     },
     "credit": {
       "available": true,
-      "corp_aa_minus_3y_pct": 4.476,
-      "corp_as_of": "20260810",
-      "gov_3y_pct": 3.778,
-      "gov_as_of": "20260810",
-      "spread_pct_point": 0.698,
+      "corp_aa_minus_3y_pct": 4.504,
+      "corp_as_of": "20260811",
+      "gov_3y_pct": 3.808,
+      "gov_as_of": "20260811",
+      "spread_pct_point": 0.696,
       "spread_history": [
         {
           "date": "20250206",
@@ -2383,9 +2387,15 @@
           "corp_aa_minus_3y_pct": 4.476,
           "gov_3y_pct": 3.778,
           "spread_pct_point": 0.698
+        },
+        {
+          "date": "20260811",
+          "corp_aa_minus_3y_pct": 4.504,
+          "gov_3y_pct": 3.808,
+          "spread_pct_point": 0.696
         }
       ],
-      "history_samples": 370,
+      "history_samples": 371,
       "stale": false,
       "source": "한국은행 ECOS 시장금리(일별)",
       "source_url": "https://ecos.bok.or.kr/",
