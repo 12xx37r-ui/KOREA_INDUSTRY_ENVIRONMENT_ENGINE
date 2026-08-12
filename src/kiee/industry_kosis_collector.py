@@ -5,13 +5,13 @@ import json
 import os
 import urllib.parse
 import urllib.request
-import re
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from .config import load_all
-from .util import age_hours, read_json, utc_now_iso, write_json
+from .util import read_json, utc_now_iso, write_json
 
 # Search is available on the SSO host, while the official parameter-data and
 # metadata examples use the main KOSIS host. Keep search and data endpoints
@@ -35,6 +35,32 @@ def _number(value: Any) -> float | None:
         return number if number == number and abs(number) != float("inf") else None
     except (TypeError, ValueError):
         return None
+
+
+def _cache_path(root: Path, namespace: str, key: str) -> Path:
+    safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in key)
+    path = root / "input_cache" / "kosis" / namespace / f"{safe}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def _read_cache(root: Path, namespace: str, key: str, ttl_hours: float) -> Any | None:
+    path = _cache_path(root, namespace, key)
+    if not path.exists():
+        return None
+    try:
+        if (time.time() - path.stat().st_mtime) > max(0.0, ttl_hours) * 3600.0:
+            return None
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return None
+
+
+def _write_cache(root: Path, namespace: str, key: str, payload: Any) -> None:
+    path = _cache_path(root, namespace, key)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(path)
 
 
 @dataclass
@@ -113,122 +139,135 @@ def _table_name(row: dict[str, Any]) -> str:
     return ""
 
 
-def _meta_codes(api_key: str, org_id: str, table_id: str, budget: _CallBudget) -> tuple[str, str]:
-    rows = _rows(_get_json(META_URL, {
+def _meta_items(api_key: str, org_id: str, table_id: str, budget: _CallBudget, root: Path, ttl_hours: float) -> list[dict[str, Any]]:
+    key = f"{org_id}_{table_id}"
+    cached = _read_cache(root, "meta_itm", key, ttl_hours)
+    if cached is not None:
+        return _rows(cached)
+    payload = _get_json(META_URL, {
         "method": "getMeta", "type": "ITM", "apiKey": api_key,
         "orgId": org_id, "tblId": table_id, "format": "json", "jsonVD": "Y",
-    }, budget))
-    obj_ids: list[str] = []
-    itm_ids: list[str] = []
-    for row in rows:
-        obj_id = str(row.get("objId") or row.get("OBJ_ID") or "").strip()
-        itm_id = str(row.get("itmId") or row.get("ITM_ID") or "").strip()
-        if obj_id and obj_id not in obj_ids:
-            obj_ids.append(obj_id)
-        if itm_id and itm_id not in itm_ids:
-            itm_ids.append(itm_id)
-    return " ".join(obj_ids) or "ALL", " ".join(itm_ids) or "ALL"
+    }, budget, timeout=15)
+    _write_cache(root, "meta_itm", key, payload)
+    return _rows(payload)
 
 
-def _meta_period(api_key: str, org_id: str, table_id: str, budget: _CallBudget) -> str:
-    rows = _rows(_get_json(META_URL, {
-        "method": "getMeta", "type": "PRD", "apiKey": api_key,
-        "orgId": org_id, "tblId": table_id, "format": "json", "jsonVD": "Y",
-    }, budget))
-    for row in rows:
-        value = str(row.get("PRD_SE") or row.get("prdSe") or "").strip().upper()
-        if value in {"M", "Q", "Y", "H", "A"}:
-            return value
-    return "M"
+def _selector_candidates(meta_rows: list[dict[str, Any]]) -> list[tuple[str, str]]:
+    """Derive valid objL1/itmId pairs from KOSIS metadata.
+
+    KOSIS requires objL1 and itmId. 'ALL' is not universally accepted for
+    every table, so the collector first uses real codes exposed by metadata.
+    """
+    pairs: list[tuple[str, str]] = []
+    for row in meta_rows:
+        obj = str(row.get("objId") or row.get("OBJ_ID") or "").strip()
+        itm = str(row.get("itmId") or row.get("ITM_ID") or "").strip()
+        if obj and itm and (obj, itm) not in pairs:
+            pairs.append((obj, itm))
+    # Preserve a bounded fallback. Some tables legitimately accept ALL.
+    if not pairs:
+        pairs.append(("ALL", "ALL"))
+    return pairs[:8]
 
 
-def _table_cache_path(root: Path, org_id: str, table_id: str, periods: int) -> Path:
-    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", f"{org_id}_{table_id}_{periods}")
-    return root / "input_cache" / "kosis_tables" / f"{safe}.json"
-
-
-def _read_table_cache(root: Path, org_id: str, table_id: str, periods: int, ttl_hours: float) -> list[dict[str, Any]] | None:
-    path = _table_cache_path(root, org_id, table_id, periods)
-    payload = read_json(path, {}) or {}
-    rows = payload.get("rows") if isinstance(payload, dict) else None
-    generated = payload.get("generated_at_utc") if isinstance(payload, dict) else None
-    if not isinstance(rows, list) or not generated:
-        return None
-    age = age_hours(str(generated))
-    if age is None or age > ttl_hours:
-        return None
-    return [row for row in rows if isinstance(row, dict)]
-
-
-def _write_table_cache(root: Path, org_id: str, table_id: str, periods: int, rows: list[dict[str, Any]]) -> None:
-    write_json(_table_cache_path(root, org_id, table_id, periods), {
-        "schema_version": "1.0.0",
-        "generated_at_utc": utc_now_iso(),
-        "org_id": org_id,
-        "table_id": table_id,
-        "periods": periods,
-        "rows": rows,
-    })
-
-
-def _fetch_table(root: Path, api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget) -> list[dict[str, Any]]:
-    cached = _read_table_cache(root, org_id, table_id, periods, 24.0)
-    if cached:
+def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget, root: Path, spec: dict[str, Any]) -> list[dict[str, Any]]:
+    ttl_hours = float(spec.get("cache_ttl_hours", 24))
+    period = str(spec.get("prd_se") or "M").strip().upper()
+    cached = _read_cache(root, "data", f"{org_id}_{table_id}_{period}_{periods}", ttl_hours)
+    if cached is not None:
         if budget.events is not None:
-            budget.events.append(f"cache_hit: {org_id}/{table_id}/{periods} rows={len(cached)}")
-        return cached
+            budget.events.append(f"cache_hit: {org_id}/{table_id} periods={periods}")
+        return _rows(cached)
 
-    # KOSIS ITM metadata's objId is the classifier identifier, not a valid
-    # objL1 selector value. Sending that identifier as objL1 produces empty
-    # tables (or error 20/21) for otherwise valid tables. The official sample
-    # query uses ALL for the first classifier and item, so use that first and
-    # reserve selector retries for tables that explicitly require them.
-    period = _meta_period(api_key, org_id, table_id, budget)
-    selector_variants = (("ALL", "ALL"),)
+    meta_rows = _meta_items(api_key, org_id, table_id, budget, root, ttl_hours)
+    candidates = _selector_candidates(meta_rows)
     last_error: Exception | None = None
-    # Production tables can exceed KOSIS's 40,000-cell response limit when
-    # every industry/item is requested for 24 months. Use the configured
-    # shorter window first; only one seven-period retry is allowed on error 31.
-    period_ladder = [periods]
-    for requested_periods in period_ladder:
-        base_params = {
-            "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
-            "prdSe": period, "newEstPrdCnt": requested_periods, "format": "json", "jsonVD": "Y",
-        }
-        for variant_index, (obj_selector, itm_selector) in enumerate(selector_variants):
-            params = dict(base_params)
-            params["itmId"] = itm_selector
-            params["objL1"] = obj_selector
-            depth_limit = 1 if requested_periods < periods else 8
-            for depth in range(0, depth_limit):
-                probe_params = dict(params)
-                for level in range(2, 2 + depth):
-                    probe_params[f"objL{level}"] = "ALL"
+    base = {
+        "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
+        "prdSe": period, "newEstPrdCnt": min(int(periods), 24),
+        "format": "json", "jsonVD": "Y",
+    }
+    for obj_selector, itm_selector in candidates:
+        params = dict(base, objL1=obj_selector, itmId=itm_selector)
+        try:
+            rows = _rows(_get_data_json(params, budget, allow_fallback=True))
+            if rows:
+                _write_cache(root, "data", f"{org_id}_{table_id}_{period}_{periods}", rows)
+                if budget.events is not None:
+                    budget.events.append(f"table_query: {org_id}/{table_id} objL1={obj_selector} itmId={itm_selector} rows={len(rows)}")
+                return rows
+        except RuntimeError as exc:
+            last_error = exc
+            text = str(exc)
+            if "KOSIS error 31" in text and int(periods) > 7:
+                retry = dict(params, newEstPrdCnt=7)
                 try:
-                    rows = _rows(_get_data_json(probe_params, budget, allow_fallback=(depth == 0)))
+                    rows = _rows(_get_data_json(retry, budget, allow_fallback=False))
                     if rows:
-                        if budget.events is not None and (depth or requested_periods != periods):
-                            budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth} periods={requested_periods}")
-                        _write_table_cache(root, org_id, table_id, requested_periods, rows)
+                        _write_cache(root, "data", f"{org_id}_{table_id}_{period}_7", rows)
+                        if budget.events is not None:
+                            budget.events.append(f"table_query_retry7: {org_id}/{table_id} rows={len(rows)}")
                         return rows
-                except RuntimeError as exc:
-                    last_error = exc
-                    text = str(exc)
-                    if "KOSIS error 31" in text:
-                        # The table is valid but the ALL×ALL cell set is too
-                        # large. Retry with fewer periods before abandoning it.
-                        if requested_periods > 7:
-                            period_ladder.append(7)
-                        break
-                    if "KOSIS error 20" not in text and "KOSIS error 21" not in text:
-                        raise
-                    continue
+                except Exception as retry_exc:
+                    last_error = retry_exc
+            # Error 20/21 means this selector is invalid; try another metadata pair.
+            if "KOSIS error 20" in text or "KOSIS error 21" in text:
+                continue
+            raise
     if last_error is not None:
         raise last_error
     return []
 
 
-def _choose_table(root: Path, api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
+def _label(row: dict[str, Any]) -> str:
+    parts = []
+    for key in ("C1_NM", "C2_NM", "C3_NM", "C4_NM", "ITM_NM", "TBL_NM"):
+        value = str(row.get(key) or "").strip()
+        if value and value not in parts:
+            parts.append(value)
+    return " ".join(parts)
+
+
+def _series_by_industry(rows: list[dict[str, Any]], keywords: list[str]) -> dict[str, list[tuple[str, float, dict[str, Any]]]]:
+    grouped: dict[str, list[tuple[str, float, dict[str, Any]]]] = {}
+    for row in rows:
+        label = _label(row)
+        if not any(keyword and keyword in label for keyword in keywords):
+            continue
+        value = _number(row.get("DT"))
+        period = str(row.get("PRD_DE") or "").strip()
+        if value is None or not period:
+            continue
+        # Keep each KOSIS classification combination separate. The previous
+        # implementation merged all matching rows, which could blend several
+        # industries into one synthetic time series.
+        key = "|".join(str(row.get(f"C{i}") or row.get(f"C{i}_NM") or "") for i in range(1, 5))
+        grouped.setdefault(key, []).append((period, value, row))
+    return grouped
+
+
+def _metric(series: list[tuple[str, float, dict[str, Any]]], factor: str, source: str) -> dict[str, Any] | None:
+    series = sorted(series, key=lambda item: item[0])
+    if len(series) < 7:
+        return None
+    values = [value for _, value, _ in series]
+    latest_period, latest, latest_row = series[-1]
+    def change(months: int) -> float | None:
+        if len(values) <= months or values[-1 - months] == 0:
+            return None
+        return round((latest / values[-1 - months] - 1.0) * 100.0, 4)
+    rank = sum(1 for value in values if value <= latest) / len(values) * 100.0
+    return {
+        "id": factor, "factor": factor, "value": latest,
+        "unit": str(latest_row.get("UNIT_NM") or latest_row.get("UNIT_ID") or "KOSIS"),
+        "change_1m": change(1), "change_3m": change(3), "change_6m": change(6),
+        "long_run_percentile": round(rank, 4), "quality": 85.0,
+        "source": source, "series_id": factor, "as_of": f"{latest_period[:4]}-{latest_period[4:6]}-01",
+        "classification": {f"C{i}": latest_row.get(f"C{i}") for i in range(1, 5) if latest_row.get(f"C{i}")},
+        "classification_name": {f"C{i}_NM": latest_row.get(f"C{i}_NM") for i in range(1, 5) if latest_row.get(f"C{i}_NM")},
+    }
+
+def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget, root: Path) -> tuple[str, str, list[dict[str, Any]]]:
     periods = min(int(spec.get("periods", 24)), 24)
     preferred = {
         str(table).strip(): index
@@ -245,7 +284,7 @@ def _choose_table(root: Path, api_key: str, spec: dict[str, Any], budget: _CallB
     direct_limit = max(1, int(spec.get("direct_probe_candidates", 1)))
     for table_id in list(preferred)[:direct_limit]:
         try:
-            rows = _fetch_table(root, api_key, direct_org, table_id, periods, budget)
+            rows = _fetch_table(api_key, direct_org, table_id, periods, budget, root, spec)
             if rows:
                 if budget.events is not None:
                     budget.events.append(f"direct_table: {direct_org}/{table_id} rows={len(rows)}")
@@ -291,7 +330,7 @@ def _choose_table(root: Path, api_key: str, spec: dict[str, Any], budget: _CallB
     for (org, table), _ in ordered_candidates[:probe_limit]:
         probed.append(table)
         try:
-            rows = _fetch_table(root, api_key, org, table, periods, budget)
+            rows = _fetch_table(api_key, org, table, periods, budget, root, spec)
             if rows:
                 return org, table, rows
         except Exception as exc:
@@ -313,46 +352,12 @@ def _label(row: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
-def _series_by_label(rows: list[dict[str, Any]], keywords: list[str]) -> dict[str, list[tuple[str, float]]]:
-    grouped: dict[str, list[tuple[str, float]]] = {}
-    for row in rows:
-        label = _label(row)
-        if not any(keyword in label for keyword in keywords):
-            continue
-        value = _number(row.get("DT"))
-        period = str(row.get("PRD_DE") or "").strip()
-        if value is None or not period:
-            continue
-        key = "|".join(str(row.get(f"C{i}") or row.get(f"C{i}_NM") or "") for i in range(1, 5))
-        grouped.setdefault(key, []).append((period, value))
-    return grouped
-
-
-def _metric(series: list[tuple[str, float]], factor: str, source: str) -> dict[str, Any] | None:
-    series = sorted(series, key=lambda item: item[0])
-    if len(series) < 7:
-        return None
-    values = [value for _, value in series]
-    latest_period, latest = series[-1]
-    def change(months: int) -> float | None:
-        if len(values) <= months or values[-1 - months] == 0:
-            return None
-        return round((latest / values[-1 - months] - 1.0) * 100.0, 4)
-    rank = sum(1 for value in values if value <= latest) / len(values) * 100.0
-    return {
-        "id": factor, "factor": factor, "value": latest, "unit": "KOSIS index",
-        "change_1m": change(1), "change_3m": change(3), "change_6m": change(6),
-        "long_run_percentile": round(rank, 4), "quality": 85.0,
-        "source": source, "series_id": factor, "as_of": f"{latest_period[:4]}-{latest_period[4:6]}-01",
-    }
-
-
 def collect(root: Path) -> dict[str, Any]:
     _, _, _ = load_all(root)
     api_key = os.getenv("KOSIS_API_KEY", "").strip()
     output = root / "input" / "industry_cycle_raw.json"
     if not api_key:
-        result = {"schema_version": "1.0.0", "status": "pending", "generated_at_utc": utc_now_iso(), "industries": [], "collector": "kosis-industry-cycle-v1", "reason": "KOSIS_API_KEY is not configured"}
+        result = {"schema_version": "1.0.0", "status": "pending", "generated_at_utc": utc_now_iso(), "industries": [], "collector": "kosis-industry-cycle-v3", "reason": "KOSIS_API_KEY is not configured"}
         write_json(output, result)
         return result
     config = read_json(root / "config" / "industry_kosis_sources.json", {}) or {}
@@ -368,7 +373,7 @@ def collect(root: Path) -> dict[str, Any]:
             break
         budget.start_scope(int(spec.get("max_external_calls", 1)))
         try:
-            org_id, table_id, rows = _choose_table(root, api_key, spec, budget)
+            org_id, table_id, rows = _choose_table(api_key, spec, budget, root)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
@@ -376,9 +381,22 @@ def collect(root: Path) -> dict[str, Any]:
                 keywords = list(overrides.get(key) or [])
                 if not keywords:
                     keywords = [str(industry.get("label") or "")]
-                grouped = _series_by_label(rows, [word for word in keywords if word])
-                merged = [item for values in grouped.values() for item in values]
-                metric = _metric(merged, str(spec.get("factor") or name), source)
+                grouped = _series_by_industry(rows, [word for word in keywords if word])
+                candidates = []
+                for values in grouped.values():
+                    metric = _metric(values, str(spec.get("factor") or name), source)
+                    if metric:
+                        candidates.append(metric)
+                # Pick the best matching series for the industry. Prefer an
+                # exact label match to the configured industry label, then
+                # the longest history and freshest observation. Never merge
+                # distinct KOSIS classifications into a synthetic series.
+                target_label = str(industry.get("label") or "")
+                def rank_metric(item: dict[str, Any]) -> tuple[int, int, str]:
+                    names = " ".join(str(v) for v in (item.get("classification_name") or {}).values())
+                    exact = 1 if target_label and target_label in names else 0
+                    return (exact, 1 if item.get("as_of") else 0, str(item.get("as_of") or ""))
+                metric = sorted(candidates, key=rank_metric, reverse=True)[0] if candidates else None
                 if metric:
                     metric["industry_key"] = key
                     metric_rows[name].append(metric)
@@ -397,7 +415,7 @@ def collect(root: Path) -> dict[str, Any]:
     result = {
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
-        "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
+        "collector": "kosis-industry-cycle-v3", "external_calls": budget.attempts,
         "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     # Preserve the last valid raw observations when a transient KOSIS outage
