@@ -168,6 +168,28 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
 
 def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
     periods = min(int(spec.get("periods", 24)), 24)
+    preferred = {
+        str(table).strip(): index
+        for index, table in enumerate(spec.get("preferred_tables") or [])
+        if str(table).strip()
+    }
+
+    # Search is useful for discovery but is a separate, less reliable request.
+    # When a reviewed table id is already configured, query it directly first;
+    # this avoids turning a search timeout into a false "no data" result and
+    # also saves one external request for the normal path.
+    direct_org = str(spec.get("org_id") or "101").strip()
+    direct_errors: list[str] = []
+    for table_id in preferred:
+        try:
+            rows = _fetch_table(api_key, direct_org, table_id, periods, budget)
+            if rows:
+                if budget.events is not None:
+                    budget.events.append(f"direct_table: {direct_org}/{table_id} rows={len(rows)}")
+                return direct_org, table_id, rows
+        except Exception as exc:
+            direct_errors.append(f"{table_id}: {type(exc).__name__}: {exc}")
+
     candidates: dict[tuple[str, str], dict[str, Any]] = {}
     terms = list(spec.get("search_terms") or [])[:1]
     for term in terms:
@@ -182,11 +204,6 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
                 candidates[(org, table)] = row
     if budget.events is not None:
         budget.events.append(f"search[{terms[0] if terms else ''}]: candidates={len(candidates)}")
-    preferred = {
-        str(table).strip(): index
-        for index, table in enumerate(spec.get("preferred_tables") or [])
-        if str(table).strip()
-    }
     hints = tuple(str(value) for value in (spec.get("table_title_hints") or DEFAULT_TABLE_TITLE_HINTS.get(str(spec.get("factor") or ""), ())) if str(value))
     title_matches = [
         item for item in candidates.items()
@@ -212,6 +229,7 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
     if budget.events is not None and candidates:
         budget.events.append(f"table_probe: no usable rows for {','.join(probed)}")
         budget.events.extend(f"table_probe_error: {error}" for error in probe_errors)
+        budget.events.extend(f"direct_table_error: {error}" for error in direct_errors)
     raise RuntimeError("no usable KOSIS table found")
 
 
