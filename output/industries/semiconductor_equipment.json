@@ -2,6 +2,8 @@
   "industry_key": "semiconductor_equipment",
   "industry_label": "반도체장비",
   "aliases": [
+    "반도체장비",
+    "semiconductor_equipment",
     "반도체 장비"
   ],
   "current": {
@@ -149,30 +151,42 @@
   },
   "direct_market": {
     "label": "반도체장비",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "240810",
+      "036930",
+      "319660"
+    ],
+    "usable_members": [
+      "240810",
+      "036930",
+      "319660"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260707",
     "period_end": "20260811",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": -15.9,
+    "positive_breadth": 0.0,
+    "flow_positive_share": 0.6667,
+    "market_internal_score": 23.3,
+    "market_internal_quality": 91.2,
+    "valuation_score": 42.67,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 13.37,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 60.63,
+    "median_pbr": 6.94,
     "broad_market_median_per": 12.12,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "240810": 104700.0,
+      "036930": 162400.0,
+      "319660": 129100.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
@@ -208,7 +222,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 25,
+      "registered_forecasts": 34,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -223,7 +237,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-12T08:25:15.475853+00:00"
+      "generated_at_utc": "2026-08-12T09:09:18.474094+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -277,5 +291,5 @@
       "memory_cycle"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": "2026-08 실제 상장현황 교차검증 후 신규 편입. 메모리 제조사 CAPEX·팹 가동률·설비 발주가 핵심 선행지표. semiconductor(005930 등 메모리 제조사) 바스켓과 종목 중복 없음."
 }
