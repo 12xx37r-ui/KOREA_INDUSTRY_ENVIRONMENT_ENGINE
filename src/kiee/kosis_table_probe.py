@@ -1,85 +1,71 @@
 from __future__ import annotations
-
-import argparse
-import json
-import os
-import urllib.parse
-import urllib.request
+import argparse, json, os, urllib.parse, urllib.request
 from typing import Any
 
 META_URL = "https://kosis.kr/openapi/statisticsData.do"
 DATA_URL = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
 
-
-def _get(url: str, params: dict[str, Any]) -> Any:
-    query = urllib.parse.urlencode({k: v for k, v in params.items() if v not in (None, "")})
-    req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-kosis-probe/1.0"})
+def _get(url, params):
+    q = urllib.parse.urlencode({k:v for k,v in params.items() if v not in (None,"")})
+    req = urllib.request.Request(f"{url}?{q}", headers={"User-Agent":"kiee-kosis-probe/1.0"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
 
-
-def _rows(payload: Any) -> list[dict]:
-    if isinstance(payload, list):
-        return [r for r in payload if isinstance(r, dict)]
-    if isinstance(payload, dict):
-        for k in ("result", "data", "rows"):
-            if isinstance(payload.get(k), list):
-                return [r for r in payload[k] if isinstance(r, dict)]
+def _rows(p):
+    if isinstance(p, list): return [r for r in p if isinstance(r,dict)]
+    if isinstance(p, dict):
+        if p.get("err"): return []
+        for k in ("result","data","rows"):
+            if isinstance(p.get(k),list): return [r for r in p[k] if isinstance(r,dict)]
     return []
 
-
-def probe_table(table_id: str, api_key: str) -> None:
-    print(f"\n{'='*60}")
-    print(f"TABLE={table_id}")
-
-    # 1) 메타(ITM) - 실제 필드명 전체 출력
+def probe(table_id, api_key, org_id="101"):
+    print(f"\n{'='*60}\nTABLE={table_id}")
+    # 메타(ITM) - 항목 목록
     try:
-        meta = _get(META_URL, {"method": "getMeta", "type": "ITM", "apiKey": api_key,
-                               "orgId": "101", "tblId": table_id, "format": "json", "jsonVD": "Y"})
-        rows = _rows(meta)
+        rows = _rows(_get(META_URL, {"method":"getMeta","type":"ITM","apiKey":api_key,
+                                     "orgId":org_id,"tblId":table_id,"format":"json","jsonVD":"Y"}))
         print(f"META_ITM rows={len(rows)}")
-        if rows:
-            print("  first row keys:", list(rows[0].keys()))
-            for r in rows[:5]:
-                print(" ", {k: v for k, v in r.items() if v not in (None, "", "0")})
+        for r in rows[:4]:
+            print(" ", {k:v for k,v in r.items() if v not in (None,"","0") and k in ("ITM_ID","ITM_NM","ITM_NM_ENG","OBJ_ID")})
     except Exception as e:
-        print(f"META_ITM ERROR: {e}")
+        print(f"META_ERR: {e}")
+    # 실제 데이터 - C1_NM 레이블 (산업별인지 확인)
+    for extra in [{}]:
+        try:
+            params = {"method":"getList","apiKey":api_key,"orgId":org_id,"tblId":table_id,
+                      "prdSe":"M","newEstPrdCnt":1,"itmId":"ALL","objL1":"ALL","format":"json","jsonVD":"Y"}
+            params.update(extra)
+            rows = _rows(_get(DATA_URL, params))
+            if not rows:
+                try:
+                    raw = _get(DATA_URL, params)
+                    if isinstance(raw,dict) and raw.get("err"):
+                        print(f"DATA_ERR: {raw.get('err')} {raw.get('errMsg','')}")
+                        continue
+                except: pass
+                print("DATA rows=0")
+                continue
+            labels = sorted(set(str(r.get("C1_NM") or "").strip() for r in rows if r.get("C1_NM")))
+            itms  = sorted(set(str(r.get("ITM_NM") or "").strip() for r in rows if r.get("ITM_NM")))
+            print(f"DATA rows={len(rows)}")
+            print(f"  C1_NM unique({len(labels)}): {labels[:30]}")
+            print(f"  ITM_NM unique({len(itms)}): {itms[:10]}")
+        except Exception as e:
+            print(f"DATA_ERR: {e}")
 
-    # 2) 실제 데이터 - C1_NM 레이블 확인 (가장 중요)
-    try:
-        data = _get(DATA_URL, {"method": "getList", "apiKey": api_key, "orgId": "101",
-                               "tblId": table_id, "prdSe": "M", "newEstPrdCnt": 1,
-                               "itmId": "ALL", "objL1": "ALL", "format": "json", "jsonVD": "Y"})
-        drows = _rows(data)
-        print(f"DATA rows={len(drows)}")
-        if drows:
-            print("  data row keys:", list(drows[0].keys()))
-            # C1_NM 레이블 유니크 목록 - 키워드 매핑에 필요한 핵심 정보
-            labels = sorted(set(str(r.get("C1_NM") or r.get("C1") or "").strip() for r in drows if r.get("C1_NM") or r.get("C1")))
-            print(f"  C1_NM unique({len(labels)}):", labels[:30])
-            labels2 = sorted(set(str(r.get("C2_NM") or "").strip() for r in drows if r.get("C2_NM")))
-            if labels2:
-                print(f"  C2_NM unique({len(labels2)}):", labels2[:20])
-        elif isinstance(data, dict) and data.get("err"):
-            print(f"  DATA_ERR: {data.get('err')} {data.get('errMsg','')}")
-    except Exception as e:
-        print(f"DATA ERROR: {e}")
-
-
-def main() -> int:
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tables", nargs="+",
-                        default=["DT_1F02001", "DT_1F02004", "DT_1F02013", "DT_512Y007", "DT_115100001"])
+        default=["DT_1F02011","DT_1F02031","DT_512Y019","DT_1JH20201"])
     args = parser.parse_args()
-    api_key = os.getenv("KOSIS_API_KEY", "").strip()
+    api_key = os.getenv("KOSIS_API_KEY","").strip()
     if not api_key:
-        print("KOSIS_KEY_CONFIGURED=false")
-        return 0
+        print("KOSIS_KEY_CONFIGURED=false"); return 0
     print("KOSIS_KEY_CONFIGURED=true")
-    for table_id in args.tables:
-        probe_table(table_id, api_key)
+    for t in args.tables:
+        probe(t, api_key)
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
