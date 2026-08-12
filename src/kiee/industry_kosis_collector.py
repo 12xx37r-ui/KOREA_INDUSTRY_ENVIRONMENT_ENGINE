@@ -18,6 +18,7 @@ from .util import read_json, utc_now_iso, write_json
 SEARCH_URL = "https://sso.kosis.kr/openapi/statisticsSearch.do"
 META_URL = "https://kosis.kr/openapi/statisticsData.do"
 DATA_URL = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
+DATA_FALLBACK_URL = "https://sso.kosis.kr/openapi/Param/statisticsParameterData.do"
 
 DEFAULT_TABLE_TITLE_HINTS = {
     "production_shipments": ("산업생산", "생산지수", "출하지수"),
@@ -69,6 +70,18 @@ def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: in
             table = params.get("tblId") or params.get("searchNm") or ""
             budget.errors.append(f"{url.rsplit('/', 1)[-1]}[{table}]: {type(exc).__name__}: {exc}")
         raise
+
+
+def _get_data_json(params: dict[str, Any], budget: _CallBudget, allow_fallback: bool = True) -> Any:
+    """Use the main KOSIS data host, then one bounded SSO-host fallback."""
+    try:
+        return _get_json(DATA_URL, params, budget, timeout=20)
+    except (TimeoutError, urllib.error.URLError) as first_error:
+        if not allow_fallback:
+            raise
+        if budget.events is not None:
+            budget.events.append(f"data_host_fallback: {type(first_error).__name__}")
+        return _get_json(DATA_FALLBACK_URL, params, budget, timeout=20)
 
 
 def _rows(payload: Any) -> list[dict[str, Any]]:
@@ -150,7 +163,7 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
             for level in range(2, 2 + depth):
                 probe_params[f"objL{level}"] = "ALL"
             try:
-                rows = _rows(_get_json(DATA_URL, probe_params, budget, timeout=25))
+                rows = _rows(_get_data_json(probe_params, budget, allow_fallback=(depth == 0)))
                 if rows:
                     if budget.events is not None and depth:
                         budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth}")
