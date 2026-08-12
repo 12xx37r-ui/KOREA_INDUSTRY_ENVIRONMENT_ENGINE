@@ -229,39 +229,6 @@ def run_engine(
         "alias_to_profile_key": alias_lookup,
     })
     write_json(output_dir / "stock_prediction_bridge.json", bridge)
-    # Compact static dashboard export: one JSON file for industry search/UI.
-    # Browser-side loading performs no external API/GitHub calls.
-    dashboard_industries = []
-    for row in results:
-        cfg = next((item for item in industries if item.get("key") == row.get("industry_key")), {})
-        direct_row = row.get("direct_market") if isinstance(row.get("direct_market"), dict) else {}
-        dashboard_industries.append({
-            "industry_key": row.get("industry_key"),
-            "industry_label": row.get("industry_label"),
-            "aliases": row.get("aliases") or [],
-            "parent_sector": cfg.get("parent_sector"),
-            "industry_group": cfg.get("industry_group"),
-            "current": row.get("current"),
-            "forecast_3m": row.get("forecast_3m"),
-            "forecast_3_6m": row.get("forecast_3_6m"),
-            "forecast_6_12m": row.get("forecast_6_12m"),
-            "quality": row.get("quality"),
-            "score_model": row.get("score_model"),
-            "companies": [
-                {"ticker": code, "representative": True}
-                for code in (direct_row.get("requested_basket") or cfg.get("krx_basket") or [])
-            ],
-        })
-    write_json(output_dir / "industry_dashboard.json", {
-        "schema_version": "1.0.0",
-        "engine_version": policy["engine_version"],
-        "generated_at_utc": as_of,
-        "status": "ok",
-        "industry_count": len(dashboard_industries),
-        "search_rule": "industry label, key, alias, parent sector, and industry group",
-        "company_rule": "configured KRX representative basket; full stock-universe linkage remains a downstream integration",
-        "industries": dashboard_industries,
-    })
     for row in results:
         write_json(output_dir / "industries" / f"{row['industry_key']}.json", row)
     direct_krx_available = direct_market.get("available") is True
