@@ -150,11 +150,10 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
     period = _meta_period(api_key, org_id, table_id, budget)
     selector_variants = (("ALL", "ALL"),)
     last_error: Exception | None = None
+    # Production tables can exceed KOSIS's 40,000-cell response limit when
+    # every industry/item is requested for 24 months. Use the configured
+    # shorter window first; only one seven-period retry is allowed on error 31.
     period_ladder = [periods]
-    if periods > 12:
-        period_ladder.append(12)
-    if periods > 7:
-        period_ladder.append(7)
     for requested_periods in period_ladder:
         base_params = {
             "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
@@ -164,7 +163,8 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
             params = dict(base_params)
             params["itmId"] = itm_selector
             params["objL1"] = obj_selector
-            for depth in range(0, 4):
+            depth_limit = 1 if requested_periods < periods else 4
+            for depth in range(0, depth_limit):
                 probe_params = dict(params)
                 for level in range(2, 2 + depth):
                     probe_params[f"objL{level}"] = "ALL"
@@ -180,6 +180,8 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
                     if "KOSIS error 31" in text:
                         # The table is valid but the ALL×ALL cell set is too
                         # large. Retry with fewer periods before abandoning it.
+                        if requested_periods > 7:
+                            period_ladder.append(7)
                         break
                     if "KOSIS error 20" not in text and "KOSIS error 21" not in text:
                         raise
