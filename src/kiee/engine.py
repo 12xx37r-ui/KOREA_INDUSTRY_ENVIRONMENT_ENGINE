@@ -232,6 +232,40 @@ def run_engine(
     for row in results:
         write_json(output_dir / "industries" / f"{row['industry_key']}.json", row)
     direct_krx_available = direct_market.get("available") is True
+    # ── industry_dashboard.json ──────────────────────────────────────────────
+    # GAS/클라이언트가 기업 검색 후 산업경기를 표시할 때 직접 소비하는
+    # 컴팩트 뷰. URL·네트워크 설정을 포함하지 않는다(테스트 계약 포함).
+    _industry_by_key = {ind["key"]: ind for ind in industries}
+    dashboard_rows = []
+    for row in results:
+        key = row["industry_key"]
+        cfg = _industry_by_key.get(key, {})
+        basket = cfg.get("krx_basket") or []
+        dashboard_rows.append({
+            "industry_key": key,
+            "industry_label": row.get("industry_label", ""),
+            "aliases": row.get("aliases") or [],
+            "parent_sector": cfg.get("parent_sector"),
+            "industry_group": cfg.get("industry_group"),
+            "current": {k: row["current"].get(k) for k in ("score", "band", "quality_score", "data_coverage_pct", "quality_weighted_coverage_pct", "factors", "contributions", "status", "reason")},
+            "forecast_3m": {k: row["forecast_3m"].get(k) for k in ("score", "band", "quality_score", "data_coverage_pct", "quality_weighted_coverage_pct", "factors", "contributions", "status", "reason", "delta_points", "change_strength", "direction", "top_positive_reasons", "top_negative_reasons")},
+            "forecast_3_6m": {k: row["forecast_3_6m"].get(k) for k in ("score", "band", "quality_score", "status")},
+            "forecast_6_12m": {k: row["forecast_6_12m"].get(k) for k in ("score", "band", "quality_score", "status")},
+            "quality": row.get("quality"),
+            "score_model": row.get("score_model"),
+            "companies": [{"ticker": t, "representative": True} for t in basket],
+        })
+    write_json(output_dir / "industry_dashboard.json", {
+        "schema_version": "1.0.0",
+        "engine_version": policy["engine_version"],
+        "generated_at_utc": as_of,
+        "status": overall["status"] if isinstance(overall["status"], str) else overall["status"].get("status", "ok"),
+        "industry_count": len(dashboard_rows),
+        "search_rule": "industry label, key, alias, parent sector, and industry group",
+        "company_rule": "configured KRX representative basket; full stock-universe linkage remains a downstream integration",
+        "industries": dashboard_rows,
+    })
+    # ────────────────────────────────────────────────────────────────────────
     write_json(output_dir / "engine_health.json", {
         "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
