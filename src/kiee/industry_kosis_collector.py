@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import time
 import urllib.parse
 import urllib.request
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -37,32 +38,6 @@ def _number(value: Any) -> float | None:
         return None
 
 
-def _cache_path(root: Path, namespace: str, key: str) -> Path:
-    safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in key)
-    path = root / "input_cache" / "kosis" / namespace / f"{safe}.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def _read_cache(root: Path, namespace: str, key: str, ttl_hours: float) -> Any | None:
-    path = _cache_path(root, namespace, key)
-    if not path.exists():
-        return None
-    try:
-        if (time.time() - path.stat().st_mtime) > max(0.0, ttl_hours) * 3600.0:
-            return None
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError):
-        return None
-
-
-def _write_cache(root: Path, namespace: str, key: str, payload: Any) -> None:
-    path = _cache_path(root, namespace, key)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-    tmp.replace(path)
-
-
 @dataclass
 class _CallBudget:
     limit: int
@@ -86,12 +61,31 @@ class _CallBudget:
 
 
 def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: int = 25) -> Any:
-    query = urllib.parse.urlencode({key: value for key, value in params.items() if value not in (None, "")})
+    clean = {key: value for key, value in params.items() if value not in (None, "")}
+    query = urllib.parse.urlencode(clean)
+    cache_root = os.getenv("KIEE_KOSIS_CACHE_DIR", "").strip()
+    ttl_hours = float(os.getenv("KIEE_KOSIS_CACHE_TTL_HOURS", "24"))
+    cache_path = None
+    if cache_root:
+        digest = hashlib.sha256((url + "?" + query).encode("utf-8")).hexdigest()
+        cache_path = Path(cache_root) / f"{digest}.json"
+        try:
+            if cache_path.exists() and (time.time() - cache_path.stat().st_mtime) <= ttl_hours * 3600:
+                return json.loads(cache_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
     request = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-industry-cycle/1.0"})
     budget.allow()
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read().decode("utf-8"))
+            payload = json.loads(response.read().decode("utf-8"))
+        if cache_path is not None:
+            try:
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                cache_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
+        return payload
     except Exception as exc:
         if budget.errors is not None:
             table = params.get("tblId") or params.get("searchNm") or ""
@@ -139,135 +133,124 @@ def _table_name(row: dict[str, Any]) -> str:
     return ""
 
 
-def _meta_items(api_key: str, org_id: str, table_id: str, budget: _CallBudget, root: Path, ttl_hours: float) -> list[dict[str, Any]]:
-    key = f"{org_id}_{table_id}"
-    cached = _read_cache(root, "meta_itm", key, ttl_hours)
-    if cached is not None:
-        return _rows(cached)
-    payload = _get_json(META_URL, {
+def _meta_items(api_key: str, org_id: str, table_id: str, budget: _CallBudget) -> list[dict[str, str]]:
+    rows = _rows(_get_json(META_URL, {
         "method": "getMeta", "type": "ITM", "apiKey": api_key,
         "orgId": org_id, "tblId": table_id, "format": "json", "jsonVD": "Y",
-    }, budget, timeout=15)
-    _write_cache(root, "meta_itm", key, payload)
-    return _rows(payload)
+    }, budget))
+    out: list[dict[str, str]] = []
+    for row in rows:
+        obj_id = str(row.get("OBJ_ID") or row.get("objId") or "").strip()
+        obj_nm = str(row.get("OBJ_NM") or row.get("objNm") or "").strip()
+        nm = str(row.get("NM") or row.get("nm") or "").strip()
+        itm_id = str(row.get("ITM_ID") or row.get("itmId") or "").strip()
+        itm_nm = str(row.get("ITM_NM") or row.get("itmNm") or "").strip()
+        if obj_id or itm_id:
+            out.append({"obj_id": obj_id, "obj_nm": obj_nm, "nm": nm, "itm_id": itm_id, "itm_nm": itm_nm})
+    return out
 
 
-def _selector_candidates(meta_rows: list[dict[str, Any]]) -> list[tuple[str, str]]:
-    """Derive valid objL1/itmId pairs from KOSIS metadata.
+def _select_query_codes(meta: list[dict[str, str]], industry_keywords: list[str], item_keywords: list[str]) -> tuple[dict[str, str], list[str]]:
+    """Build selectors from KOSIS metadata.
 
-    KOSIS requires objL1 and itmId. 'ALL' is not universally accepted for
-    every table, so the collector first uses real codes exposed by metadata.
+    KOSIS ITM metadata semantics are: OBJ_ID=classification-value code,
+    OBJ_NM=classification name, NM=classification-value name. The previous
+    patch incorrectly treated OBJ_ID as C1/C2 level and NM as the code. That
+    can generate invalid objL requests. We instead derive classifier levels
+    from the ordered unique OBJ_NM values and use OBJ_ID as the actual code.
     """
-    pairs: list[tuple[str, str]] = []
-    for row in meta_rows:
-        obj = str(row.get("objId") or row.get("OBJ_ID") or "").strip()
-        itm = str(row.get("itmId") or row.get("ITM_ID") or "").strip()
-        if obj and itm and (obj, itm) not in pairs:
-            pairs.append((obj, itm))
-    # Preserve a bounded fallback. Some tables legitimately accept ALL.
-    if not pairs:
-        pairs.append(("ALL", "ALL"))
-    return pairs[:8]
+    classifiers: dict[str, list[tuple[str, str]]] = {}
+    order: list[str] = []
+    item_matches: list[str] = []
+    item_seen: set[str] = set()
+    for row in meta:
+        classifier = row["obj_nm"] or "__UNKNOWN__"
+        code = row["obj_id"]
+        value_name = row["nm"]
+        if code:
+            if classifier not in classifiers:
+                classifiers[classifier] = []
+                order.append(classifier)
+            classifiers[classifier].append((code, value_name))
+        iid = row["itm_id"]
+        text = row["itm_nm"]
+        if iid and iid not in item_seen and (not item_keywords or any(k in text for k in item_keywords)):
+            item_matches.append(iid)
+            item_seen.add(iid)
+
+    selectors: dict[str, str] = {}
+    industry_level = None
+    industry_codes: list[str] = []
+    for idx, classifier in enumerate(order, start=1):
+        matches = [code for code, name in classifiers[classifier] if any(k in name for k in industry_keywords)]
+        if matches:
+            # Prefer the classifier with the largest useful industry match set;
+            # this is typically the 산업별 dimension rather than 시도/지역.
+            if industry_level is None or len(matches) > len(industry_codes):
+                industry_level = idx
+                industry_codes = list(dict.fromkeys(matches))
+
+    for idx in range(1, len(order) + 1):
+        if industry_level == idx:
+            selectors[f"objL{idx}"] = " ".join(industry_codes)
+        else:
+            selectors[f"objL{idx}"] = "ALL"
+    return selectors, item_matches
 
 
-def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget, root: Path, spec: dict[str, Any]) -> list[dict[str, Any]]:
-    ttl_hours = float(spec.get("cache_ttl_hours", 24))
-    period = str(spec.get("prd_se") or "M").strip().upper()
-    cached = _read_cache(root, "data", f"{org_id}_{table_id}_{period}_{periods}", ttl_hours)
-    if cached is not None:
-        if budget.events is not None:
-            budget.events.append(f"cache_hit: {org_id}/{table_id} periods={periods}")
-        return _rows(cached)
+def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget, industry_keywords: list[str] | None = None, item_keywords: list[str] | None = None) -> list[dict[str, Any]]:
+    """Fetch a table using real KOSIS metadata codes, not invented selectors.
 
-    meta_rows = _meta_items(api_key, org_id, table_id, budget, root, ttl_hours)
-    candidates = _selector_candidates(meta_rows)
-    last_error: Exception | None = None
-    base = {
+    KOSIS requires objL1 and itmId for the parameter endpoint. The previous
+    implementation sent ALL for both, which caused error 20/21 on tables where
+    ALL is not a valid item or classifier value. Metadata is fetched once and
+    then used to construct one bounded bulk query.
+    """
+    period = _meta_period(api_key, org_id, table_id, budget)
+    meta = _meta_items(api_key, org_id, table_id, budget)
+    if not meta:
+        raise RuntimeError(f"{table_id}: no ITM metadata")
+    selectors, item_ids = _select_query_codes(meta, industry_keywords or [], item_keywords or [])
+    if "objL1" not in selectors:
+        # Some tables have a non-numeric OBJ_ID. Fall back only if metadata
+        # contains an explicit first-level value; never fabricate a code.
+        first = next((r["nm"] for r in meta if r["obj_id"] and r["nm"]), "")
+        if first:
+            selectors["objL1"] = first
+    if not item_ids:
+        item_ids = list(dict.fromkeys(r["itm_id"] for r in meta if r["itm_id"]))
+    if not selectors.get("objL1") or not item_ids:
+        raise RuntimeError(f"{table_id}: metadata did not expose usable objL1/itmId")
+
+    params = {
         "method": "getList", "apiKey": api_key, "orgId": org_id, "tblId": table_id,
-        "prdSe": period, "newEstPrdCnt": min(int(periods), 24),
-        "format": "json", "jsonVD": "Y",
+        "prdSe": period, "newEstPrdCnt": min(max(int(periods), 7), 24),
+        "format": "json", "jsonVD": "Y", "itmId": " ".join(item_ids),
     }
-    for obj_selector, itm_selector in candidates:
-        params = dict(base, objL1=obj_selector, itmId=itm_selector)
-        try:
-            rows = _rows(_get_data_json(params, budget, allow_fallback=True))
+    params.update(selectors)
+    try:
+        rows = _rows(_get_data_json(params, budget, allow_fallback=True))
+        if rows:
+            if budget.events is not None:
+                budget.events.append(f"metadata_query: {table_id} objL1={selectors.get('objL1','')} itm={len(item_ids)} rows={len(rows)}")
+            return rows
+    except RuntimeError as exc:
+        # One bounded retry with only the first matched industry code and first
+        # matched item reduces the response size without turning into a call loop.
+        text = str(exc)
+        if "KOSIS error 31" in text or "KOSIS error 21" in text:
+            first_obj = selectors.get("objL1", "").split()[0]
+            first_itm = item_ids[0]
+            retry = dict(params)
+            retry["objL1"] = first_obj
+            retry["itmId"] = first_itm
+            rows = _rows(_get_data_json(retry, budget, allow_fallback=False))
             if rows:
-                _write_cache(root, "data", f"{org_id}_{table_id}_{period}_{periods}", rows)
-                if budget.events is not None:
-                    budget.events.append(f"table_query: {org_id}/{table_id} objL1={obj_selector} itmId={itm_selector} rows={len(rows)}")
                 return rows
-        except RuntimeError as exc:
-            last_error = exc
-            text = str(exc)
-            if "KOSIS error 31" in text and int(periods) > 7:
-                retry = dict(params, newEstPrdCnt=7)
-                try:
-                    rows = _rows(_get_data_json(retry, budget, allow_fallback=False))
-                    if rows:
-                        _write_cache(root, "data", f"{org_id}_{table_id}_{period}_7", rows)
-                        if budget.events is not None:
-                            budget.events.append(f"table_query_retry7: {org_id}/{table_id} rows={len(rows)}")
-                        return rows
-                except Exception as retry_exc:
-                    last_error = retry_exc
-            # Error 20/21 means this selector is invalid; try another metadata pair.
-            if "KOSIS error 20" in text or "KOSIS error 21" in text:
-                continue
-            raise
-    if last_error is not None:
-        raise last_error
+        raise
     return []
 
-
-def _label(row: dict[str, Any]) -> str:
-    parts = []
-    for key in ("C1_NM", "C2_NM", "C3_NM", "C4_NM", "ITM_NM", "TBL_NM"):
-        value = str(row.get(key) or "").strip()
-        if value and value not in parts:
-            parts.append(value)
-    return " ".join(parts)
-
-
-def _series_by_industry(rows: list[dict[str, Any]], keywords: list[str]) -> dict[str, list[tuple[str, float, dict[str, Any]]]]:
-    grouped: dict[str, list[tuple[str, float, dict[str, Any]]]] = {}
-    for row in rows:
-        label = _label(row)
-        if not any(keyword and keyword in label for keyword in keywords):
-            continue
-        value = _number(row.get("DT"))
-        period = str(row.get("PRD_DE") or "").strip()
-        if value is None or not period:
-            continue
-        # Keep each KOSIS classification combination separate. The previous
-        # implementation merged all matching rows, which could blend several
-        # industries into one synthetic time series.
-        key = "|".join(str(row.get(f"C{i}") or row.get(f"C{i}_NM") or "") for i in range(1, 5))
-        grouped.setdefault(key, []).append((period, value, row))
-    return grouped
-
-
-def _metric(series: list[tuple[str, float, dict[str, Any]]], factor: str, source: str) -> dict[str, Any] | None:
-    series = sorted(series, key=lambda item: item[0])
-    if len(series) < 7:
-        return None
-    values = [value for _, value, _ in series]
-    latest_period, latest, latest_row = series[-1]
-    def change(months: int) -> float | None:
-        if len(values) <= months or values[-1 - months] == 0:
-            return None
-        return round((latest / values[-1 - months] - 1.0) * 100.0, 4)
-    rank = sum(1 for value in values if value <= latest) / len(values) * 100.0
-    return {
-        "id": factor, "factor": factor, "value": latest,
-        "unit": str(latest_row.get("UNIT_NM") or latest_row.get("UNIT_ID") or "KOSIS"),
-        "change_1m": change(1), "change_3m": change(3), "change_6m": change(6),
-        "long_run_percentile": round(rank, 4), "quality": 85.0,
-        "source": source, "series_id": factor, "as_of": f"{latest_period[:4]}-{latest_period[4:6]}-01",
-        "classification": {f"C{i}": latest_row.get(f"C{i}") for i in range(1, 5) if latest_row.get(f"C{i}")},
-        "classification_name": {f"C{i}_NM": latest_row.get(f"C{i}_NM") for i in range(1, 5) if latest_row.get(f"C{i}_NM")},
-    }
-
-def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget, root: Path) -> tuple[str, str, list[dict[str, Any]]]:
+def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
     periods = min(int(spec.get("periods", 24)), 24)
     preferred = {
         str(table).strip(): index
@@ -284,7 +267,7 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget, root:
     direct_limit = max(1, int(spec.get("direct_probe_candidates", 1)))
     for table_id in list(preferred)[:direct_limit]:
         try:
-            rows = _fetch_table(api_key, direct_org, table_id, periods, budget, root, spec)
+            rows = _fetch_table(api_key, direct_org, table_id, periods, budget, list(spec.get("keywords") or []), list(spec.get("item_keywords") or []))
             if rows:
                 if budget.events is not None:
                     budget.events.append(f"direct_table: {direct_org}/{table_id} rows={len(rows)}")
@@ -330,7 +313,7 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget, root:
     for (org, table), _ in ordered_candidates[:probe_limit]:
         probed.append(table)
         try:
-            rows = _fetch_table(api_key, org, table, periods, budget, root, spec)
+            rows = _fetch_table(api_key, org, table, periods, budget, list(spec.get("keywords") or []), list(spec.get("item_keywords") or []))
             if rows:
                 return org, table, rows
         except Exception as exc:
@@ -352,15 +335,59 @@ def _label(row: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
+def _series_by_label(rows: list[dict[str, Any]], keywords: list[str]) -> dict[str, list[tuple[str, float]]]:
+    grouped: dict[str, list[tuple[str, float]]] = {}
+    for row in rows:
+        label = _label(row)
+        if not any(keyword in label for keyword in keywords):
+            continue
+        value = _number(row.get("DT"))
+        period = str(row.get("PRD_DE") or "").strip()
+        if value is None or not period:
+            continue
+        key = "|".join(str(row.get(f"C{i}") or "") for i in range(1, 5))
+        grouped.setdefault(key, []).append((period, value))
+    return grouped
+
+
+def _best_series(grouped: dict[str, list[tuple[str, float]]]) -> list[tuple[str, float]]:
+    if not grouped:
+        return []
+    # Do not merge regions / classifications. Prefer the longest series and,
+    # where available, the national aggregate (code/name containing 전국).
+    ranked = sorted(grouped.items(), key=lambda kv: (len(kv[1]), 1 if "전국" in kv[0] else 0), reverse=True)
+    return ranked[0][1]
+
+def _metric(series: list[tuple[str, float]], factor: str, source: str, unit: str = "KOSIS") -> dict[str, Any] | None:
+    series = sorted(series, key=lambda item: item[0])
+    if len(series) < 7:
+        return None
+    values = [value for _, value in series]
+    latest_period, latest = series[-1]
+    def change(months: int) -> float | None:
+        if len(values) <= months or values[-1 - months] == 0:
+            return None
+        return round((latest / values[-1 - months] - 1.0) * 100.0, 4)
+    rank = sum(1 for value in values if value <= latest) / len(values) * 100.0
+    return {
+        "id": factor, "factor": factor, "value": latest, "unit": unit,
+        "change_1m": change(1), "change_3m": change(3), "change_6m": change(6),
+        "long_run_percentile": round(rank, 4), "quality": 85.0,
+        "source": source, "series_id": factor, "as_of": f"{latest_period[:4]}-{latest_period[4:6]}-01",
+    }
+
+
 def collect(root: Path) -> dict[str, Any]:
     _, _, _ = load_all(root)
     api_key = os.getenv("KOSIS_API_KEY", "").strip()
     output = root / "input" / "industry_cycle_raw.json"
     if not api_key:
-        result = {"schema_version": "1.0.0", "status": "pending", "generated_at_utc": utc_now_iso(), "industries": [], "collector": "kosis-industry-cycle-v3", "reason": "KOSIS_API_KEY is not configured"}
+        result = {"schema_version": "1.0.0", "status": "pending", "generated_at_utc": utc_now_iso(), "industries": [], "collector": "kosis-industry-cycle-v1", "reason": "KOSIS_API_KEY is not configured"}
         write_json(output, result)
         return result
     config = read_json(root / "config" / "industry_kosis_sources.json", {}) or {}
+    os.environ.setdefault("KIEE_KOSIS_CACHE_DIR", str(root / "input_cache" / "kosis_api"))
+    os.environ.setdefault("KIEE_KOSIS_CACHE_TTL_HOURS", str(config.get("cache_ttl_hours", 24)))
     universe, _, _ = load_all(root)
     overrides = config.get("industry_keyword_overrides") or {}
     previous = read_json(output, {}) or {}
@@ -373,7 +400,7 @@ def collect(root: Path) -> dict[str, Any]:
             break
         budget.start_scope(int(spec.get("max_external_calls", 1)))
         try:
-            org_id, table_id, rows = _choose_table(api_key, spec, budget, root)
+            org_id, table_id, rows = _choose_table(api_key, spec, budget)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
@@ -381,22 +408,9 @@ def collect(root: Path) -> dict[str, Any]:
                 keywords = list(overrides.get(key) or [])
                 if not keywords:
                     keywords = [str(industry.get("label") or "")]
-                grouped = _series_by_industry(rows, [word for word in keywords if word])
-                candidates = []
-                for values in grouped.values():
-                    metric = _metric(values, str(spec.get("factor") or name), source)
-                    if metric:
-                        candidates.append(metric)
-                # Pick the best matching series for the industry. Prefer an
-                # exact label match to the configured industry label, then
-                # the longest history and freshest observation. Never merge
-                # distinct KOSIS classifications into a synthetic series.
-                target_label = str(industry.get("label") or "")
-                def rank_metric(item: dict[str, Any]) -> tuple[int, int, str]:
-                    names = " ".join(str(v) for v in (item.get("classification_name") or {}).values())
-                    exact = 1 if target_label and target_label in names else 0
-                    return (exact, 1 if item.get("as_of") else 0, str(item.get("as_of") or ""))
-                metric = sorted(candidates, key=rank_metric, reverse=True)[0] if candidates else None
+                grouped = _series_by_label(rows, [word for word in keywords if word])
+                series = _best_series(grouped)
+                metric = _metric(series, str(spec.get("factor") or name), source)
                 if metric:
                     metric["industry_key"] = key
                     metric_rows[name].append(metric)
