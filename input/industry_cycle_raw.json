@@ -1,27 +1,27 @@
 {
   "schema_version": "1.0.0",
   "status": "pending",
-  "generated_at_utc": "2026-08-12T01:52:41.873381+00:00",
+  "generated_at_utc": "2026-08-12T01:58:01.378148+00:00",
   "industries": [],
   "collector": "kosis-industry-cycle-v2",
-  "external_calls": 4,
+  "external_calls": 6,
   "diagnostics": [
     "production_shipments: RuntimeError: no usable KOSIS table found",
     "inventory_cycle: RuntimeError: no usable KOSIS table found",
     "utilization: RuntimeError: no usable KOSIS table found",
-    "pmi_bsi: RuntimeError: no usable KOSIS table found",
+    "KOSIS call cap reached",
     "search[산업생산지수]: candidates=0",
     "search_titles: ",
     "search[재고지수]: candidates=0",
     "search_titles: ",
     "search[제조업 가동률]: candidates=0",
     "search_titles: ",
-    "search[제조업 경기실사지수]: candidates=0",
-    "search_titles: ",
-    "statisticsSearch.do[산업생산지수]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[재고지수]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[제조업 가동률]: URLError: <urlopen error timed out>",
-    "statisticsSearch.do[제조업 경기실사지수]: URLError: <urlopen error timed out>"
+    "statisticsData.do[DT_1JH20202]: URLError: <urlopen error timed out>",
+    "statisticsData.do[DT_1JH20203]: URLError: <urlopen error timed out>",
+    "statisticsData.do[DT_1JH20204]: URLError: <urlopen error timed out>",
+    "statisticsData.do[DT_1JH20205]: URLError: <urlopen error timed out>",
+    "statisticsData.do[DT_1JH20206]: URLError: <urlopen error timed out>",
+    "statisticsData.do[DT_1JH20207]: URLError: <urlopen error timed out>"
   ],
   "missing_data_policy": "do_not_impute_or_neutral_fill"
 }
