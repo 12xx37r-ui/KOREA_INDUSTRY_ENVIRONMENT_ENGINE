@@ -127,6 +127,16 @@ def run_engine(
         for industry in industries
     ]
 
+    # 출력 계약 강제 정규화: score=None이면 quality_score도 반드시 0.0
+    # (scoring.py가 score를 None으로 내리면서 quality를 남겨두는 경우 방어)
+    _SCORE_BLOCKS = ("current", "forecast_3m", "forecast_3_6m", "forecast_6_12m")
+    for _row in results:
+        for _block in _SCORE_BLOCKS:
+            _b = _row.get(_block)
+            if isinstance(_b, dict) and _b.get("score") is None:
+                _b["quality_score"] = 0.0
+                _b["quality_weighted_coverage_pct"] = 0.0
+
     by_key = {row["industry_key"]: row for row in results}
     alias_lookup: dict[str, str] = {}
     for industry in industries:
