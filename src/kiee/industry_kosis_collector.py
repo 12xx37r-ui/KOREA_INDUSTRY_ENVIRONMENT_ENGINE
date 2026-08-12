@@ -5,12 +5,13 @@ import json
 import os
 import urllib.parse
 import urllib.request
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from .config import load_all
-from .util import read_json, utc_now_iso, write_json
+from .util import age_hours, read_json, utc_now_iso, write_json
 
 # Search is available on the SSO host, while the official parameter-data and
 # metadata examples use the main KOSIS host. Keep search and data endpoints
@@ -141,7 +142,42 @@ def _meta_period(api_key: str, org_id: str, table_id: str, budget: _CallBudget) 
     return "M"
 
 
-def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget) -> list[dict[str, Any]]:
+def _table_cache_path(root: Path, org_id: str, table_id: str, periods: int) -> Path:
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", f"{org_id}_{table_id}_{periods}")
+    return root / "input_cache" / "kosis_tables" / f"{safe}.json"
+
+
+def _read_table_cache(root: Path, org_id: str, table_id: str, periods: int, ttl_hours: float) -> list[dict[str, Any]] | None:
+    path = _table_cache_path(root, org_id, table_id, periods)
+    payload = read_json(path, {}) or {}
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    generated = payload.get("generated_at_utc") if isinstance(payload, dict) else None
+    if not isinstance(rows, list) or not generated:
+        return None
+    age = age_hours(str(generated))
+    if age is None or age > ttl_hours:
+        return None
+    return [row for row in rows if isinstance(row, dict)]
+
+
+def _write_table_cache(root: Path, org_id: str, table_id: str, periods: int, rows: list[dict[str, Any]]) -> None:
+    write_json(_table_cache_path(root, org_id, table_id, periods), {
+        "schema_version": "1.0.0",
+        "generated_at_utc": utc_now_iso(),
+        "org_id": org_id,
+        "table_id": table_id,
+        "periods": periods,
+        "rows": rows,
+    })
+
+
+def _fetch_table(root: Path, api_key: str, org_id: str, table_id: str, periods: int, budget: _CallBudget) -> list[dict[str, Any]]:
+    cached = _read_table_cache(root, org_id, table_id, periods, 24.0)
+    if cached:
+        if budget.events is not None:
+            budget.events.append(f"cache_hit: {org_id}/{table_id}/{periods} rows={len(cached)}")
+        return cached
+
     # KOSIS ITM metadata's objId is the classifier identifier, not a valid
     # objL1 selector value. Sending that identifier as objL1 produces empty
     # tables (or error 20/21) for otherwise valid tables. The official sample
@@ -173,6 +209,7 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
                     if rows:
                         if budget.events is not None and (depth or requested_periods != periods):
                             budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth={depth} periods={requested_periods}")
+                        _write_table_cache(root, org_id, table_id, requested_periods, rows)
                         return rows
                 except RuntimeError as exc:
                     last_error = exc
@@ -191,7 +228,7 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
     return []
 
 
-def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
+def _choose_table(root: Path, api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tuple[str, str, list[dict[str, Any]]]:
     periods = min(int(spec.get("periods", 24)), 24)
     preferred = {
         str(table).strip(): index
@@ -208,7 +245,7 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
     direct_limit = max(1, int(spec.get("direct_probe_candidates", 1)))
     for table_id in list(preferred)[:direct_limit]:
         try:
-            rows = _fetch_table(api_key, direct_org, table_id, periods, budget)
+            rows = _fetch_table(root, api_key, direct_org, table_id, periods, budget)
             if rows:
                 if budget.events is not None:
                     budget.events.append(f"direct_table: {direct_org}/{table_id} rows={len(rows)}")
@@ -254,7 +291,7 @@ def _choose_table(api_key: str, spec: dict[str, Any], budget: _CallBudget) -> tu
     for (org, table), _ in ordered_candidates[:probe_limit]:
         probed.append(table)
         try:
-            rows = _fetch_table(api_key, org, table, periods, budget)
+            rows = _fetch_table(root, api_key, org, table, periods, budget)
             if rows:
                 return org, table, rows
         except Exception as exc:
@@ -331,7 +368,7 @@ def collect(root: Path) -> dict[str, Any]:
             break
         budget.start_scope(int(spec.get("max_external_calls", 1)))
         try:
-            org_id, table_id, rows = _choose_table(api_key, spec, budget)
+            org_id, table_id, rows = _choose_table(root, api_key, spec, budget)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
