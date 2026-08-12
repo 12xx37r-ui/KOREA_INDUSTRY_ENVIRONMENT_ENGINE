@@ -1,5 +1,8 @@
-import tempfile, json
+import tempfile, json, sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 from src.kiee.industry_kosis_collector import _meta_period, build_selectors, select_metric, normalize_metric, collect_with_cache
 
 def test_meta_period():
