@@ -321,6 +321,7 @@ def collect(root: Path) -> dict[str, Any]:
     config = read_json(root / "config" / "industry_kosis_sources.json", {}) or {}
     universe, _, _ = load_all(root)
     overrides = config.get("industry_keyword_overrides") or {}
+    previous = read_json(output, {}) or {}
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
     budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[], events=[])
@@ -362,6 +363,16 @@ def collect(root: Path) -> dict[str, Any]:
         "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
         "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
+    # Preserve the last valid raw observations when a transient KOSIS outage
+    # returns no rows. The failed attempt remains visible in diagnostics, but
+    # a timeout must not erase the last-known-good input used by the batch feed.
+    if not by_key and isinstance(previous, dict) and previous.get("industries") and previous.get("status") in {"raw", "scored"}:
+        result = dict(previous)
+        result["generated_at_utc"] = utc_now_iso()
+        result["last_attempt_status"] = "pending"
+        result["last_attempt_external_calls"] = budget.attempts
+        result["last_attempt_diagnostics"] = diagnostics + (budget.events or []) + (budget.errors or [])
+        result["missing_data_policy"] = "do_not_impute_or_neutral_fill"
     write_json(output, result)
     return result
 
