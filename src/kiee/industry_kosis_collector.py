@@ -163,7 +163,7 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
             params = dict(base_params)
             params["itmId"] = itm_selector
             params["objL1"] = obj_selector
-            depth_limit = 1 if requested_periods < periods else 4
+            depth_limit = 1 if requested_periods < periods else 8
             for depth in range(0, depth_limit):
                 probe_params = dict(params)
                 for level in range(2, 2 + depth):
