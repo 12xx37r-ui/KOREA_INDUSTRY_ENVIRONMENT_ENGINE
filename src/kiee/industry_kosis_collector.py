@@ -177,6 +177,25 @@ def _fetch_table(api_key: str, org_id: str, table_id: str, periods: int, budget:
                 except RuntimeError as exc:
                     last_error = exc
                     text = str(exc)
+                    if "KOSIS error 20" in text and depth == 0:
+                        # Some KOSIS tables require every remaining
+                        # classification level to be present. Do one bounded
+                        # all-level retry instead of spending the series budget
+                        # walking objL2, objL3, ... one request at a time.
+                        full_params = dict(params)
+                        for level in range(2, 9):
+                            full_params[f"objL{level}"] = "ALL"
+                        try:
+                            full_rows = _rows(_get_data_json(full_params, budget, allow_fallback=False))
+                            if full_rows:
+                                if budget.events is not None:
+                                    budget.events.append(f"table_probe_selector: {table_id} ALL obj_depth=7 periods={requested_periods}")
+                                return full_rows
+                        except RuntimeError as full_exc:
+                            last_error = full_exc
+                            text = str(full_exc)
+                        if "KOSIS error 20" in text:
+                            break
                     if "KOSIS error 31" in text:
                         # The table is valid but the ALL×ALL cell set is too
                         # large. Retry with fewer periods before abandoning it.
