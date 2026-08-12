@@ -712,14 +712,8 @@ def score_industry(
     gl = _extract_global(global_bundle)
     direct = (direct_market.get("industries") or {}).get(industry["key"]) or {}
     cycle_row = _industry_cycle_row(industry_cycle, industry["key"])
-    if not cycle_row or not isinstance(cycle_row.get("current"), dict) or not finite(cycle_row.get("current", {}).get("score")):
-        return _pending_industry_result(
-            industry,
-            direct,
-            "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 입력이 연결될 때까지 임의의 ETF·테마·거시 대체점수를 사용하지 않습니다.",
-            prospective_summary,
-        )
-    return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
+    if cycle_row and isinstance(cycle_row.get("current"), dict) and finite(cycle_row.get("current", {}).get("score")):
+        return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
     current_factors, current_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)
     future_factors, future_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, True)
     current_agg = _aggregate_score(current_factors, industry.get("weights_current") or {})
@@ -759,6 +753,17 @@ def score_industry(
             "quality_weighted_coverage_pct": round(future_agg["quality_weighted_coverage_pct"], 1),
             "factors": future_factors, "contributions": future_agg["contributions"],
             "top_positive_reasons": positive, "top_negative_reasons": negative,
+            "status": "scored",
+        },
+        "forecast_3_6m": {
+            "score": None, "band": None, "quality_score": 0.0,
+            "status": "insufficient_data",
+            "reason": "매크로 모델은 3개월 전망만 제공합니다. 3~6개월 전망은 산업 선행지표 피드 연결 후 제공됩니다.",
+        },
+        "forecast_6_12m": {
+            "score": None, "band": None, "quality_score": 0.0,
+            "status": "insufficient_data",
+            "reason": "매크로 모델은 3개월 전망만 제공합니다. 6~12개월 전망은 산업 선행지표 피드 연결 후 제공됩니다.",
         },
         "direct_market": direct,
         "theme_bridge": future_meta["theme"],
