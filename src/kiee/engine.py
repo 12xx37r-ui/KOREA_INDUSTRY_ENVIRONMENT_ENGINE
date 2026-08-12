@@ -66,10 +66,10 @@ def _append_history(root: Path, as_of: str, results: list[dict[str, Any]]) -> No
         "as_of": as_of,
         "industries": {
             row["industry_key"]: {
-                "current_score": row["current"]["score"],
-                "forecast_3m_score": row["forecast_3m"]["score"],
-                "delta_points": row["forecast_3m"]["delta_points"],
-                "quality_score": row["forecast_3m"]["quality_score"],
+                "current_score": row["current"].get("score"),
+                "forecast_3m_score": row["forecast_3m"].get("score"),
+                "delta_points": row["forecast_3m"].get("delta_points"),
+                "quality_score": row["forecast_3m"].get("quality_score"),
             }
             for row in results
         },
@@ -142,13 +142,13 @@ def run_engine(
         "by_profile_key": {
             key: {
                 "industry_label": row["industry_label"],
-                "current_score": row["current"]["score"],
-                "current_band": row["current"]["band"],
-                "forecast_3m_score": row["forecast_3m"]["score"],
-                "forecast_3m_band": row["forecast_3m"]["band"],
-                "delta_points": row["forecast_3m"]["delta_points"],
-                "direction": row["forecast_3m"]["direction"],
-                "quality_score": row["forecast_3m"]["quality_score"],
+                "current_score": row["current"].get("score"),
+                "current_band": row["current"].get("band", "데이터 부족"),
+                "forecast_3m_score": row["forecast_3m"].get("score"),
+                "forecast_3m_band": row["forecast_3m"].get("band", "데이터 부족"),
+                "delta_points": row["forecast_3m"].get("delta_points"),
+                "direction": row["forecast_3m"].get("direction"),
+                "quality_score": row["forecast_3m"].get("quality_score"),
                 "bounded_direction_adjustment_points": row["stock_prediction_bridge"]["bounded_direction_adjustment_points"],
                 "allowed_as_auxiliary": row["stock_prediction_bridge"]["allowed_as_auxiliary"],
                 "allowed_as_primary": row["stock_prediction_bridge"]["allowed_as_primary"],
