@@ -38,8 +38,12 @@ API_TIMEOUT    = 10
 
 
 def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[ET.Element, str]:
-    """(파싱된 XML 루트, 원본 텍스트 앞 300자) 반환."""
-    query = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
+    """(파싱된 XML 루트, 원본 텍스트 앞 300자) 반환.
+    serviceKey는 data.go.kr 발급 시 이미 URL 인코딩됨 → 별도 처리로 이중 인코딩 방지.
+    """
+    service_key = params.get("serviceKey", "")
+    other = {k: v for k, v in params.items() if k != "serviceKey" and v is not None}
+    query = f"serviceKey={service_key}&{urllib.parse.urlencode(other)}"
     req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/2.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         raw = resp.read()
