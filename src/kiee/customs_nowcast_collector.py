@@ -77,22 +77,40 @@ def _fetch_hs(api_key: str, hs_code: str, year: int, month: int, call_count: lis
         return []
 
 
+def _normalize_hs(hs: str) -> str:
+    """HS 코드를 6자리로 정규화 (관세청 API 요구사항)."""
+    hs = hs.strip().replace(" ", "")
+    if len(hs) < 6:
+        hs = hs.ljust(6, "0")
+    return hs[:10]  # 최대 10자리
+
+
 def _build_series(api_key: str, hs_codes: list[str], call_count: list[int]) -> dict[str, dict[str, float]]:
-    """당해년도 + 전년도 연간 합계 2회 호출로 YoY 계산용 시계열 구성."""
+    """직전 완성 월 + 전년 동월 2회 호출로 YoY 계산용 시계열 구성.
+    관세청 API는 month 파라미터 필수이며 HS코드 6자리 이상 필요.
+    """
     now = datetime.now(timezone.utc)
+    # 직전 완성 월 (당월은 미집계 가능 → 1개월 전)
+    if now.month == 1:
+        ref_year, ref_month = now.year - 1, 12
+    else:
+        ref_year, ref_month = now.year, now.month - 1
+
     yearly: dict[str, dict[str, float]] = {}
 
-    for hs in hs_codes[:1]:  # HS 코드 1개만 (호출 최소화)
-        for year in (now.year, now.year - 1):
+    for hs_raw in hs_codes[:1]:  # HS 코드 1개만 (호출 최소화)
+        hs = _normalize_hs(hs_raw)
+        # 당해 기준월 + 전년 동월 각 1회
+        for year, month in [(ref_year, ref_month), (ref_year - 1, ref_month)]:
             if call_count[0] >= MAX_CALLS:
                 return yearly
-            # month=None → 연간 합계 (파라미터 생략)
             params = {
                 "serviceKey": api_key,
-                "year": str(year),
-                "hsCd": hs,
-                "numOfRows": "100",
-                "pageNo": "1",
+                "year":       str(year),
+                "month":      f"{month:02d}",
+                "hsCd":       hs,
+                "numOfRows":  "100",
+                "pageNo":     "1",
             }
             call_count[0] += 1
             try:
