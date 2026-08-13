@@ -152,41 +152,93 @@
   },
   "direct_market": {
     "label": "IT하드웨어",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "066570",
+      "018260",
+      "307950",
+      "000660",
+      "005930"
+    ],
+    "usable_members": [
+      "066570",
+      "018260",
+      "307950",
+      "000660",
+      "005930"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": -10.07,
+    "positive_breadth": 0.4,
+    "flow_positive_share": 0.4,
+    "market_internal_score": 34.23,
+    "market_internal_quality": 100.0,
+    "valuation_score": 44.68,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 23.39,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 38.46,
+    "median_pbr": 3.99,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "066570": 205000.0,
+      "018260": 235500.0,
+      "307950": 433000.0,
+      "000660": 1504000.0,
+      "005930": 255500.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 50.27382073125,
+    "leading_3m": 49.995538124999996,
+    "quality": 44.02125000000001,
+    "themes": [
+      {
+        "theme_id": "ADVANCED_PACKAGING_HBM",
+        "theme_name": "첨단 패키징·HBM",
+        "current_score": 50.71,
+        "leading_score_3m": 50.55,
+        "source_diffusion_percent": 40.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.55
+      },
+      {
+        "theme_id": "EDGE_AI",
+        "theme_name": "엣지 AI",
+        "current_score": 49.84,
+        "leading_score_3m": 49.44,
+        "source_diffusion_percent": 20.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.55
+      }
+    ],
+    "current_components": {
+      "industrial": 49.93,
+      "commercialization": 53.46,
+      "investment": 49.32,
+      "diffusion": 43.95,
+      "boom": 51.73
+    },
+    "leading_components": {
+      "industrial": 49.93,
+      "commercialization": 53.46,
+      "investment": 49.32,
+      "diffusion": 43.95,
+      "boom": 51.73
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.55
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -211,7 +263,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -226,7 +278,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -278,5 +330,5 @@
       "component_orders"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

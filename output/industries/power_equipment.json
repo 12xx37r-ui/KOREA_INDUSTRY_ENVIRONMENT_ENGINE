@@ -129,41 +129,87 @@
   },
   "direct_market": {
     "label": "전력기기·전선·변압기·전력망",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "010120",
+      "298040",
+      "103590"
+    ],
+    "usable_members": [
+      "010120",
+      "298040",
+      "103590"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": 1.21,
+    "positive_breadth": 0.6667,
+    "flow_positive_share": 1.0,
+    "market_internal_score": 67.94,
+    "market_internal_quality": 91.2,
+    "valuation_score": 42.37,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 11.87,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 51.8,
+    "median_pbr": 11.45,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "010120": 208500.0,
+      "298040": 2892000.0,
+      "103590": 72500.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 54.044732656250005,
+    "leading_3m": 53.77039746875,
+    "quality": 51.31875,
+    "themes": [
+      {
+        "theme_id": "POWER_GRID_ELECTRIFICATION",
+        "theme_name": "전력망·전기화",
+        "current_score": 56.52,
+        "leading_score_3m": 56.48,
+        "source_diffusion_percent": 60.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.75
+      },
+      {
+        "theme_id": "COPPER_INFRASTRUCTURE",
+        "theme_name": "구리 공급망",
+        "current_score": 51.57,
+        "leading_score_3m": 51.06,
+        "source_diffusion_percent": 20.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.75
+      }
+    ],
+    "current_components": {
+      "industrial": 54.07,
+      "commercialization": 56.74,
+      "investment": 54.29,
+      "diffusion": 45.88,
+      "boom": 54.88
+    },
+    "leading_components": {
+      "industrial": 54.07,
+      "commercialization": 56.74,
+      "investment": 54.29,
+      "diffusion": 45.88,
+      "boom": 54.88
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.75
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -188,7 +234,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -203,10 +249,10 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
-    "direct_sector_market_available": false,
-    "industry_specific_valuation_available": false,
+    "direct_sector_market_available": true,
+    "industry_specific_valuation_available": true,
     "industry_historical_valuation_available": false,
     "data_status": "scored",
     "current_metric_coverage": 10.0,
@@ -259,5 +305,5 @@
     ],
     "feed_generated_at_utc": null
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

@@ -153,41 +153,96 @@
   },
   "direct_market": {
     "label": "신재생·태양광·풍력",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "112610",
+      "010060",
+      "011930",
+      "009830",
+      "006400",
+      "373220"
+    ],
+    "usable_members": [
+      "112610",
+      "010060",
+      "011930",
+      "009830",
+      "006400",
+      "373220"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": 8.54,
+    "positive_breadth": 0.8333,
+    "flow_positive_share": 0.6667,
+    "market_internal_score": 72.3,
+    "market_internal_quality": 100.0,
+    "valuation_score": 45.29,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 26.45,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 51.79,
+    "median_pbr": 1.51,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "112610": 43350.0,
+      "010060": 256000.0,
+      "011930": 16800.0,
+      "009830": 35700.0,
+      "006400": 485500.0,
+      "373220": 358500.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 53.2784857875,
+    "leading_3m": 53.15004305,
+    "quality": 54.275,
+    "themes": [
+      {
+        "theme_id": "ENERGY_STORAGE",
+        "theme_name": "에너지저장장치",
+        "current_score": 55.16,
+        "leading_score_3m": 55.11,
+        "source_diffusion_percent": 60.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.7
+      },
+      {
+        "theme_id": "OFFSHORE_WIND",
+        "theme_name": "해상풍력",
+        "current_score": 51.39,
+        "leading_score_3m": 51.19,
+        "source_diffusion_percent": 60.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.7
+      }
+    ],
+    "current_components": {
+      "industrial": 53.27,
+      "commercialization": 53.71,
+      "investment": 53.2,
+      "diffusion": 53.85,
+      "boom": 51.79
+    },
+    "leading_components": {
+      "industrial": 53.27,
+      "commercialization": 53.71,
+      "investment": 53.2,
+      "diffusion": 53.85,
+      "boom": 51.79
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.7
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -212,7 +267,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -227,7 +282,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -281,5 +336,5 @@
       "project_approvals"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

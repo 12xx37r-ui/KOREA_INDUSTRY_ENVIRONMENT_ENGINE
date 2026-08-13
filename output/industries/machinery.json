@@ -128,41 +128,87 @@
   },
   "direct_market": {
     "label": "기계·공작기계·산업장비",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "241560",
+      "267270",
+      "034020"
+    ],
+    "usable_members": [
+      "241560",
+      "267270",
+      "034020"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": -1.59,
+    "positive_breadth": 0.3333,
+    "flow_positive_share": 1.0,
+    "market_internal_score": 55.66,
+    "market_internal_quality": 91.2,
+    "valuation_score": 47.47,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 37.35,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 24.31,
+    "median_pbr": 1.33,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "241560": 63600.0,
+      "267270": 138500.0,
+      "034020": 80300.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 50.305168806249995,
+    "leading_3m": 49.98609331875001,
+    "quality": 44.02125000000001,
+    "themes": [
+      {
+        "theme_id": "SMART_FACTORY",
+        "theme_name": "스마트팩토리",
+        "current_score": 50.11,
+        "leading_score_3m": 49.82,
+        "source_diffusion_percent": 20.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.55
+      },
+      {
+        "theme_id": "ADDITIVE_MANUFACTURING",
+        "theme_name": "3D프린팅",
+        "current_score": 50.5,
+        "leading_score_3m": 50.15,
+        "source_diffusion_percent": 40.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.55
+      }
+    ],
+    "current_components": {
+      "industrial": 50.35,
+      "commercialization": 53.98,
+      "investment": 48.86,
+      "diffusion": 43.95,
+      "boom": 50.23
+    },
+    "leading_components": {
+      "industrial": 50.35,
+      "commercialization": 53.98,
+      "investment": 48.86,
+      "diffusion": 43.95,
+      "boom": 50.23
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.55
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -187,7 +233,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -202,10 +248,10 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
-    "direct_sector_market_available": false,
-    "industry_specific_valuation_available": false,
+    "direct_sector_market_available": true,
+    "industry_specific_valuation_available": true,
     "industry_historical_valuation_available": false,
     "data_status": "scored",
     "current_metric_coverage": 10.0,
@@ -258,5 +304,5 @@
     ],
     "feed_generated_at_utc": null
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

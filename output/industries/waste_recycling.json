@@ -153,41 +153,88 @@
   },
   "direct_market": {
     "label": "폐기물처리·재활용·환경서비스",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "029960",
+      "095190",
+      "365340",
+      "003670"
+    ],
+    "usable_members": [
+      "095190",
+      "365340",
+      "003670"
+    ],
+    "member_coverage": 0.75,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": -0.75,
+    "positive_breadth": 0.3333,
+    "flow_positive_share": 0.0,
+    "market_internal_score": 32.55,
+    "market_internal_quality": 75.0,
+    "valuation_score": 41.94,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 9.7,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 3137.25,
+    "median_pbr": 3.43,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "095190": 1995.0,
+      "365340": 35650.0,
+      "003670": 160000.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 52.598578125,
+    "leading_3m": 52.671581,
+    "quality": 47.12500000000001,
+    "themes": [
+      {
+        "theme_id": "BATTERY_RECYCLING",
+        "theme_name": "배터리 재활용",
+        "current_score": 51.1,
+        "leading_score_3m": 51.27,
+        "source_diffusion_percent": 60.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.5
+      },
+      {
+        "theme_id": "CARBON_CAPTURE",
+        "theme_name": "탄소포집·저장",
+        "current_score": 54.1,
+        "leading_score_3m": 54.08,
+        "source_diffusion_percent": 80.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.5
+      }
+    ],
+    "current_components": {
+      "industrial": 52.96,
+      "commercialization": 50.65,
+      "investment": 53.47,
+      "diffusion": 55.5,
+      "boom": 51.56
+    },
+    "leading_components": {
+      "industrial": 52.96,
+      "commercialization": 50.65,
+      "investment": 53.47,
+      "diffusion": 55.5,
+      "boom": 51.56
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.5
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -212,7 +259,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -227,7 +274,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -279,5 +326,5 @@
       "carbon_price"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

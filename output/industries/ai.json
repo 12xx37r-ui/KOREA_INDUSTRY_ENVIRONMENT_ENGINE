@@ -152,41 +152,100 @@
   },
   "direct_market": {
     "label": "AI",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "304100",
+      "347170",
+      "035720",
+      "022100",
+      "005930"
+    ],
+    "usable_members": [
+      "304100",
+      "035720",
+      "022100",
+      "005930"
+    ],
+    "member_coverage": 0.8,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": 8.205,
+    "positive_breadth": 0.75,
+    "flow_positive_share": 0.5,
+    "market_internal_score": 65.62,
+    "market_internal_quality": 87.0,
+    "valuation_score": 44.82,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 24.1,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 38.68,
+    "median_pbr": 3.575,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "304100": 17700.0,
+      "035720": 39550.0,
+      "022100": 21200.0,
+      "005930": 255500.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
   },
   "theme_bridge": {
-    "available": false,
-    "current": null,
-    "leading_3m": null,
-    "quality": 0.0,
-    "themes": [],
-    "relevance_weight": 0.0
+    "available": true,
+    "current": 49.6915523,
+    "leading_3m": 49.500194375,
+    "quality": 53.865,
+    "themes": [
+      {
+        "theme_id": "AI_SEMICONDUCTORS",
+        "theme_name": "AI 반도체",
+        "current_score": 50.68,
+        "leading_score_3m": 50.49,
+        "source_diffusion_percent": 40.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.9
+      },
+      {
+        "theme_id": "INDUSTRIAL_ROBOTICS",
+        "theme_name": "산업용 로봇",
+        "current_score": 48.66,
+        "leading_score_3m": 48.93,
+        "source_diffusion_percent": 20.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.9
+      },
+      {
+        "theme_id": "EDGE_AI",
+        "theme_name": "엣지 AI",
+        "current_score": 49.73,
+        "leading_score_3m": 49.08,
+        "source_diffusion_percent": 20.0,
+        "prevalidation": true,
+        "industry_theme_relevance": 0.9
+      }
+    ],
+    "current_components": {
+      "industrial": 49.21,
+      "commercialization": 56.14,
+      "investment": 47.98,
+      "diffusion": 38.45,
+      "boom": 49.91
+    },
+    "leading_components": {
+      "industrial": 49.21,
+      "commercialization": 56.14,
+      "investment": 47.98,
+      "diffusion": 38.45,
+      "boom": 49.91
+    },
+    "prevalidation": true,
+    "relevance_weight": 0.9
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -211,7 +270,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -226,7 +285,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -278,5 +337,5 @@
       "gpu_orders"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }

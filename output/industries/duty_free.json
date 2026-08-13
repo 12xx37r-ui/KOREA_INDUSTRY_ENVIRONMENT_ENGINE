@@ -152,30 +152,42 @@
   },
   "direct_market": {
     "label": "면세점·여행유통",
-    "requested_basket": [],
-    "usable_members": [],
-    "member_coverage": 0.0,
+    "requested_basket": [
+      "004170",
+      "023530",
+      "008770"
+    ],
+    "usable_members": [
+      "004170",
+      "023530",
+      "008770"
+    ],
+    "member_coverage": 1.0,
     "period_start": "20260708",
     "period_end": "20260812",
-    "median_return_pct": null,
-    "positive_breadth": null,
-    "flow_positive_share": null,
-    "market_internal_score": null,
-    "market_internal_quality": 0.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "median_return_pct": -41.32,
+    "positive_breadth": 0.0,
+    "flow_positive_share": 0.0,
+    "market_internal_score": 3.0,
+    "market_internal_quality": 91.2,
+    "valuation_score": 44.05,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 20.27,
     "valuation_history_median_per": null,
     "valuation_history_median_pbr": null,
-    "median_per": null,
-    "median_pbr": null,
+    "median_per": 152.14,
+    "median_pbr": 0.79,
     "broad_market_median_per": 12.14,
     "broad_market_median_pbr": 0.82,
-    "member_closes": {},
+    "member_closes": {
+      "004170": 399000.0,
+      "023530": 97300.0,
+      "008770": 44050.0
+    },
     "source": "KRX market-wide bulk tables via pykrx; local industry filtering",
     "source_type": "direct_sector_basket",
     "stale": false
@@ -186,7 +198,7 @@
     "leading_3m": null,
     "quality": 0.0,
     "themes": [],
-    "relevance_weight": 0.0
+    "relevance_weight": 0.3
   },
   "stock_prediction_bridge": {
     "allowed_as_auxiliary": false,
@@ -211,7 +223,7 @@
       "schema_version": "1.0.0",
       "status": "PENDING",
       "quality_score": 30.0,
-      "registered_forecasts": 34,
+      "registered_forecasts": 101,
       "evaluated_cases": 0,
       "directional_cases": 0,
       "direction_accuracy": null,
@@ -226,7 +238,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T01:25:55.854985+00:00"
+      "generated_at_utc": "2026-08-13T01:50:32.778563+00:00"
     },
     "data_status": "insufficient_data",
     "current_metric_coverage": 0.0,
@@ -278,5 +290,5 @@
       "fx"
     ]
   },
-  "notes": "산업실물지표 피드 연결 전에는 점수를 산출하지 않음"
+  "notes": ""
 }
