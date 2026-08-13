@@ -339,15 +339,25 @@ def _fetch_price_change(
     attempts = 0
     fn = getattr(stock, "get_market_price_change_by_ticker", None)
     if callable(fn):
-        attempts += 1
-        try:
-            frame = fn(start, end, market=market)
-            rows = _rows(frame)
-            if rows and any(finite(row.get("change_pct")) is not None for row in rows.values()):
-                return rows, attempts, start, end
-            diagnostics.append(f"price:{market}:primary_empty_or_columns:{list(getattr(frame, 'columns', []))}")
-        except Exception as exc:
-            diagnostics.append(f"price:{market}:primary:{type(exc).__name__}:{str(exc)[:140]}")
+        # Try primary date range; if pykrx raises IndexError (empty frame internals)
+        # retry once with start backed off one business day before falling back.
+        for attempt_start in [start] + _backtrack_business_dates(start, 2)[1:2]:
+            attempts += 1
+            try:
+                frame = fn(attempt_start, end, market=market)
+                rows = _rows(frame)
+                if rows and any(finite(row.get("change_pct")) is not None for row in rows.values()):
+                    if attempt_start != start:
+                        diagnostics.append(f"price:{market}:primary_start_adjusted:{start}->{attempt_start}")
+                    return rows, attempts, attempt_start, end
+                diagnostics.append(f"price:{market}:primary_empty_or_columns:{list(getattr(frame, 'columns', []))}")
+                break
+            except IndexError as exc:
+                diagnostics.append(f"price:{market}:primary_index_error_retry:{attempt_start}:{str(exc)[:80]}")
+                continue
+            except Exception as exc:
+                diagnostics.append(f"price:{market}:primary:{type(exc).__name__}:{str(exc)[:140]}")
+                break
 
     snapshot_fn = getattr(stock, "get_market_ohlcv_by_ticker", None)
     if not callable(snapshot_fn):
