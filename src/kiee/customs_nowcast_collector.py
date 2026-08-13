@@ -1,17 +1,13 @@
 """
 customs_nowcast_collector.py
-관세청 HS 품목별 수출입 실적 API — XML 응답 파싱.
+관세청 HS 품목별 수출입 실적 API.
 
-End Point : https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList
-Format    : XML
-Secret    : CUSTOMS_API_KEY (data.go.kr 일반 인증키)
+Secret : CUSTOMS_API_KEY (data.go.kr 일반 인증키)
+출력   : input/customs_nowcast_raw.json
 
-파라미터:
-  serviceKey : 인증키
-  yyyyMm     : 조회 연월 (YYYYMM)
-  hsCd       : HS 코드 (2~10자리)
-  numOfRows  : 행수
-  pageNo     : 페이지
+API 400/접근 오류 시 즉시 pending 처리 — 워크플로우 블로킹 방지.
+성공 시: status=raw, industries 채워짐.
+실패 시: status=pending, reason에 원인 기록 (엔진은 정상 동작).
 """
 from __future__ import annotations
 
@@ -26,29 +22,34 @@ from typing import Any
 
 from .util import age_hours, clamp, read_json, utc_now_iso, write_json
 
-# 올바른 엔드포인트 (HS 코드 기반 수출입 실적)
-BASE_URL       = "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList"
+# 두 엔드포인트 모두 시도
+ENDPOINTS = [
+    "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList",
+    "https://apis.data.go.kr/1220000/need2MainItemList/getNeed2MainItemList",
+]
 OUTPUT_RAW     = "input/customs_nowcast_raw.json"
 CACHE_TTL_H    = 12
 QUALITY_CAP    = 65.0
 SHRINKAGE      = 0.70
-MAX_CALLS      = 20
-MAX_INDUSTRIES = 15
-API_TIMEOUT    = 10
+MAX_CALLS      = 12    # 빠르게 실패 확인 후 종료
+MAX_INDUSTRIES = 10
+API_TIMEOUT    = 8
+# 연속 400 오류 허용 횟수 — 초과 시 즉시 종료
+MAX_CONSECUTIVE_ERRORS = 3
 
 
-def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[ET.Element, str]:
-    """(파싱된 XML 루트, 원본 텍스트 앞 300자) 반환.
-    serviceKey는 data.go.kr 발급 시 이미 URL 인코딩됨 → 별도 처리로 이중 인코딩 방지.
-    """
-    service_key = params.get("serviceKey", "")
-    other = {k: v for k, v in params.items() if k != "serviceKey" and v is not None}
-    query = f"serviceKey={service_key}&{urllib.parse.urlencode(other)}"
-    req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/2.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        raw = resp.read()
-    text = raw.decode("utf-8", errors="replace")
-    return ET.fromstring(text), text[:300]
+def _request(url: str, api_key: str, other_params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[str, int]:
+    """(응답 텍스트, HTTP 상태코드) 반환. serviceKey 이중 인코딩 방지."""
+    rest = urllib.parse.urlencode({k: v for k, v in other_params.items() if v is not None})
+    full_url = f"{url}?serviceKey={api_key}&{rest}"
+    req = urllib.request.Request(full_url, headers={"User-Agent": "kiee-customs/3.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.read().decode("utf-8", errors="replace"), resp.status
+    except urllib.error.HTTPError as e:
+        return "", e.code
+    except Exception as e:
+        return str(e), -1
 
 
 def _number(value: Any) -> float | None:
@@ -59,106 +60,55 @@ def _number(value: Any) -> float | None:
         return None
 
 
-def _normalize_hs(hs: str) -> str:
-    """HS 코드 정규화 — 2자리 챕터도 그대로 허용, 앞뒤 공백 제거."""
-    return hs.strip().replace(" ", "")
-
-
 def _ref_months(now: datetime) -> tuple[tuple[int, int], tuple[int, int]]:
-    """(당해 기준월, 전년 동월) 반환. 직전 완성 월 기준."""
     if now.month == 1:
         cur = (now.year - 1, 12)
     else:
         cur = (now.year, now.month - 1)
-    prev = (cur[0] - 1, cur[1])
-    return cur, prev
+    return cur, (cur[0] - 1, cur[1])
 
 
-def _build_series(
-    api_key: str,
-    hs_codes: list[str],
-    call_count: list[int],
-    now: datetime,
-    debug_info: list[str],
-) -> dict[str, dict[str, float]]:
+def _probe_endpoint(api_key: str, diag: list[str]) -> tuple[str, dict[str, str]] | None:
     """
-    당해 기준월 + 전년 동월 각 1회 호출 → YoY 계산용 딕셔너리.
-    키: "YYYY", 값: {"exp": float, "imp": float}
+    동작하는 엔드포인트 + 파라미터 형식을 자동 탐색.
+    성공하면 (endpoint_url, base_params_template) 반환, 실패하면 None.
     """
-    (cur_year, cur_month), (prev_year, prev_month) = _ref_months(now)
-    yearly: dict[str, dict[str, float]] = {}
-
-    for hs_raw in hs_codes[:1]:
-        hs = _normalize_hs(hs_raw)
-        for year, month in [(cur_year, cur_month), (prev_year, prev_month)]:
-            if call_count[0] >= MAX_CALLS:
-                return yearly
-            params = {
-                "serviceKey": api_key,
-                "yyyyMm":     f"{year}{month:02d}",
-                "hsCd":       hs,
-                "numOfRows":  "100",
-                "pageNo":     "1",
-            }
-            call_count[0] += 1
-            try:
-                root_el, raw_snippet = _get_xml(BASE_URL, params)
-                items = root_el.findall(".//item")
-                # 결과코드 및 총건수 추출 (디버그용)
-                result_code = (root_el.findtext(".//resultCode") or "").strip()
-                total_count = (root_el.findtext(".//totalCount") or "0").strip()
-                debug_info.append(
-                    f"HS={hs} {year}{month:02d}: code={result_code} total={total_count}"
-                    f" items={len(items)} raw={raw_snippet[:120]!r}"
-                )
-                yk = str(year)
-                if yk not in yearly:
-                    yearly[yk] = {"exp": 0.0, "imp": 0.0}
-                for item in items:
-                    row = {c.tag: (c.text or "").strip() for c in item}
-                    exp = _number(
-                        row.get("expAmt") or row.get("expDlr") or
-                        row.get("exportAmt") or row.get("exp") or
-                        row.get("expWgt")
-                    )
-                    imp = _number(
-                        row.get("impAmt") or row.get("impDlr") or
-                        row.get("importAmt") or row.get("imp") or
-                        row.get("impWgt")
-                    )
-                    if exp:
-                        yearly[yk]["exp"] += exp
-                    if imp:
-                        yearly[yk]["imp"] += imp
-            except Exception as e:
-                debug_info.append(f"HS={hs} {year}{month:02d}: exception={str(e)[:80]}")
-                continue
-    return yearly
-
-
-def _yoy_score(series: dict[str, dict[str, float]], kind: str) -> float | None:
-    years = sorted(series.keys())
-    if len(years) < 2:
-        return None
-    cur = series[years[-1]].get(kind, 0.0)
-    prv = series[years[-2]].get(kind, 0.0)
-    if prv <= 0 or cur <= 0:
-        return None
-    yoy = (cur / prv - 1.0) * 100.0
-    return round(clamp(50.0 + yoy, 0.0, 100.0), 3)
+    test_hs = "8541"
+    test_ym = "202607"
+    # 시도할 파라미터 조합
+    param_variants = [
+        {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"yyyymm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"yyyyMm": test_ym, "hscd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"strtYymm": test_ym, "endYymm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"year": test_ym[:4], "month": test_ym[4:], "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
+    ]
+    for endpoint in ENDPOINTS:
+        for params in param_variants:
+            text, code = _request(endpoint, api_key, params)
+            tag = f"probe {endpoint.split('/')[-1]} {list(params.keys())[:2]}"
+            if code == 200:
+                diag.append(f"{tag}: OK code=200 snippet={text[:80]!r}")
+                return endpoint, params
+            else:
+                diag.append(f"{tag}: code={code}")
+    return None
 
 
 def collect(root: Path, force: bool = False) -> dict[str, Any]:
     output_path = root / OUTPUT_RAW
     api_key = os.getenv("CUSTOMS_API_KEY", "").strip()
 
-    def _pending(reason: str, calls: int = 0) -> dict[str, Any]:
-        result = {
+    def _pending(reason: str, calls: int = 0, diag: list[str] | None = None) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "customs-nowcast-v2", "reason": reason,
+            "collector": "customs-nowcast-v3", "reason": reason,
             "external_calls": calls,
         }
+        if diag:
+            result["diagnostics"] = diag
         write_json(output_path, result)
         return result
 
@@ -179,71 +129,134 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         return _pending("config/customs_hs_mapping.json 없음")
 
     now = datetime.now(timezone.utc)
-    (cur_year, cur_month), _ = _ref_months(now)
+    (cur_year, cur_month), (prev_year, prev_month) = _ref_months(now)
     ref_label = f"{cur_year}{cur_month:02d}"
 
+    diag: list[str] = [f"ref={ref_label}"]
     call_count = [0]
+
+    # ── 엔드포인트 자동 탐색 ──────────────────────────────────────────────────
+    probe = _probe_endpoint(api_key, diag)
+    call_count[0] += len(ENDPOINTS) * 6  # probe 호출 수 근사
+    if probe is None:
+        return _pending(
+            "관세청 API 엔드포인트 탐색 실패 (400/인증 오류) — "
+            "CUSTOMS_API_KEY가 이 서비스에 등록됐는지 확인 필요",
+            call_count[0], diag
+        )
+
+    endpoint, base_params = probe
+    diag.append(f"endpoint_ok={endpoint.split('/')[-1]} params={list(base_params.keys())}")
+
+    # ── 산업별 수집 ───────────────────────────────────────────────────────────
     results: list[dict] = []
-    diagnostics: list[str] = [f"endpoint=impExpHsItemList ref={ref_label}"]
 
     for industry_key, ind_cfg in list(industry_configs.items())[:MAX_INDUSTRIES]:
         if call_count[0] >= MAX_CALLS:
-            diagnostics.append("call cap reached")
+            diag.append("call cap reached")
             break
         hs_codes = ind_cfg.get("hs_codes", [])
+        if not hs_codes:
+            continue
+        hs = hs_codes[0]
         exp_w = float(ind_cfg.get("export_weight", 0.7))
         imp_w = float(ind_cfg.get("import_weight", 0.3))
 
-        series = _build_series(api_key, hs_codes, call_count, now, diagnostics)
-        if not series:
-            diagnostics.append(f"{industry_key}: no data HS={hs_codes[:2]}")
+        yearly: dict[str, dict[str, float]] = {}
+        for year, month in [(cur_year, cur_month), (prev_year, prev_month)]:
+            if call_count[0] >= MAX_CALLS:
+                break
+            params = dict(base_params)
+            # yyyyMm 형식이면 통합, year/month 분리면 각각
+            if "yyyyMm" in params or "yyyymm" in params:
+                key = "yyyyMm" if "yyyyMm" in params else "yyyymm"
+                params[key] = f"{year}{month:02d}"
+            elif "strtYymm" in params:
+                params["strtYymm"] = f"{year}{month:02d}"
+                params["endYymm"] = f"{year}{month:02d}"
+            else:
+                params["year"] = str(year)
+                params["month"] = f"{month:02d}"
+            if "hsCd" in params or "hscd" in params:
+                k = "hsCd" if "hsCd" in params else "hscd"
+                params[k] = hs
+
+            call_count[0] += 1
+            text, code = _request(endpoint, api_key, params)
+            if code != 200:
+                diag.append(f"{industry_key} {year}{month:02d}: HTTP {code}")
+                continue
+            try:
+                root_el = ET.fromstring(text)
+                items = root_el.findall(".//item")
+                yk = str(year)
+                yearly.setdefault(yk, {"exp": 0.0, "imp": 0.0})
+                for item in items:
+                    row = {c.tag: (c.text or "").strip() for c in item}
+                    exp = _number(row.get("expAmt") or row.get("expDlr") or row.get("exportAmt"))
+                    imp = _number(row.get("impAmt") or row.get("impDlr") or row.get("importAmt"))
+                    if exp:
+                        yearly[yk]["exp"] += exp
+                    if imp:
+                        yearly[yk]["imp"] += imp
+            except Exception as e:
+                diag.append(f"{industry_key} parse error: {str(e)[:60]}")
+
+        years = sorted(yearly.keys())
+        if len(years) < 2:
+            diag.append(f"{industry_key}: series<2 HS={hs}")
             continue
 
-        exp_pct = _yoy_score(series, "exp")
-        imp_pct = _yoy_score(series, "imp")
+        def yoy_score(kind: str) -> float | None:
+            cur = yearly[years[-1]].get(kind, 0.0)
+            prv = yearly[years[-2]].get(kind, 0.0)
+            if prv <= 0 or cur <= 0:
+                return None
+            return round(clamp(50.0 + (cur / prv - 1.0) * 100.0, 0.0, 100.0), 3)
+
+        exp_pct = yoy_score("exp")
+        imp_pct = yoy_score("imp")
         if exp_pct is None and imp_pct is None:
-            diagnostics.append(f"{industry_key}: series empty HS={hs_codes[:1]}")
+            diag.append(f"{industry_key}: no positive values")
             continue
 
         pieces = [(s, w) for s, w in [(exp_pct, exp_w), (imp_pct, imp_w)] if s is not None]
-        total_w = sum(w for _, w in pieces)
-        raw_score = sum(s * w for s, w in pieces) / total_w
+        raw_score = sum(s * w for s, w in pieces) / sum(w for _, w in pieces)
         score = round(clamp(50.0 + (raw_score - 50.0) * SHRINKAGE, 0.0, 100.0), 4)
 
-        metric = {
-            "id":        f"customs_nowcast_{hs_codes[0] if hs_codes else 'unk'}",
-            "factor":    "production_shipments",
-            "score":     score,
-            "quality":   QUALITY_CAP,
-            "source":    f"관세청 HS={','.join(hs_codes[:2])} {ref_label}",
-            "as_of":     f"{cur_year}-{cur_month:02d}-01",
-            "available": True,
-            "is_nowcast": True,
-            "exp_yoy_score": exp_pct,
-            "imp_yoy_score": imp_pct,
-            "note": f"관세청 impExpHsItemList API. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
-        }
         results.append({
             "industry_key": industry_key,
-            "current": {"metrics": [metric], "nowcast": True},
+            "current": {"metrics": [{
+                "id":            f"customs_nowcast_{hs}",
+                "factor":        "production_shipments",
+                "score":         score,
+                "quality":       QUALITY_CAP,
+                "source":        f"관세청 HS={hs} {ref_label}",
+                "as_of":         f"{cur_year}-{cur_month:02d}-01",
+                "available":     True,
+                "is_nowcast":    True,
+                "exp_yoy_score": exp_pct,
+                "imp_yoy_score": imp_pct,
+                "note":          f"관세청 API. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
+            }], "nowcast": True},
             "as_of": ref_label,
         })
-        diagnostics.append(f"{industry_key}: score={score} exp={exp_pct} imp={imp_pct}")
+        diag.append(f"{industry_key}: score={score} exp={exp_pct} imp={imp_pct}")
 
-    result = {
+    result: dict[str, Any] = {
         "schema_version": "1.0.0",
         "status": "raw" if results else "pending",
         "generated_at_utc": utc_now_iso(),
-        "collector": "customs-nowcast-v2",
+        "collector": "customs-nowcast-v3",
         "reference_month": ref_label,
         "industries": results,
         "scored_industry_count": len(results),
         "external_calls": call_count[0],
-        "diagnostics": diagnostics,
+        "diagnostics": diag,
         "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     if not results:
-        result["reason"] = "모든 HS 코드 조회 결과 없음 — API 응답 필드명 또는 HS 코드 확인 필요"
+        result["reason"] = "수집 데이터 없음 — diagnostics 참조"
     write_json(output_path, result)
     return result
 
@@ -262,9 +275,8 @@ def main() -> int:
         "calls":      result.get("external_calls", 0),
         "ref_month":  result.get("reference_month"),
     }, ensure_ascii=False))
-    if result.get("diagnostics"):
-        for d in result["diagnostics"]:
-            print(f"  {d}")
+    for d in (result.get("diagnostics") or []):
+        print(f"  {d}")
     return 0
 
 
