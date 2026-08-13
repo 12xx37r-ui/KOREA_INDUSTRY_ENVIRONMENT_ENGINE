@@ -1,11 +1,17 @@
 """
 customs_nowcast_collector.py
-관세청_품목별 수출입실적(GW) API — XML 응답 파싱.
+관세청 HS 품목별 수출입 실적 API — XML 응답 파싱.
 
-End Point : https://apis.data.go.kr/1220000/Itemtrade
-Operation : /getItemtradeList
+End Point : https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList
 Format    : XML
 Secret    : CUSTOMS_API_KEY (data.go.kr 일반 인증키)
+
+파라미터:
+  serviceKey : 인증키
+  yyyyMm     : 조회 연월 (YYYYMM)
+  hsCd       : HS 코드 (2~10자리)
+  numOfRows  : 행수
+  pageNo     : 페이지
 """
 from __future__ import annotations
 
@@ -18,30 +24,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .util import age_hours, clamp, finite, read_json, utc_now_iso, write_json
+from .util import age_hours, clamp, read_json, utc_now_iso, write_json
 
-BASE_URL       = "https://apis.data.go.kr/1220000/Itemtrade/getItemtradeList"
+# 올바른 엔드포인트 (HS 코드 기반 수출입 실적)
+BASE_URL       = "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList"
 OUTPUT_RAW     = "input/customs_nowcast_raw.json"
 CACHE_TTL_H    = 12
 QUALITY_CAP    = 65.0
 SHRINKAGE      = 0.70
-MAX_CALLS      = 20   # 30→20 (속도 우선)
-MAX_INDUSTRIES = 15   # 앞 15개 산업만 수집
-API_TIMEOUT    = 8    # 25→8초 (무응답 조기 탈출)
+MAX_CALLS      = 20
+MAX_INDUSTRIES = 15
+API_TIMEOUT    = 10
 
 
 def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> ET.Element:
     query = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
-    req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/1.0"})
+    req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/2.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return ET.fromstring(resp.read())
-
-
-def _xml_text(el: ET.Element | None, tag: str, default: str = "") -> str:
-    if el is None:
-        return default
-    child = el.find(tag)
-    return (child.text or "").strip() if child is not None else default
 
 
 def _number(value: Any) -> float | None:
@@ -52,62 +52,42 @@ def _number(value: Any) -> float | None:
         return None
 
 
-def _fetch_hs(api_key: str, hs_code: str, year: int, month: int, call_count: list[int]) -> list[dict]:
-    """단일 HS코드·연월 조회. XML 파싱 후 행 리스트 반환."""
-    if call_count[0] >= MAX_CALLS:
-        return []
-    params = {
-        "serviceKey": api_key,
-        "year": str(year),
-        "month": f"{month:02d}",
-        "hsCd": hs_code,
-        "numOfRows": "100",
-        "pageNo": "1",
-    }
-    call_count[0] += 1
-    try:
-        root = _get_xml(BASE_URL, params)
-        items = root.findall(".//item")
-        result = []
-        for item in items:
-            row = {child.tag: (child.text or "").strip() for child in item}
-            result.append(row)
-        return result
-    except Exception:
-        return []
-
-
 def _normalize_hs(hs: str) -> str:
-    """HS 코드를 6자리로 정규화 (관세청 API 요구사항)."""
-    hs = hs.strip().replace(" ", "")
-    if len(hs) < 6:
-        hs = hs.ljust(6, "0")
-    return hs[:10]  # 최대 10자리
+    """HS 코드 정규화 — 2자리 챕터도 그대로 허용, 앞뒤 공백 제거."""
+    return hs.strip().replace(" ", "")
 
 
-def _build_series(api_key: str, hs_codes: list[str], call_count: list[int]) -> dict[str, dict[str, float]]:
-    """직전 완성 월 + 전년 동월 2회 호출로 YoY 계산용 시계열 구성.
-    관세청 API는 month 파라미터 필수이며 HS코드 6자리 이상 필요.
-    """
-    now = datetime.now(timezone.utc)
-    # 직전 완성 월 (당월은 미집계 가능 → 1개월 전)
+def _ref_months(now: datetime) -> tuple[tuple[int, int], tuple[int, int]]:
+    """(당해 기준월, 전년 동월) 반환. 직전 완성 월 기준."""
     if now.month == 1:
-        ref_year, ref_month = now.year - 1, 12
+        cur = (now.year - 1, 12)
     else:
-        ref_year, ref_month = now.year, now.month - 1
+        cur = (now.year, now.month - 1)
+    prev = (cur[0] - 1, cur[1])
+    return cur, prev
 
+
+def _build_series(
+    api_key: str,
+    hs_codes: list[str],
+    call_count: list[int],
+    now: datetime,
+) -> dict[str, dict[str, float]]:
+    """
+    당해 기준월 + 전년 동월 각 1회 호출 → YoY 계산용 딕셔너리.
+    키: "YYYY", 값: {"exp": float, "imp": float}
+    """
+    (cur_year, cur_month), (prev_year, prev_month) = _ref_months(now)
     yearly: dict[str, dict[str, float]] = {}
 
-    for hs_raw in hs_codes[:1]:  # HS 코드 1개만 (호출 최소화)
+    for hs_raw in hs_codes[:1]:
         hs = _normalize_hs(hs_raw)
-        # 당해 기준월 + 전년 동월 각 1회
-        for year, month in [(ref_year, ref_month), (ref_year - 1, ref_month)]:
+        for year, month in [(cur_year, cur_month), (prev_year, prev_month)]:
             if call_count[0] >= MAX_CALLS:
                 return yearly
             params = {
                 "serviceKey": api_key,
-                "year":       str(year),
-                "month":      f"{month:02d}",
+                "yyyyMm":     f"{year}{month:02d}",
                 "hsCd":       hs,
                 "numOfRows":  "100",
                 "pageNo":     "1",
@@ -116,13 +96,20 @@ def _build_series(api_key: str, hs_codes: list[str], call_count: list[int]) -> d
             try:
                 root_el = _get_xml(BASE_URL, params)
                 items = root_el.findall(".//item")
+                yk = str(year)
+                if yk not in yearly:
+                    yearly[yk] = {"exp": 0.0, "imp": 0.0}
                 for item in items:
-                    row = {child.tag: (child.text or "").strip() for child in item}
-                    exp = _number(row.get("expAmt") or row.get("expDlr") or row.get("exportAmt"))
-                    imp = _number(row.get("impAmt") or row.get("impDlr") or row.get("importAmt"))
-                    yk = str(year)
-                    if yk not in yearly:
-                        yearly[yk] = {"exp": 0.0, "imp": 0.0}
+                    row = {c.tag: (c.text or "").strip() for c in item}
+                    # 응답 필드명 후보 모두 시도
+                    exp = _number(
+                        row.get("expAmt") or row.get("expDlr") or
+                        row.get("exportAmt") or row.get("exp")
+                    )
+                    imp = _number(
+                        row.get("impAmt") or row.get("impDlr") or
+                        row.get("importAmt") or row.get("imp")
+                    )
                     if exp:
                         yearly[yk]["exp"] += exp
                     if imp:
@@ -132,11 +119,7 @@ def _build_series(api_key: str, hs_codes: list[str], call_count: list[int]) -> d
     return yearly
 
 
-def _yoy_percentile(series: dict[str, dict[str, float]], kind: str) -> float | None:
-    """연간 데이터 기준 YoY% → 0~100 점수로 변환.
-    YoY > 0: 50 이상, YoY < 0: 50 미만.
-    clamp: -50%~+50% → 0~100점.
-    """
+def _yoy_score(series: dict[str, dict[str, float]], kind: str) -> float | None:
     years = sorted(series.keys())
     if len(years) < 2:
         return None
@@ -144,21 +127,20 @@ def _yoy_percentile(series: dict[str, dict[str, float]], kind: str) -> float | N
     prv = series[years[-2]].get(kind, 0.0)
     if prv <= 0 or cur <= 0:
         return None
-    yoy = (cur / prv - 1.0) * 100.0  # %
-    # -50%~+50% 범위를 0~100으로 선형 매핑
-    score = clamp(50.0 + yoy, 0.0, 100.0)
-    return round(score, 3)
+    yoy = (cur / prv - 1.0) * 100.0
+    return round(clamp(50.0 + yoy, 0.0, 100.0), 3)
 
 
 def collect(root: Path, force: bool = False) -> dict[str, Any]:
     output_path = root / OUTPUT_RAW
     api_key = os.getenv("CUSTOMS_API_KEY", "").strip()
 
-    def _pending(reason: str) -> dict[str, Any]:
+    def _pending(reason: str, calls: int = 0) -> dict[str, Any]:
         result = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "customs-nowcast-v1", "reason": reason, "external_calls": 0,
+            "collector": "customs-nowcast-v2", "reason": reason,
+            "external_calls": calls,
         }
         write_json(output_path, result)
         return result
@@ -179,9 +161,13 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     if not industry_configs:
         return _pending("config/customs_hs_mapping.json 없음")
 
+    now = datetime.now(timezone.utc)
+    (cur_year, cur_month), _ = _ref_months(now)
+    ref_label = f"{cur_year}{cur_month:02d}"
+
     call_count = [0]
     results: list[dict] = []
-    diagnostics: list[str] = []
+    diagnostics: list[str] = [f"endpoint=impExpHsItemList ref={ref_label}"]
 
     for industry_key, ind_cfg in list(industry_configs.items())[:MAX_INDUSTRIES]:
         if call_count[0] >= MAX_CALLS:
@@ -191,56 +177,56 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         exp_w = float(ind_cfg.get("export_weight", 0.7))
         imp_w = float(ind_cfg.get("import_weight", 0.3))
 
-        series = _build_series(api_key, hs_codes, call_count)
+        series = _build_series(api_key, hs_codes, call_count, now)
         if not series:
-            diagnostics.append(f"{industry_key}: no data for HS {hs_codes[:2]}")
+            diagnostics.append(f"{industry_key}: no data HS={hs_codes[:2]}")
             continue
 
-        exp_pct = _yoy_percentile(series, "exp")
-        imp_pct = _yoy_percentile(series, "imp")
+        exp_pct = _yoy_score(series, "exp")
+        imp_pct = _yoy_score(series, "imp")
         if exp_pct is None and imp_pct is None:
-            diagnostics.append(f"{industry_key}: insufficient series ({len(series)}개월)")
+            diagnostics.append(f"{industry_key}: series empty HS={hs_codes[:1]}")
             continue
 
-        pieces = []
-        if exp_pct is not None:
-            pieces.append((exp_pct, exp_w))
-        if imp_pct is not None:
-            pieces.append((imp_pct, imp_w))
+        pieces = [(s, w) for s, w in [(exp_pct, exp_w), (imp_pct, imp_w)] if s is not None]
         total_w = sum(w for _, w in pieces)
         raw_score = sum(s * w for s, w in pieces) / total_w
-        score = clamp(50.0 + (raw_score - 50.0) * SHRINKAGE, 0.0, 100.0)
+        score = round(clamp(50.0 + (raw_score - 50.0) * SHRINKAGE, 0.0, 100.0), 4)
 
-        as_of = sorted(series.keys())[-1]
         metric = {
-            "id": f"customs_nowcast_{hs_codes[0] if hs_codes else 'unk'}",
-            "factor": "production_shipments",
-            "score": round(score, 4),
-            "quality": QUALITY_CAP,
-            "source": f"관세청 수출입실적 HS={','.join(hs_codes[:2])} 기준={as_of}",
-            "as_of": f"{as_of[:4]}-{as_of[4:6]}-01",
+            "id":        f"customs_nowcast_{hs_codes[0] if hs_codes else 'unk'}",
+            "factor":    "production_shipments",
+            "score":     score,
+            "quality":   QUALITY_CAP,
+            "source":    f"관세청 HS={','.join(hs_codes[:2])} {ref_label}",
+            "as_of":     f"{cur_year}-{cur_month:02d}-01",
             "available": True,
             "is_nowcast": True,
-            "note": f"관세청 GW API. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
+            "exp_yoy_score": exp_pct,
+            "imp_yoy_score": imp_pct,
+            "note": f"관세청 impExpHsItemList API. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
         }
         results.append({
             "industry_key": industry_key,
             "current": {"metrics": [metric], "nowcast": True},
-            "as_of": as_of,
+            "as_of": ref_label,
         })
-        diagnostics.append(f"{industry_key}: score={score:.1f} as_of={as_of}")
+        diagnostics.append(f"{industry_key}: score={score} exp={exp_pct} imp={imp_pct}")
 
     result = {
         "schema_version": "1.0.0",
         "status": "raw" if results else "pending",
         "generated_at_utc": utc_now_iso(),
-        "collector": "customs-nowcast-v1",
+        "collector": "customs-nowcast-v2",
+        "reference_month": ref_label,
         "industries": results,
         "scored_industry_count": len(results),
         "external_calls": call_count[0],
         "diagnostics": diagnostics,
         "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
+    if not results:
+        result["reason"] = "모든 HS 코드 조회 결과 없음 — API 응답 필드명 또는 HS 코드 확인 필요"
     write_json(output_path, result)
     return result
 
@@ -254,10 +240,14 @@ def main() -> int:
     print(f"CUSTOMS_KEY_CONFIGURED={'true' if os.getenv('CUSTOMS_API_KEY','').strip() else 'false'}")
     result = collect(Path(args.root).resolve(), force=args.force)
     print(json.dumps({
-        "status": result.get("status"),
+        "status":     result.get("status"),
         "industries": len(result.get("industries", [])),
-        "calls": result.get("external_calls", 0),
+        "calls":      result.get("external_calls", 0),
+        "ref_month":  result.get("reference_month"),
     }, ensure_ascii=False))
+    if result.get("diagnostics"):
+        for d in result["diagnostics"]:
+            print(f"  {d}")
     return 0
 
 
