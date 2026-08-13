@@ -8,9 +8,7 @@
       "max_external_calls": 8,
       "probe_candidates": 0,
       "search_terms": [],
-      "preferred_tables": [
-        "DT_1F02011"
-      ],
+      "preferred_tables": [],
       "keywords": [
         "반도체",
         "전자부품",
@@ -28,16 +26,15 @@
       ],
       "periods": 6,
       "direct_probe_candidates": 1,
-      "note": "DT_1F02011 직접 호출 전용. search fallback 비활성화 — DT_1F02001 등 엉뚱한 테이블 방지."
+      "note": "DT_1F02011 라벨이 집계단위(총지수·제조업)라 산업별 매핑 불가. 비활성화.",
+      "active": false
     },
     "inventory_cycle": {
       "factor": "inventory_cycle",
       "max_external_calls": 8,
       "probe_candidates": 0,
       "search_terms": [],
-      "preferred_tables": [
-        "DT_1F02011"
-      ],
+      "preferred_tables": [],
       "keywords": [
         "반도체",
         "전자부품",
@@ -52,7 +49,9 @@
         "플라스틱"
       ],
       "periods": 6,
-      "direct_probe_candidates": 1
+      "direct_probe_candidates": 1,
+      "active": false,
+      "note": "DT_1F02011 라벨이 집계단위라 산업별 매핑 불가. 비활성화."
     },
     "utilization": {
       "factor": "utilization",
@@ -81,17 +80,16 @@
       "max_external_calls": 8,
       "probe_candidates": 0,
       "search_terms": [],
-      "preferred_tables": [
-        "DT_1E2001",
-        "DT_1E2002"
-      ],
+      "preferred_tables": [],
       "keywords": [
         "제조업",
         "중소기업",
         "기업경기"
       ],
       "periods": 24,
-      "direct_probe_candidates": 2
+      "direct_probe_candidates": 2,
+      "active": false,
+      "note": "KOSIS BSI 테이블(DT_512Y007/DT_1E2001/DT_1E2002) 모두 error. 한국은행 ECOS API 별도 연결 필요."
     },
     "service_production": {
       "factor": "sales_earnings",
@@ -112,7 +110,7 @@
       ],
       "periods": 12,
       "direct_probe_candidates": 2,
-      "note": "서비스업생산지수 — 도소매·숙박음식·운수·금융보험·정보통신 등 계열",
+      "note": "DT_1JH30000/DT_1JH30001 KOSIS error 30. 서비스업 통계는 KOSIS 별도 접근 필요.",
       "covered_industries": [
         "convenience_store",
         "department_store",
@@ -133,7 +131,8 @@
         "telecom",
         "transport_logistics",
         "travel"
-      ]
+      ],
+      "active": false
     },
     "retail_sales": {
       "factor": "demand_cycle",
@@ -152,7 +151,7 @@
       ],
       "periods": 12,
       "direct_probe_candidates": 1,
-      "note": "소매판매지수 — 음식료품·의복·가전·가구·화장품 등 소비재 계열",
+      "note": "DT_1K9A001 KOSIS error 30. 소매판매 통계는 KOSIS 별도 접근 필요.",
       "covered_industries": [
         "retail",
         "convenience_store",
@@ -161,7 +160,8 @@
         "food_distribution",
         "clothing",
         "home_appliance"
-      ]
+      ],
+      "active": false
     }
   },
   "industry_keyword_overrides": {
