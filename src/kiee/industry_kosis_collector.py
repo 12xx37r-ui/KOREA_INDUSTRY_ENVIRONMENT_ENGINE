@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import load_all
-from .util import read_json, utc_now_iso, write_json
+from .util import age_hours, read_json, utc_now_iso, write_json
 
 # Search is available on the SSO host, while the official parameter-data and
 # metadata examples use the main KOSIS host. Keep search and data endpoints
@@ -310,7 +310,7 @@ def _metric(series: list[tuple[str, float]], factor: str, source: str) -> dict[s
     }
 
 
-def collect(root: Path) -> dict[str, Any]:
+def collect(root: Path, force: bool = False) -> dict[str, Any]:
     _, _, _ = load_all(root)
     api_key = os.getenv("KOSIS_API_KEY", "").strip()
     output = root / "input" / "industry_cycle_raw.json"
@@ -319,6 +319,18 @@ def collect(root: Path) -> dict[str, Any]:
         write_json(output, result)
         return result
     config = read_json(root / "config" / "industry_kosis_sources.json", {}) or {}
+
+    # Short-circuit: if the output is fresh (within cache_ttl_hours), skip all
+    # KOSIS API calls. This avoids 32+ external requests per engine run when the
+    # data was already collected recently. Pass force=True to override.
+    if not force:
+        previous_check = read_json(output, {}) or {}
+        if isinstance(previous_check, dict) and previous_check.get("status") in {"raw", "scored"}:
+            cache_ttl = float(config.get("cache_ttl_hours", 24))
+            data_age = age_hours(previous_check.get("generated_at_utc"))
+            if data_age is not None and data_age < cache_ttl:
+                previous_check.setdefault("cache_hit", True)
+                return previous_check
     universe, _, _ = load_all(root)
     overrides = config.get("industry_keyword_overrides") or {}
     # production_shipments/inventory_cycle/utilization/pmi_bsi 계열은 KOSIS

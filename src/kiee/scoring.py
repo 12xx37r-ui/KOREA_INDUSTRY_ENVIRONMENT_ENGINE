@@ -639,7 +639,7 @@ def _feed_stage(stage: dict[str, Any] | None, policy: dict[str, Any], horizon: s
     }
 
 
-def _scored_industry_result_from_feed(industry: dict[str, Any], cycle_row: dict[str, Any], direct: dict[str, Any], policy: dict[str, Any], prospective_summary: dict[str, Any]) -> dict[str, Any]:
+def _scored_industry_result_from_feed(industry: dict[str, Any], cycle_row: dict[str, Any], direct: dict[str, Any], policy: dict[str, Any], prospective_summary: dict[str, Any], boom: dict[str, Any] | None = None) -> dict[str, Any]:
     current = _feed_stage(cycle_row.get("current"), policy, "current")
     current_score = finite(current.get("score"))
     forecasts = cycle_row.get("forecasts") if isinstance(cycle_row.get("forecasts"), dict) else {}
@@ -666,7 +666,7 @@ def _scored_industry_result_from_feed(industry: dict[str, Any], cycle_row: dict[
         "forecast_3_6m": forecast_3_6m,
         "forecast_6_12m": forecast_6_12m,
         "direct_market": direct,
-        "theme_bridge": {"available": False, "current": None, "leading_3m": None, "quality": 0.0, "themes": [], "relevance_weight": 0.0},
+        "theme_bridge": _theme_signal(industry, boom or {}, policy),
         "stock_prediction_bridge": {
             "allowed_as_auxiliary": False, "allowed_as_primary": False,
             "bounded_direction_adjustment_points": 0.0, "max_abs_adjustment_points": 0.0,
@@ -721,7 +721,7 @@ def score_industry(
             boom=boom,
             policy=policy,
         )
-    return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary)
+    return _scored_industry_result_from_feed(industry, cycle_row, direct, policy, prospective_summary, boom=boom)
     current_factors, current_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)
     future_factors, future_meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, True)
     current_agg = _aggregate_score(current_factors, industry.get("weights_current") or {})

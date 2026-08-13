@@ -90,18 +90,42 @@ class UpstreamLoader:
             self.memo[name] = result
             return result
 
+        # Cache is stale — attempt conditional GET first (ETag / Last-Modified).
+        # A 304 response means content is unchanged: refresh fetched_at and reuse
+        # the cached payload without re-downloading the file.
+        # _pending_meta is read by _fetch_github to build conditional request headers;
+        # keeping the public signature as (source) preserves compatibility with mocks.
+        self._pending_meta: dict[str, Any] = meta
         payload = None
         error = ""
         calls = 0
+        not_modified = False
         try:
-            payload, calls = self._fetch_github(source)
-        except Exception as exc:  # bounded fallback below
+            result_tuple = self._fetch_github(source)
+            # Support both old mock signature (payload, calls) and new (payload, calls, not_modified).
+            if len(result_tuple) == 3:
+                payload, calls, not_modified = result_tuple
+            else:
+                payload, calls = result_tuple
+        except Exception as exc:
             error = f"{type(exc).__name__}: {exc}"
         self.http_calls += calls
 
+        if not_modified and isinstance(cached, dict) and cached:
+            # Content unchanged — extend TTL by refreshing fetched_at only.
+            new_meta = dict(meta)
+            new_meta["fetched_at"] = utc_now_iso()
+            new_meta["mode"] = "conditional-not-modified"
+            write_json(meta_path, new_meta)
+            result = self._result_from_payload(name, cached, "cache-not-modified", calls, "", stale=False)
+            result.age_hours = 0.0
+            self.memo[name] = result
+            return result
+
         if isinstance(payload, dict):
             write_json(cache_path, payload)
-            write_json(meta_path, {
+            # Persist etag/last_modified returned by this fetch for next conditional GET.
+            new_meta = {
                 "name": name,
                 "fetched_at": utc_now_iso(),
                 "owner": self.owner,
@@ -109,7 +133,14 @@ class UpstreamLoader:
                 "branch": source.get("branch"),
                 "path": source.get("path"),
                 "mode": "github-api" if self.token else "raw-public",
-            })
+            }
+            if isinstance(payload, dict):
+                # Carry forward any etag/last_modified set during _fetch_github
+                for key in ("etag", "last_modified"):
+                    value = getattr(self, f"_last_{key}", None)
+                    if value:
+                        new_meta[key] = value
+            write_json(meta_path, new_meta)
             result = self._result_from_payload(name, payload, "github-api" if self.token else "raw-public", calls, "")
             self.memo[name] = result
             return result
@@ -125,27 +156,49 @@ class UpstreamLoader:
         self.memo[name] = result
         return result
 
-    def _fetch_github(self, source: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    def _fetch_github(self, source: dict[str, Any]) -> tuple[dict[str, Any] | None, int, bool]:
+        """Fetch from GitHub. Returns (payload, calls, not_modified).
+
+        payload is None and not_modified is True when the server returns HTTP 304,
+        meaning the cached content is still current and should be reused.
+        Reads self._pending_meta (set by load()) for ETag / Last-Modified headers
+        so the public signature remains (source,) for backwards-compatible mocking.
+        """
         repo = str(source.get("repo") or "").strip()
         branch = str(source.get("branch") or "main").strip()
         path = str(source.get("path") or "").strip().lstrip("/")
         if not repo or not path:
             raise RuntimeError("repo/path missing")
+        meta = getattr(self, "_pending_meta", None) or {}
         calls = 0
+
+        # Reset per-fetch header capture
+        self._last_etag: str = ""
+        self._last_last_modified: str = ""
+
         if self.token:
             api = (
                 "https://api.github.com/repos/" + urllib.parse.quote(self.owner) + "/" + urllib.parse.quote(repo)
                 + "/contents/" + "/".join(urllib.parse.quote(part) for part in path.split("/"))
                 + "?ref=" + urllib.parse.quote(branch)
             )
-            request = urllib.request.Request(api, headers={
+            headers: dict[str, str] = {
                 "Authorization": f"Bearer {self.token}",
                 "Accept": "application/vnd.github+json",
                 "User-Agent": "korea-industry-environment-engine/1.0",
-            })
+            }
+            if meta.get("etag"):
+                headers["If-None-Match"] = str(meta["etag"])
+            request = urllib.request.Request(api, headers=headers)
             calls += 1
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                body = json.loads(response.read().decode("utf-8"))
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    self._last_etag = response.headers.get("ETag", "")
+                    body = json.loads(response.read().decode("utf-8"))
+            except urllib.error.HTTPError as exc:
+                if exc.code == 304:
+                    return None, calls, True
+                raise
             content = body.get("content") if isinstance(body, dict) else None
             if not content:
                 raise RuntimeError("GitHub Contents API content missing")
@@ -153,19 +206,31 @@ class UpstreamLoader:
             payload = json.loads(decoded)
             if not isinstance(payload, dict):
                 raise RuntimeError("upstream JSON root is not object")
-            return payload, calls
+            return payload, calls, False
 
         raw = (
             "https://raw.githubusercontent.com/" + urllib.parse.quote(self.owner) + "/" + urllib.parse.quote(repo)
             + "/" + urllib.parse.quote(branch) + "/" + "/".join(urllib.parse.quote(part) for part in path.split("/"))
         )
-        request = urllib.request.Request(raw, headers={"User-Agent": "korea-industry-environment-engine/1.0"})
+        raw_headers: dict[str, str] = {"User-Agent": "korea-industry-environment-engine/1.0"}
+        if meta.get("etag"):
+            raw_headers["If-None-Match"] = str(meta["etag"])
+        elif meta.get("last_modified"):
+            raw_headers["If-Modified-Since"] = str(meta["last_modified"])
+        request = urllib.request.Request(raw, headers=raw_headers)
         calls += 1
-        with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                self._last_etag = response.headers.get("ETag", "")
+                self._last_last_modified = response.headers.get("Last-Modified", "")
+                payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            if exc.code == 304:
+                return None, calls, True
+            raise
         if not isinstance(payload, dict):
             raise RuntimeError("upstream JSON root is not object")
-        return payload, calls
+        return payload, calls, False
 
     @staticmethod
     def _source_generated_at(name: str, payload: dict[str, Any]) -> str:
