@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "cache_ttl_hours": 24,
-  "max_external_calls": 32,
+  "max_external_calls": 48,
   "series": {
     "production_shipments": {
       "factor": "production_shipments",
@@ -100,6 +100,76 @@
       ],
       "periods": 24,
       "direct_probe_candidates": 0
+    },
+    "service_production": {
+      "factor": "sales_earnings",
+      "max_external_calls": 6,
+      "probe_candidates": 2,
+      "search_terms": [
+        "서비스업생산지수",
+        "서비스업동향조사"
+      ],
+      "preferred_tables": [
+        "DT_1JH30001",
+        "DT_1JH30000"
+      ],
+      "table_title_hints": [
+        "서비스업생산지수",
+        "서비스업동향",
+        "서비스업 생산"
+      ],
+      "periods": 12,
+      "direct_probe_candidates": 2,
+      "note": "서비스업생산지수 — 도소매·숙박음식·운수·금융보험·정보통신 등 계열",
+      "covered_industries": [
+        "convenience_store",
+        "department_store",
+        "finance",
+        "food_distribution",
+        "food_service",
+        "gaming",
+        "healthcare_services",
+        "hotel",
+        "insurance",
+        "leisure_sports",
+        "online_shopping",
+        "parcel_logistics",
+        "real_estate_reit",
+        "retail",
+        "securities",
+        "shipping",
+        "telecom",
+        "transport_logistics",
+        "travel"
+      ]
+    },
+    "retail_sales": {
+      "factor": "demand_cycle",
+      "max_external_calls": 4,
+      "probe_candidates": 2,
+      "search_terms": [
+        "소매판매지수",
+        "소매판매액지수"
+      ],
+      "preferred_tables": [
+        "DT_1K9A001"
+      ],
+      "table_title_hints": [
+        "소매판매",
+        "소매판매액"
+      ],
+      "periods": 12,
+      "direct_probe_candidates": 1,
+      "note": "소매판매지수 — 음식료품·의복·가전·가구·화장품 등 소비재 계열",
+      "covered_industries": [
+        "retail",
+        "convenience_store",
+        "department_store",
+        "online_shopping",
+        "food_distribution",
+        "clothing",
+        "home_appliance"
+      ]
     }
   },
   "industry_keyword_overrides": {
@@ -178,22 +248,229 @@
     "medical_devices": [
       "의료용 기기",
       "의료기기"
+    ],
+    "pcb_mlcc": [
+      "인쇄회로기판",
+      "전자부품"
+    ],
+    "semiconductor_equipment": [
+      "반도체 제조용 기계",
+      "반도체장비"
+    ],
+    "it_hardware": [
+      "컴퓨터",
+      "주변기기"
+    ],
+    "home_appliance": [
+      "가전제품",
+      "전자제품"
+    ],
+    "smartphone": [
+      "통신·방송장비",
+      "통신장비"
+    ],
+    "petrochemicals": [
+      "기초화학물질",
+      "석유화학",
+      "합성수지",
+      "기타 화학제품"
+    ],
+    "nonferrous": [
+      "비철금속",
+      "동 제련",
+      "알루미늄"
+    ],
+    "cement_glass_ceramics": [
+      "비금속 광물",
+      "유리",
+      "시멘트"
+    ],
+    "paper_packaging": [
+      "펄프·종이",
+      "인쇄"
+    ],
+    "industrial_gases": [
+      "기초화학물질",
+      "산업용 가스"
+    ],
+    "clothing": [
+      "의복",
+      "의류"
+    ],
+    "tires": [
+      "고무제품",
+      "타이어"
+    ],
+    "automotive_parts": [
+      "자동차 부품",
+      "자동차 차체"
+    ],
+    "automation_robot": [
+      "로봇",
+      "특수목적용 기계",
+      "기타 기계"
+    ],
+    "construction_machinery": [
+      "건설기계",
+      "건설·광업용 기계"
+    ],
+    "hvac_elevator": [
+      "냉난방기",
+      "승강기",
+      "공기조화기"
+    ],
+    "oil_gas_lng": [
+      "석유정제",
+      "코크스"
+    ],
+    "waste_recycling": [
+      "폐기물",
+      "금속 재생"
+    ],
+    "food": [
+      "식료품",
+      "기타 식품"
+    ],
+    "beverage_alcohol": [
+      "음료",
+      "주류"
+    ],
+    "agri_farm": [
+      "농업기계",
+      "식료품"
+    ],
+    "fisheries_livestock": [
+      "수산물",
+      "육류"
+    ],
+    "pharma": [
+      "의약품",
+      "의약품 제조"
+    ],
+    "diagnostics": [
+      "의료용 기기",
+      "의료·정밀기기"
+    ],
+    "cro_cdmo": [
+      "의약품",
+      "생물학적 제제"
+    ],
+    "api_health_supplements": [
+      "의약품",
+      "기타 화학제품"
+    ],
+    "retail": [
+      "소매업",
+      "도매업",
+      "소매"
+    ],
+    "convenience_store": [
+      "슈퍼마켓",
+      "편의점"
+    ],
+    "department_store": [
+      "종합소매",
+      "백화점"
+    ],
+    "online_shopping": [
+      "전자상거래",
+      "통신판매"
+    ],
+    "food_distribution": [
+      "식료품 및 음료"
+    ],
+    "food_service": [
+      "음식점",
+      "음식점업"
+    ],
+    "hotel": [
+      "숙박업",
+      "호텔"
+    ],
+    "transport_logistics": [
+      "운수업",
+      "육상운송",
+      "항공운송"
+    ],
+    "parcel_logistics": [
+      "육상운송",
+      "택배"
+    ],
+    "shipping": [
+      "수상운송",
+      "해운"
+    ],
+    "finance": [
+      "금융업",
+      "금융"
+    ],
+    "insurance": [
+      "보험업",
+      "보험"
+    ],
+    "securities": [
+      "금융 지원",
+      "증권"
+    ],
+    "telecom": [
+      "통신업",
+      "전기통신"
+    ],
+    "gaming": [
+      "정보서비스",
+      "소프트웨어"
+    ],
+    "it_services": [
+      "정보서비스",
+      "소프트웨어"
+    ],
+    "healthcare_services": [
+      "보건업",
+      "의원",
+      "병원"
+    ],
+    "real_estate_reit": [
+      "부동산업"
+    ],
+    "leisure_sports": [
+      "스포츠",
+      "오락"
+    ],
+    "travel": [
+      "여행업",
+      "관광"
     ]
   },
   "non_manufacturing_scope": {
     "reason": "production_shipments/inventory_cycle/utilization/pmi_bsi 계열은 KOSIS 광공업(mining+manufacturing) 통계이며 아래 산업은 이 통계 범위 밖입니다. 임의 매칭을 시도하지 않고 collector가 명시적으로 건너뜁니다.",
     "industries": [
+      "ai",
+      "asset_management_vc",
+      "broadcast_media",
+      "card_capital_fintech",
+      "casino",
+      "character_ip",
+      "cloud",
       "construction",
-      "finance",
-      "insurance",
-      "securities",
-      "software_platform",
-      "gaming",
+      "credit_information",
+      "cybersecurity",
+      "duty_free",
+      "education_edtech",
+      "entertainment",
+      "film_drama_webtoon",
+      "holding_company",
+      "internet_platform",
+      "it_services",
       "media_entertainment",
-      "retail",
-      "transport_logistics",
-      "utilities_power",
-      "telecom"
+      "mobility_platform",
+      "music",
+      "ott",
+      "reit_office_logistics",
+      "search_advertising",
+      "social_media",
+      "software_platform",
+      "used_cars",
+      "utilities_power"
     ]
   }
 }
