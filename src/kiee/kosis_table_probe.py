@@ -47,17 +47,47 @@ def probe(table_id, api_key, org_id="101"):
     except Exception as e:
         print(f"DATA_SKIP: {type(e).__name__}: {e}")
 
+# 서비스업 KOSIS 테이블 후보
+SERVICE_TABLES = [
+    # 서비스업생산지수 (통계청 서비스업동향조사)
+    "DT_1JH30001",  # 서비스업생산지수 업종별
+    "DT_1JH30000",  # 서비스업 생산·판매 종합
+    # 소매판매액지수 (산업활동동향)
+    "DT_1K9A001",   # 소매판매액지수 업태별
+    # 음식·숙박
+    "DT_1JH20202",  # 음식점업 매출
+    "DT_1JH10100",  # 숙박업 이용
+    # 운수·창고
+    "DT_1JH40101",  # 육상운송업 물동량
+    "DT_1JH40201",  # 해운업
+    # 금융보험
+    "DT_1JH50001",  # 금융보험업 생산지수
+    # 정보통신
+    "DT_1JH70001",  # 정보통신업 생산지수
+]
+
+# 제조업 확인용 (기존 테이블 키워드 매핑 검증)
+MFG_TABLES = [
+    "DT_1F32001",   # 제조업 가동률지수 (현재 utilization 사용 중)
+    "DT_1F02011",   # 광공업 생산·출하·재고 (현재 inventory_cycle 사용 중)
+]
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tables", nargs="+",
-        # 서비스업 통계 후보: 서비스업생산지수, 소매판매, 금융, 운송
-        default=["DT_1JH30001","DT_1K9A001","DT_1JH30000","DT_1JH20202","DT_1JH10100"])
+    parser.add_argument("--tables", nargs="+", default=SERVICE_TABLES + MFG_TABLES)
+    parser.add_argument("--service-only", action="store_true")
+    parser.add_argument("--mfg-only", action="store_true")
     args = parser.parse_args()
     api_key = os.getenv("KOSIS_API_KEY","").strip()
     if not api_key:
         print("KOSIS_KEY_CONFIGURED=false"); return 0
     print("KOSIS_KEY_CONFIGURED=true")
-    for t in args.tables:
+    tables = args.tables
+    if args.service_only:
+        tables = SERVICE_TABLES
+    elif args.mfg_only:
+        tables = MFG_TABLES
+    for t in tables:
         probe(t, api_key)
     return 0
 

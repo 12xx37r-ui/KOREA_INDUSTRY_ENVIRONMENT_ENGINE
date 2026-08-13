@@ -345,18 +345,22 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
     budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[], events=[])
+    # 광공업(manufacturing) 전용 시리즈 — non_mfg 체크 적용
+    MFG_SERIES = {"production_shipments", "inventory_cycle", "utilization", "pmi_bsi"}
+
     for name, spec in (config.get("series") or {}).items():
         if budget.attempts >= budget.limit:
             diagnostics.append("KOSIS call cap reached before remaining series")
             break
         budget.start_scope(int(spec.get("max_external_calls", 1)))
+        is_mfg_series = name in MFG_SERIES
         try:
             org_id, table_id, rows = _choose_table(api_key, spec, budget)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
                 key = str(industry.get("key") or "")
-                if key in non_manufacturing_scope:
+                if is_mfg_series and key in non_manufacturing_scope:
                     diagnostics.append(
                         f"{name}: industry={key} skipped (non_manufacturing_scope, KOSIS 광공업 통계 범위 밖)"
                     )
