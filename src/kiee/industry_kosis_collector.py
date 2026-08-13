@@ -349,6 +349,10 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     MFG_SERIES = {"production_shipments", "inventory_cycle", "utilization", "pmi_bsi"}
 
     for name, spec in (config.get("series") or {}).items():
+        # active=False 명시 시리즈는 건너뜀
+        if spec.get("active") is False:
+            diagnostics.append(f"{name}: skipped (active=false in config)")
+            continue
         if budget.attempts >= budget.limit:
             diagnostics.append("KOSIS call cap reached before remaining series")
             break
