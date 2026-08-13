@@ -1,54 +1,54 @@
 {
   "status": "ok",
-  "generated_at_utc": "2026-08-13T17:00:12.426133+00:00",
+  "generated_at_utc": "2026-08-13T17:34:44.316943+00:00",
   "source_status": {
     "korea_rate_fx": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "cache-not-modified",
       "stale": false,
-      "age_hours": 5.8,
+      "age_hours": 0.0,
       "source_generated_at": "2026-08-13T14:17:01.813388+09:00",
-      "source_age_hours": 11.72,
-      "http_calls": 0,
+      "source_age_hours": 12.29,
+      "http_calls": 1,
       "error": ""
     },
     "korea_equity": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 0.2,
+      "age_hours": 0.78,
       "source_generated_at": "2026-08-13T05:19:23.727682+00:00",
-      "source_age_hours": 11.68,
+      "source_age_hours": 12.26,
       "http_calls": 0,
       "error": ""
     },
     "global_bundle": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "cache-not-modified",
       "stale": false,
-      "age_hours": 5.79,
+      "age_hours": 0.0,
       "source_generated_at": "2026-08-12T18:12:31.164521+00:00",
-      "source_age_hours": 22.79,
-      "http_calls": 0,
+      "source_age_hours": 23.37,
+      "http_calls": 1,
       "error": ""
     },
     "fed_futures": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "raw-public",
       "stale": false,
-      "age_hours": 5.79,
-      "source_generated_at": "2026-08-13T09:50:27.841029+00:00",
-      "source_age_hours": 7.16,
-      "http_calls": 0,
+      "age_hours": null,
+      "source_generated_at": "2026-08-13T15:37:42.002267+00:00",
+      "source_age_hours": 1.95,
+      "http_calls": 1,
       "error": ""
     },
     "industry_boom": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 5.79,
+      "age_hours": 6.37,
       "source_generated_at": "2026-08-02",
-      "source_age_hours": 281.0,
+      "source_age_hours": 281.58,
       "http_calls": 0,
       "error": ""
     },
@@ -58,14 +58,14 @@
       "stale": false,
       "age_hours": null,
       "source_generated_at": "2026-08-13T12:31:57.659280+00:00",
-      "source_age_hours": 4.47,
+      "source_age_hours": 5.05,
       "http_calls": 0,
       "error": ""
     }
   },
-  "freshness_quality_score": 90.6,
+  "freshness_quality_score": 90.5,
   "direct_krx_available": true,
-  "direct_krx_source_mode": "live-pykrx-bulk",
+  "direct_krx_source_mode": "lkg-no-pykrx",
   "direct_krx_credentials_configured": true,
   "direct_krx_industry_coverage_pct": 100.0,
   "direct_krx_fresh_industry_count": 101,
@@ -90,11 +90,13 @@
       "fundamental_date": "20260813"
     }
   },
-  "direct_krx_diagnostics": [],
+  "direct_krx_diagnostics": [
+    "pykrx_import:JSONDecodeError:Expecting value: line 1 column 1 (char 0)"
+  ],
   "call_efficiency": {
-    "upstream_http_calls_this_run": 0,
+    "upstream_http_calls_this_run": 3,
     "normal_upstream_http_call_target": 6,
-    "krx_bulk_calls_this_run": 8,
+    "krx_bulk_calls_this_run": 0,
     "krx_normal_target_calls": 8,
     "per_company_live_calls": 0,
     "duplicate_upstream_reads_in_same_run": 0,
@@ -119,7 +121,7 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-13T17:00:12.518726+00:00"
+    "generated_at_utc": "2026-08-13T17:34:44.396052+00:00"
   },
   "oos_bridge_status": "PENDING",
   "oos_bridge_evaluated_cases": 0,

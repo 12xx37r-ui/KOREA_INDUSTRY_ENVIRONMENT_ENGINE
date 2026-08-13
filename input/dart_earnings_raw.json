@@ -1,15 +1,433 @@
 {
   "schema_version": "1.0.0",
-  "status": "expired",
-  "generated_at_utc": "2026-08-13T16:47:24.809418+00:00",
-  "collector": "dart-earnings-v2",
+  "status": "raw",
+  "generated_at_utc": "2026-08-13T17:34:26.072330+00:00",
+  "collector": "dart-earnings-v3",
   "quarter": "HY",
   "reference_year": 2026,
-  "industries": [],
-  "scored_industry_count": 0,
-  "external_calls": 0,
-  "diagnostics": [
-    "cache invalidated for fresh collection"
+  "industries": [
+    {
+      "industry_key": "semiconductor",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_semiconductor",
+            "factor": "earnings_momentum",
+            "value": 68.47,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 84.235,
+            "score": 77.3881,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_semiconductor",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 68.47,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "electronic_components",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_electronic_components",
+            "factor": "earnings_momentum",
+            "value": 3665.96,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값)",
+            "series_id": "dart_op_electronic_components",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 3665.96,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "display",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_display",
+            "factor": "earnings_momentum",
+            "value": 79.96,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 89.978,
+            "score": 81.9824,
+            "quality": 54.0,
+            "source": "DART 공시 HY 영업이익 (1개사 중앙값)",
+            "series_id": "dart_op_display",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 79.96,
+            "n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "automotive",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_automotive",
+            "factor": "earnings_momentum",
+            "value": -15.83,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 42.083,
+            "score": 43.6666,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_automotive",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": -15.83,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": false,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "battery",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_battery",
+            "factor": "earnings_momentum",
+            "value": -76.98,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 11.511,
+            "score": 19.2086,
+            "quality": 54.0,
+            "source": "DART 공시 HY 영업이익 (1개사 중앙값)",
+            "series_id": "dart_op_battery",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": -76.98,
+            "n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "shipbuilding",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_shipbuilding",
+            "factor": "earnings_momentum",
+            "value": 413.18,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_shipbuilding",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 413.18,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "construction",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_construction",
+            "factor": "earnings_momentum",
+            "value": 47.32,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 73.658,
+            "score": 68.9264,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_construction",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 47.32,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "industrial_machinery",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_industrial_machinery",
+            "factor": "earnings_momentum",
+            "value": -0.43,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 49.783,
+            "score": 49.826,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_industrial_machinery",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": -0.43,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": false,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "defense_aerospace",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_defense_aerospace",
+            "factor": "earnings_momentum",
+            "value": 140.96,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_defense_aerospace",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 140.96,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "steel_materials",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_steel_materials",
+            "factor": "earnings_momentum",
+            "value": 3.88,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 51.94,
+            "score": 51.5523,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_steel_materials",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 3.88,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "chemicals",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_chemicals",
+            "factor": "earnings_momentum",
+            "value": 17.47,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 58.737,
+            "score": 56.9899,
+            "quality": 48.6,
+            "source": "DART 공시 HY 영업이익 (1개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_chemicals",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 17.47,
+            "n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "refining_energy",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_refining_energy",
+            "factor": "earnings_momentum",
+            "value": -314.12,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 0.0,
+            "score": 10.0,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_refining_energy",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": -314.12,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": false,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "finance",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_finance",
+            "factor": "earnings_momentum",
+            "value": 8.73,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 54.365,
+            "score": 53.4917,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_finance",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 8.73,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "insurance",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_insurance",
+            "factor": "earnings_momentum",
+            "value": 3.73,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 51.866,
+            "score": 51.4929,
+            "quality": 64.8,
+            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "series_id": "dart_op_insurance",
+            "as_of": "2025-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 3.73,
+            "n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2025,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+          }
+        ],
+        "dart_earnings": true
+      }
+    }
   ],
-  "note": "캐시 초기화 — 다음 런에서 새로 수집"
+  "scored_industry_count": 14,
+  "external_calls": 109,
+  "diagnostics": [
+    "corp_map_size=3982 quarter=HY year=2026 calls_used=1",
+    "semiconductor: score=77.4 yoy=68.5% n=2 year=2025 surprise=True",
+    "electronic_components: score=90.0 yoy=3666.0% n=2 year=2026 surprise=True",
+    "display: score=82.0 yoy=80.0% n=1 year=2026 surprise=False",
+    "automotive: score=43.7 yoy=-15.8% n=2 year=2025 surprise=False",
+    "battery: score=19.2 yoy=-77.0% n=1 year=2026 surprise=False",
+    "shipbuilding: score=90.0 yoy=413.2% n=2 year=2025 surprise=True",
+    "construction: score=68.9 yoy=47.3% n=2 year=2025 surprise=True",
+    "industrial_machinery: score=49.8 yoy=-0.4% n=2 year=2025 surprise=False",
+    "defense_aerospace: score=90.0 yoy=141.0% n=2 year=2025 surprise=True",
+    "steel_materials: score=51.6 yoy=3.9% n=2 year=2025 surprise=True",
+    "chemicals: score=57.0 yoy=17.5% n=1 year=2025 surprise=False",
+    "refining_energy: score=10.0 yoy=-314.1% n=2 year=2025 surprise=False",
+    "finance: score=53.5 yoy=8.7% n=2 year=2025 surprise=True",
+    "insurance: score=51.5 yoy=3.7% n=2 year=2025 surprise=True",
+    "securities: no data — API empty (map_ok=2, misses=[])",
+    "biotechnology: no data — API empty (map_ok=2, misses=[])",
+    "medical_devices: no data — API empty (map_ok=2, misses=[])",
+    "software_platform: no data — API empty (map_ok=2, misses=[])",
+    "gaming: no data — API empty (map_ok=2, misses=[])",
+    "media_entertainment: no data — API empty (map_ok=2, misses=[])",
+    "retail: no data — API empty (map_ok=2, misses=[])",
+    "food_beverage: no data — API empty (map_ok=2, misses=[])",
+    "transport_logistics: no data — API empty (map_ok=2, misses=[])",
+    "utilities_power: no data — API empty (map_ok=2, misses=[])",
+    "telecom: no data — API empty (map_ok=2, misses=[])"
+  ],
+  "note": "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 fnlttSinglAcntAll로 분기 영업이익 YoY 수집. earnings_momentum 팩터 보강용."
 }

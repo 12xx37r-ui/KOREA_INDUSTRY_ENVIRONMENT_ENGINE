@@ -8,19 +8,20 @@
     "finance"
   ],
   "current": {
-    "score": 44.6,
+    "score": 45.1,
     "band": "중립",
-    "quality_score": 36.0,
-    "data_coverage_pct": 71.8,
-    "quality_weighted_coverage_pct": 48.8,
+    "quality_score": 44.0,
+    "data_coverage_pct": 91.0,
+    "quality_weighted_coverage_pct": 59.4,
     "factors": {
       "earnings_momentum": {
-        "score": null,
-        "quality": 0.0,
-        "available": false,
-        "source": "산업 고유 실적·상업화 신호",
-        "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-        "proxy": true
+        "score": 53.49,
+        "quality": 55.1,
+        "available": true,
+        "source": "DART 공시 분기 영업이익 YoY",
+        "detail": "분기 YoY 8.7% (2개사)",
+        "proxy": false,
+        "surprise": true
       },
       "demand_cycle": {
         "score": null,
@@ -67,13 +68,13 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": null,
-        "quality": 0.0,
+        "score": 53.49,
+        "quality": 55.1,
         "base_weight": 0.1921,
-        "effective_weight": 0.0,
-        "normalized_weight": 0.0,
-        "contribution_points": 0.0,
-        "available": false
+        "effective_weight": 0.1058,
+        "normalized_weight": 0.1782,
+        "contribution_points": 0.62,
+        "available": true
       },
       {
         "factor": "demand_cycle",
@@ -104,8 +105,8 @@
         "quality": 64.4,
         "base_weight": 0.3377,
         "effective_weight": 0.2175,
-        "normalized_weight": 0.4455,
-        "contribution_points": -13.95,
+        "normalized_weight": 0.3661,
+        "contribution_points": -11.46,
         "available": true
       },
       {
@@ -115,8 +116,8 @@
         "quality": 100.0,
         "base_weight": 0.2119,
         "effective_weight": 0.2119,
-        "normalized_weight": 0.434,
-        "contribution_points": 6.68,
+        "normalized_weight": 0.3566,
+        "contribution_points": 5.49,
         "available": true
       },
       {
@@ -126,24 +127,24 @@
         "quality": 35.0,
         "base_weight": 0.1682,
         "effective_weight": 0.0589,
-        "normalized_weight": 0.1206,
-        "contribution_points": 0.05,
+        "normalized_weight": 0.0991,
+        "contribution_points": 0.04,
         "available": true
       }
     ],
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 44.6,
+    "estimated_score": 45.1,
     "observed_coverage_pct": 0.0,
-    "estimated_quality": 36.0,
-    "available_factor_count": 3,
-    "notes": "지표 3개로 산출한 추정점수입니다."
+    "estimated_quality": 44.0,
+    "available_factor_count": 4,
+    "notes": "지표 4개로 산출한 추정점수입니다."
   },
   "forecast_3m": {
     "score": 38.8,
     "band": "약불리",
-    "delta_points": -5.8,
+    "delta_points": -6.4,
     "direction": "악화",
     "change_strength": "조금",
     "quality_score": 25.0,
@@ -392,7 +393,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 중립 44.6/100",
+    "headline": "추정 중립 45.1/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -419,7 +420,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T17:00:12.518726+00:00"
+      "generated_at_utc": "2026-08-13T17:34:44.396052+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,

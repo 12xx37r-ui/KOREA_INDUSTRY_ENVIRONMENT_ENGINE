@@ -16,12 +16,14 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 60.8,
-        "quality": 55.1,
+        "score": 73.94,
+        "quality": 58.980000000000004,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
+        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정 + DART 분기 OP YoY",
         "detail": "피드 총점 83.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "proxy": true,
+        "dart_earnings_applied": true,
+        "surprise": true
       },
       "demand_cycle": {
         "score": 58.24,
@@ -68,12 +70,12 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 60.8,
-        "quality": 55.1,
+        "score": 73.94,
+        "quality": 59.0,
         "base_weight": 0.2003,
-        "effective_weight": 0.1104,
-        "normalized_weight": 0.1837,
-        "contribution_points": 1.98,
+        "effective_weight": 0.1181,
+        "normalized_weight": 0.1941,
+        "contribution_points": 4.65,
         "available": true
       },
       {
@@ -83,8 +85,8 @@
         "quality": 55.1,
         "base_weight": 0.2954,
         "effective_weight": 0.1627,
-        "normalized_weight": 0.2709,
-        "contribution_points": 2.23,
+        "normalized_weight": 0.2674,
+        "contribution_points": 2.2,
         "available": true
       },
       {
@@ -94,8 +96,8 @@
         "quality": 55.1,
         "base_weight": 0.1512,
         "effective_weight": 0.0833,
-        "normalized_weight": 0.1387,
-        "contribution_points": 1.54,
+        "normalized_weight": 0.1369,
+        "contribution_points": 1.52,
         "available": true
       },
       {
@@ -105,8 +107,8 @@
         "quality": 64.5,
         "base_weight": 0.1174,
         "effective_weight": 0.0757,
-        "normalized_weight": 0.126,
-        "contribution_points": 0.15,
+        "normalized_weight": 0.1244,
+        "contribution_points": 0.14,
         "available": true
       },
       {
@@ -116,8 +118,8 @@
         "quality": 100.0,
         "base_weight": 0.1326,
         "effective_weight": 0.1326,
-        "normalized_weight": 0.2206,
-        "contribution_points": 8.04,
+        "normalized_weight": 0.2178,
+        "contribution_points": 7.94,
         "available": true
       },
       {
@@ -127,7 +129,7 @@
         "quality": 35.0,
         "base_weight": 0.1031,
         "effective_weight": 0.0361,
-        "normalized_weight": 0.0601,
+        "normalized_weight": 0.0593,
         "contribution_points": 0.33,
         "available": true
       }
@@ -831,7 +833,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-13T17:00:12.518726+00:00"
+      "generated_at_utc": "2026-08-13T17:34:44.396052+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
