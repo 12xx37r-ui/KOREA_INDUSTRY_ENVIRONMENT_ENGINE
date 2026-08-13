@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "note": "매크로 레짐별 팩터 가중치 배수(multiplier). 산업별 base weight에 곱해서 최종 가중치 산출 후 재정규화. 절대값 교체가 아니므로 산업별 커스텀 weights_current/3m는 그대로 보존.",
+  "regimes": {
+    "tightening": {
+      "label": "금리 인상기",
+      "description": "한국 기준금리 인상 추세 또는 미 10년물 고공. 금융환경 악화 → 밸류에이션 압박.",
+      "triggers": {
+        "note": "korea_rate_delta_3m > +0.15 OR us10y > 4.5 AND rising"
+      },
+      "multipliers": {
+        "earnings_momentum": 1.20,
+        "demand_cycle":      1.00,
+        "pricing_margin":    0.90,
+        "financial_conditions": 1.40,
+        "market_internals":  0.85,
+        "valuation":         1.25
+      },
+      "quality_scale": 1.0
+    },
+    "easing": {
+      "label": "금리 인하기",
+      "description": "한국 기준금리 인하 추세 또는 미 10년물 하강. 유동성 개선 → 성장·수요 회복 기대.",
+      "triggers": {
+        "note": "korea_rate_delta_3m < -0.15 OR us10y falling AND liquidity_score > 0.2"
+      },
+      "multipliers": {
+        "earnings_momentum": 1.10,
+        "demand_cycle":      1.30,
+        "pricing_margin":    1.10,
+        "financial_conditions": 0.80,
+        "market_internals":  1.20,
+        "valuation":         0.90
+      },
+      "quality_scale": 1.0
+    },
+    "high_fx": {
+      "label": "고환율기",
+      "description": "원화 약세(USD/KRW > 1380). 수출 산업 마진 개선, 수입 원자재 비용 상승.",
+      "triggers": {
+        "note": "usdkrw > 1380 AND krw_strength_score < 35"
+      },
+      "multipliers": {
+        "earnings_momentum": 1.15,
+        "demand_cycle":      0.95,
+        "pricing_margin":    1.20,
+        "financial_conditions": 1.10,
+        "market_internals":  1.00,
+        "valuation":         0.95
+      },
+      "quality_scale": 1.0
+    },
+    "risk_off": {
+      "label": "리스크 오프",
+      "description": "글로벌 증시 하강 + 신용 스프레드 확대. 안전자산 선호 → 성장주 압박.",
+      "triggers": {
+        "note": "global_equity_score < 35 AND credit_health < -0.3"
+      },
+      "multipliers": {
+        "earnings_momentum": 0.85,
+        "demand_cycle":      0.80,
+        "pricing_margin":    0.90,
+        "financial_conditions": 1.30,
+        "market_internals":  1.40,
+        "valuation":         1.20
+      },
+      "quality_scale": 0.95
+    },
+    "neutral": {
+      "label": "중립",
+      "description": "명확한 레짐 신호 없음. 기본 가중치 그대로 사용.",
+      "multipliers": {
+        "earnings_momentum": 1.0,
+        "demand_cycle":      1.0,
+        "pricing_margin":    1.0,
+        "financial_conditions": 1.0,
+        "market_internals":  1.0,
+        "valuation":         1.0
+      },
+      "quality_scale": 1.0
+    }
+  },
+  "blending": {
+    "note": "복수 레짐이 동시에 감지되면 각 레짐의 strength(0~1)에 비례해 multiplier를 가중 평균.",
+    "max_active_regimes": 2,
+    "min_regime_strength": 0.25
+  }
+}
