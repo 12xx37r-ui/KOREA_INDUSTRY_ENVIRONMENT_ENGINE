@@ -37,14 +37,15 @@ OUTPUT_RAW       = "input/dart_earnings_raw.json"
 CORPCODE_CACHE   = "input_cache/dart_corpcode_map.json"   # stock_code → corp_code 캐시
 QUALITY_CAP      = 72.0
 SHRINKAGE        = 0.80
-# ZIP 1회 + 폴백 포함 산업당 최대 12회 × 17개 핵심산업 + 여유 = 220
-MAX_CALLS        = 220
-CACHE_TTL_H      = 24
-CORPCODE_TTL_H   = 168     # corp_code 맵은 1주일 캐시 (자주 안 바뀜)
-MIN_BASKET_CNT   = 2
-MAX_FIRMS        = 3       # 산업당 최대 조회 기업 수
-# 당해 연도 데이터 없을 때 몇 년 전까지 폴백할지 (2 = 최대 2년 전까지 시도)
-MAX_YEAR_FALLBACK = 2
+# ZIP 1회 + 핵심 25개 산업 × 2개사 × 폴백 1년 = 최대 101회
+MAX_CALLS         = 110
+CACHE_TTL_H       = 24
+CORPCODE_TTL_H    = 168
+MIN_BASKET_CNT    = 2
+MAX_FIRMS         = 2      # 산업당 2개사 (속도 우선)
+MAX_YEAR_FALLBACK = 1      # 1년만 폴백 (2→1, 속도 절반)
+MAX_INDUSTRIES    = 25     # 앞에서 25개 산업만 수집 (100개+ 전체 순회 방지)
+API_SLEEP         = 0.08   # 콜 간 대기 0.12→0.08초
 
 # 분기 공시 코드
 _REPRT_CODE = {"1Q": "11013", "HY": "11012", "3Q": "11014", "FY": "11011"}
@@ -197,10 +198,10 @@ def _fetch_op_with_fallback(
             return None, None, ref_year
         call_count[0] += 1
         cur_op = _fetch_op(corp_code, ref_year, reprt_code, api_key)
-        time.sleep(0.12)
+        time.sleep(API_SLEEP)
         call_count[0] += 1
         prev_op = _fetch_op(corp_code, ref_year - 1, reprt_code, api_key)
-        time.sleep(0.12)
+        time.sleep(API_SLEEP)
         if cur_op is not None and prev_op is not None and prev_op != 0:
             return cur_op, prev_op, ref_year
     return None, None, base_year
@@ -303,7 +304,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         result: dict[str, Any] = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "dart-earnings-v2", "reason": reason,
+            "collector": "dart-earnings-v3", "reason": reason,
             "external_calls": calls,
         }
         if diag:
@@ -351,7 +352,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         f"corp_map_size={len(corp_map)} quarter={qcode} year={current_year} calls_used={call_count[0]}"
     ]
 
-    for ind in industries:
+    for ind in industries[:MAX_INDUSTRIES]:
         if call_count[0] >= MAX_CALLS:
             diagnostics.append("call cap reached")
             break
@@ -378,7 +379,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "schema_version":       "1.0.0",
         "status":               "raw" if results else "pending",
         "generated_at_utc":     utc_now_iso(),
-        "collector":            "dart-earnings-v2",
+        "collector":            "dart-earnings-v3",
         "quarter":              qcode,
         "reference_year":       current_year,
         "industries":           results,
