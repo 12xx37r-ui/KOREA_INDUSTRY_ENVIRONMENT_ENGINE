@@ -22,7 +22,10 @@ from typing import Any
 
 from .util import age_hours, clamp, read_json, utc_now_iso, write_json
 
-# 두 엔드포인트 모두 시도
+# API 400 지속 발생 — 재활성화 전까지 수집 비활성화
+# 원인: hsSgn 파라미터 규격/엔드포인트 불일치 또는 서비스 미등록
+CUSTOMS_DISABLED = True
+
 ENDPOINTS = [
     "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList",
     "https://apis.data.go.kr/1220000/need2MainItemList/getNeed2MainItemList",
@@ -111,6 +114,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
             result["diagnostics"] = diag
         write_json(output_path, result)
         return result
+
+    if CUSTOMS_DISABLED:
+        return _pending("관세청 API 일시 비활성화 — hsSgn 파라미터 규격 확인 후 재활성화 예정", 0)
 
     if not api_key:
         return _pending("CUSTOMS_API_KEY 미설정")
