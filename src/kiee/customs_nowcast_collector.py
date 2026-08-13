@@ -24,7 +24,7 @@ from .util import age_hours, clamp, read_json, utc_now_iso, write_json
 
 # API 400 지속 발생 — 재활성화 전까지 수집 비활성화
 # 원인: hsSgn 파라미터 규격/엔드포인트 불일치 또는 서비스 미등록
-CUSTOMS_DISABLED = True
+CUSTOMS_DISABLED = False
 
 ENDPOINTS = [
     "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList",
@@ -78,14 +78,14 @@ def _probe_endpoint(api_key: str, diag: list[str]) -> tuple[str, dict[str, str]]
     """
     test_hs = "8542310000"  # 10자리 HSK 코드 필수
     test_ym = "202607"
-    # 시도할 파라미터 조합 (hsSgn = 10자리 HSK 파라미터명)
+    # 시도할 파라미터 조합 — searchBseYm + hsSgn 이 정식 파라미터명
     param_variants = [
+        {"searchBseYm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"searchBseYm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
         {"yyyyMm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyyMm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
         {"yyyymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
         {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
         {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"year": test_ym[:4], "month": test_ym[4:], "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
     ]
     for endpoint in ENDPOINTS:
         for params in param_variants:
@@ -173,13 +173,16 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
             if call_count[0] >= MAX_CALLS:
                 break
             params = dict(base_params)
-            # yyyyMm 형식이면 통합, year/month 분리면 각각
-            if "yyyyMm" in params or "yyyymm" in params:
-                key = "yyyyMm" if "yyyyMm" in params else "yyyymm"
-                params[key] = f"{year}{month:02d}"
+            ym = f"{year}{month:02d}"
+            if "searchBseYm" in params:
+                params["searchBseYm"] = ym
+            elif "yyyyMm" in params:
+                params["yyyyMm"] = ym
+            elif "yyyymm" in params:
+                params["yyyymm"] = ym
             elif "strtYymm" in params:
-                params["strtYymm"] = f"{year}{month:02d}"
-                params["endYymm"] = f"{year}{month:02d}"
+                params["strtYymm"] = ym
+                params["endYymm"] = ym
             else:
                 params["year"] = str(year)
                 params["month"] = f"{month:02d}"
