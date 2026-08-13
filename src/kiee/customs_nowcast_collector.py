@@ -283,21 +283,17 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
 
         # 산업별 월별 시계열 합산 (여러 HS 코드 합산)
         combined_monthly: dict[str, dict[str, float]] = {}
-        for hs in hs_codes[:4]:  # 산업당 최대 4개 HS 코드
+        for hs in hs_codes[:2]:  # 산업당 최대 2개 HS 코드 (호출 절약)
             if call_count[0] >= max_calls:
                 break
-            # 당해년도 + 전년도 조회
-            for year in (cur_year, prev_year):
-                if call_count[0] >= max_calls:
-                    break
-                rows = _fetch_hs_monthly(api_key, hs, year, call_count, max_calls)
-                if rows:
-                    monthly = _extract_monthly_series(rows, hs)
-                    for ym, vals in monthly.items():
-                        if ym not in combined_monthly:
-                            combined_monthly[ym] = {"exp": 0.0, "imp": 0.0}
-                        combined_monthly[ym]["exp"] += vals.get("exp", 0.0)
-                        combined_monthly[ym]["imp"] += vals.get("imp", 0.0)
+            rows = _fetch_hs_monthly(api_key, hs, cur_year, call_count, max_calls)
+            if rows:
+                monthly = _extract_monthly_series(rows, hs)
+                for ym, vals in monthly.items():
+                    if ym not in combined_monthly:
+                        combined_monthly[ym] = {"exp": 0.0, "imp": 0.0}
+                    combined_monthly[ym]["exp"] += vals.get("exp", 0.0)
+                    combined_monthly[ym]["imp"] += vals.get("imp", 0.0)
 
         if not combined_monthly:
             diagnostics.append(f"{industry_key}: no data returned for HS {hs_codes}")
