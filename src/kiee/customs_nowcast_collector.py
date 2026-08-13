@@ -73,16 +73,16 @@ def _probe_endpoint(api_key: str, diag: list[str]) -> tuple[str, dict[str, str]]
     동작하는 엔드포인트 + 파라미터 형식을 자동 탐색.
     성공하면 (endpoint_url, base_params_template) 반환, 실패하면 None.
     """
-    test_hs = "8541"
+    test_hs = "8542310000"  # 10자리 HSK 코드 필수
     test_ym = "202607"
-    # 시도할 파라미터 조합
+    # 시도할 파라미터 조합 (hsSgn = 10자리 HSK 파라미터명)
     param_variants = [
+        {"yyyyMm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"yyyyMm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
+        {"yyyymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
         {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyymm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyyMm": test_ym, "hscd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"strtYymm": test_ym, "endYymm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"year": test_ym[:4], "month": test_ym[4:], "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
+        {"year": test_ym[:4], "month": test_ym[4:], "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
     ]
     for endpoint in ENDPOINTS:
         for params in param_variants:
@@ -177,9 +177,10 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
             else:
                 params["year"] = str(year)
                 params["month"] = f"{month:02d}"
-            if "hsCd" in params or "hscd" in params:
-                k = "hsCd" if "hsCd" in params else "hscd"
-                params[k] = hs
+            for hk in ("hsSgn", "hsCd", "hscd"):
+                if hk in params:
+                    params[hk] = hs
+                    break
 
             call_count[0] += 1
             text, code = _request(endpoint, api_key, params)
