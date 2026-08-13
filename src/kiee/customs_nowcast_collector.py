@@ -37,11 +37,14 @@ MAX_INDUSTRIES = 15
 API_TIMEOUT    = 10
 
 
-def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> ET.Element:
+def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[ET.Element, str]:
+    """(파싱된 XML 루트, 원본 텍스트 앞 300자) 반환."""
     query = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
     req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/2.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return ET.fromstring(resp.read())
+        raw = resp.read()
+    text = raw.decode("utf-8", errors="replace")
+    return ET.fromstring(text), text[:300]
 
 
 def _number(value: Any) -> float | None:
@@ -72,6 +75,7 @@ def _build_series(
     hs_codes: list[str],
     call_count: list[int],
     now: datetime,
+    debug_info: list[str],
 ) -> dict[str, dict[str, float]]:
     """
     당해 기준월 + 전년 동월 각 1회 호출 → YoY 계산용 딕셔너리.
@@ -94,27 +98,36 @@ def _build_series(
             }
             call_count[0] += 1
             try:
-                root_el = _get_xml(BASE_URL, params)
+                root_el, raw_snippet = _get_xml(BASE_URL, params)
                 items = root_el.findall(".//item")
+                # 결과코드 및 총건수 추출 (디버그용)
+                result_code = (root_el.findtext(".//resultCode") or "").strip()
+                total_count = (root_el.findtext(".//totalCount") or "0").strip()
+                debug_info.append(
+                    f"HS={hs} {year}{month:02d}: code={result_code} total={total_count}"
+                    f" items={len(items)} raw={raw_snippet[:120]!r}"
+                )
                 yk = str(year)
                 if yk not in yearly:
                     yearly[yk] = {"exp": 0.0, "imp": 0.0}
                 for item in items:
                     row = {c.tag: (c.text or "").strip() for c in item}
-                    # 응답 필드명 후보 모두 시도
                     exp = _number(
                         row.get("expAmt") or row.get("expDlr") or
-                        row.get("exportAmt") or row.get("exp")
+                        row.get("exportAmt") or row.get("exp") or
+                        row.get("expWgt")
                     )
                     imp = _number(
                         row.get("impAmt") or row.get("impDlr") or
-                        row.get("importAmt") or row.get("imp")
+                        row.get("importAmt") or row.get("imp") or
+                        row.get("impWgt")
                     )
                     if exp:
                         yearly[yk]["exp"] += exp
                     if imp:
                         yearly[yk]["imp"] += imp
-            except Exception:
+            except Exception as e:
+                debug_info.append(f"HS={hs} {year}{month:02d}: exception={str(e)[:80]}")
                 continue
     return yearly
 
@@ -177,7 +190,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         exp_w = float(ind_cfg.get("export_weight", 0.7))
         imp_w = float(ind_cfg.get("import_weight", 0.3))
 
-        series = _build_series(api_key, hs_codes, call_count, now)
+        series = _build_series(api_key, hs_codes, call_count, now, diagnostics)
         if not series:
             diagnostics.append(f"{industry_key}: no data HS={hs_codes[:2]}")
             continue
