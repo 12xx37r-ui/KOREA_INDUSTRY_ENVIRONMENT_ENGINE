@@ -43,8 +43,11 @@ MAX_CONSECUTIVE_ERRORS = 3
 
 def _request(url: str, api_key: str, other_params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[str, int]:
     """(응답 텍스트, HTTP 상태코드) 반환. serviceKey 이중 인코딩 방지."""
+    # data.go.kr 키는 인코딩/디코딩 형태 모두 존재 — 디코딩 후 재인코딩으로 통일
+    decoded_key = urllib.parse.unquote(api_key)
+    encoded_key = urllib.parse.quote(decoded_key, safe="")
     rest = urllib.parse.urlencode({k: v for k, v in other_params.items() if v is not None})
-    full_url = f"{url}?serviceKey={api_key}&{rest}"
+    full_url = f"{url}?serviceKey={encoded_key}&{rest}"
     req = urllib.request.Request(full_url, headers={"User-Agent": "kiee-customs/3.0"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
