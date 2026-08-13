@@ -116,6 +116,12 @@ jobs:
               print("customs_nowcast: file not found (OK if key not configured)")
           PY
 
+      - name: Probe KOSIS table labels (keyword mapping aid)
+        env:
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+        run: |
+          PYTHONPATH=src python -m kiee.kosis_label_probe --root . || echo "label probe failed (non-fatal)"
+
       - name: Validate and build industry cycle feed
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
