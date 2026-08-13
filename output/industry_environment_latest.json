@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "engine_version": "1.1.1-industry-cycle-local-batch-gated",
-  "generated_at_utc": "2026-08-13T13:36:02.194413+00:00",
+  "generated_at_utc": "2026-08-13T16:48:02.581984+00:00",
   "status": "ok",
   "industry_count": 101,
   "industry_universe": {
@@ -604,7 +604,7 @@
         "industry_key": "securities",
         "industry_label": "증권",
         "score": 45.6,
-        "direction": "개선",
+        "direction": "유지",
         "status": "estimated"
       },
       {
@@ -893,7 +893,7 @@
         "industry_key": "securities",
         "industry_label": "증권",
         "score": 45.6,
-        "direction": "개선",
+        "direction": "유지",
         "status": "estimated"
       },
       {
@@ -2305,7 +2305,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -2352,12 +2352,13 @@
         "quality_weighted_coverage_pct": 3.5,
         "factors": {
           "earnings_momentum": {
-            "score": 41.14,
-            "quality": 54.3,
+            "score": 58.24,
+            "quality": 51.78,
             "available": true,
-            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
+            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정 + DART 분기 OP YoY",
             "detail": "피드 총점 22.2에 40% 앵커 후 매크로 팩터 추정",
-            "proxy": true
+            "proxy": true,
+            "dart_earnings_applied": true
           },
           "demand_cycle": {
             "score": 37.73,
@@ -2404,12 +2405,12 @@
           {
             "factor": "earnings_momentum",
             "label": "산업 실적 모멘텀",
-            "score": 41.14,
-            "quality": 54.3,
+            "score": 58.24,
+            "quality": 51.8,
             "base_weight": 0.2217,
-            "effective_weight": 0.1204,
-            "normalized_weight": 0.2021,
-            "contribution_points": -1.79,
+            "effective_weight": 0.1148,
+            "normalized_weight": 0.1946,
+            "contribution_points": 1.6,
             "available": true
           },
           {
@@ -2419,8 +2420,8 @@
             "quality": 54.3,
             "base_weight": 0.2759,
             "effective_weight": 0.1498,
-            "normalized_weight": 0.2515,
-            "contribution_points": -3.09,
+            "normalized_weight": 0.2539,
+            "contribution_points": -3.12,
             "available": true
           },
           {
@@ -2430,8 +2431,8 @@
             "quality": 54.3,
             "base_weight": 0.1507,
             "effective_weight": 0.0818,
-            "normalized_weight": 0.1374,
-            "contribution_points": -1.14,
+            "normalized_weight": 0.1387,
+            "contribution_points": -1.15,
             "available": true
           },
           {
@@ -2441,8 +2442,8 @@
             "quality": 64.6,
             "base_weight": 0.1169,
             "effective_weight": 0.0755,
-            "normalized_weight": 0.1268,
-            "contribution_points": -2.4,
+            "normalized_weight": 0.128,
+            "contribution_points": -2.43,
             "available": true
           },
           {
@@ -2452,8 +2453,8 @@
             "quality": 100.0,
             "base_weight": 0.132,
             "effective_weight": 0.132,
-            "normalized_weight": 0.2217,
-            "contribution_points": -0.57,
+            "normalized_weight": 0.2238,
+            "contribution_points": -0.58,
             "available": true
           },
           {
@@ -2463,8 +2464,8 @@
             "quality": 35.0,
             "base_weight": 0.1028,
             "effective_weight": 0.036,
-            "normalized_weight": 0.0604,
-            "contribution_points": -1.1,
+            "normalized_weight": 0.061,
+            "contribution_points": -1.11,
             "available": true
           }
         ],
@@ -3164,7 +3165,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -3211,12 +3212,13 @@
         "quality_weighted_coverage_pct": 3.5,
         "factors": {
           "earnings_momentum": {
-            "score": 57.97,
-            "quality": 47.4,
+            "score": 66.37,
+            "quality": 47.64,
             "available": true,
-            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
+            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정 + DART 분기 OP YoY",
             "detail": "피드 총점 61.1에 40% 앵커 후 매크로 팩터 추정",
-            "proxy": true
+            "proxy": true,
+            "dart_earnings_applied": true
           },
           "demand_cycle": {
             "score": 54.7,
@@ -3263,12 +3265,12 @@
           {
             "factor": "earnings_momentum",
             "label": "산업 실적 모멘텀",
-            "score": 57.97,
-            "quality": 47.4,
+            "score": 66.37,
+            "quality": 47.6,
             "base_weight": 0.2217,
-            "effective_weight": 0.1051,
-            "normalized_weight": 0.203,
-            "contribution_points": 1.62,
+            "effective_weight": 0.1056,
+            "normalized_weight": 0.2038,
+            "contribution_points": 3.34,
             "available": true
           },
           {
@@ -3278,7 +3280,7 @@
             "quality": 47.4,
             "base_weight": 0.2759,
             "effective_weight": 0.1308,
-            "normalized_weight": 0.2525,
+            "normalized_weight": 0.2523,
             "contribution_points": 1.19,
             "available": true
           },
@@ -3289,7 +3291,7 @@
             "quality": 47.4,
             "base_weight": 0.1507,
             "effective_weight": 0.0714,
-            "normalized_weight": 0.1379,
+            "normalized_weight": 0.1378,
             "contribution_points": 1.06,
             "available": true
           },
@@ -3300,7 +3302,7 @@
             "quality": 64.6,
             "base_weight": 0.1169,
             "effective_weight": 0.0755,
-            "normalized_weight": 0.1459,
+            "normalized_weight": 0.1457,
             "contribution_points": -0.51,
             "available": true
           },
@@ -3311,7 +3313,7 @@
             "quality": 75.0,
             "base_weight": 0.132,
             "effective_weight": 0.099,
-            "normalized_weight": 0.1913,
+            "normalized_weight": 0.1911,
             "contribution_points": 0.35,
             "available": true
           },
@@ -3322,7 +3324,7 @@
             "quality": 35.0,
             "base_weight": 0.1028,
             "effective_weight": 0.036,
-            "normalized_weight": 0.0695,
+            "normalized_weight": 0.0694,
             "contribution_points": 0.22,
             "available": true
           }
@@ -4015,7 +4017,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -4887,7 +4889,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -4934,12 +4936,13 @@
         "quality_weighted_coverage_pct": 3.5,
         "factors": {
           "earnings_momentum": {
-            "score": 57.58,
-            "quality": 60.8,
+            "score": 44.15,
+            "quality": 55.68,
             "available": true,
-            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
+            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정 + DART 분기 OP YoY",
             "detail": "피드 총점 65.3에 40% 앵커 후 매크로 팩터 추정",
-            "proxy": true
+            "proxy": true,
+            "dart_earnings_applied": true
           },
           "demand_cycle": {
             "score": 56.54,
@@ -4986,12 +4989,12 @@
           {
             "factor": "earnings_momentum",
             "label": "산업 실적 모멘텀",
-            "score": 57.58,
-            "quality": 60.8,
+            "score": 44.15,
+            "quality": 55.7,
             "base_weight": 0.1999,
-            "effective_weight": 0.1215,
-            "normalized_weight": 0.1912,
-            "contribution_points": 1.45,
+            "effective_weight": 0.1113,
+            "normalized_weight": 0.178,
+            "contribution_points": -1.04,
             "available": true
           },
           {
@@ -5001,8 +5004,8 @@
             "quality": 60.8,
             "base_weight": 0.2579,
             "effective_weight": 0.1568,
-            "normalized_weight": 0.2467,
-            "contribution_points": 1.61,
+            "normalized_weight": 0.2507,
+            "contribution_points": 1.64,
             "available": true
           },
           {
@@ -5012,8 +5015,8 @@
             "quality": 60.8,
             "base_weight": 0.2515,
             "effective_weight": 0.1529,
-            "normalized_weight": 0.2406,
-            "contribution_points": 1.92,
+            "normalized_weight": 0.2446,
+            "contribution_points": 1.95,
             "available": true
           },
           {
@@ -5023,8 +5026,8 @@
             "quality": 65.0,
             "base_weight": 0.0937,
             "effective_weight": 0.0609,
-            "normalized_weight": 0.0958,
-            "contribution_points": -0.3,
+            "normalized_weight": 0.0974,
+            "contribution_points": -0.31,
             "available": true
           },
           {
@@ -5034,8 +5037,8 @@
             "quality": 100.0,
             "base_weight": 0.1146,
             "effective_weight": 0.1146,
-            "normalized_weight": 0.1803,
-            "contribution_points": 6.01,
+            "normalized_weight": 0.1833,
+            "contribution_points": 6.11,
             "available": true
           },
           {
@@ -5045,7 +5048,7 @@
             "quality": 35.0,
             "base_weight": 0.0823,
             "effective_weight": 0.0288,
-            "normalized_weight": 0.0453,
+            "normalized_weight": 0.0461,
             "contribution_points": -0.22,
             "available": true
           }
@@ -5755,7 +5758,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -5802,12 +5805,13 @@
         "quality_weighted_coverage_pct": 3.5,
         "factors": {
           "earnings_momentum": {
-            "score": 65.25,
-            "quality": 49.5,
+            "score": 73.64,
+            "quality": 48.900000000000006,
             "available": true,
-            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
+            "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정 + DART 분기 OP YoY",
             "detail": "피드 총점 88.9에 40% 앵커 후 매크로 팩터 추정",
-            "proxy": true
+            "proxy": true,
+            "dart_earnings_applied": true
           },
           "demand_cycle": {
             "score": 65.27,
@@ -5854,12 +5858,12 @@
           {
             "factor": "earnings_momentum",
             "label": "산업 실적 모멘텀",
-            "score": 65.25,
-            "quality": 49.5,
+            "score": 73.64,
+            "quality": 48.9,
             "base_weight": 0.2211,
-            "effective_weight": 0.1094,
-            "normalized_weight": 0.2036,
-            "contribution_points": 3.1,
+            "effective_weight": 0.1081,
+            "normalized_weight": 0.2016,
+            "contribution_points": 4.77,
             "available": true
           },
           {
@@ -5869,8 +5873,8 @@
             "quality": 49.5,
             "base_weight": 0.2751,
             "effective_weight": 0.1362,
-            "normalized_weight": 0.2533,
-            "contribution_points": 3.87,
+            "normalized_weight": 0.2539,
+            "contribution_points": 3.88,
             "available": true
           },
           {
@@ -5880,7 +5884,7 @@
             "quality": 49.5,
             "base_weight": 0.1503,
             "effective_weight": 0.0744,
-            "normalized_weight": 0.1384,
+            "normalized_weight": 0.1387,
             "contribution_points": 2.12,
             "available": true
           },
@@ -5891,7 +5895,7 @@
             "quality": 64.4,
             "base_weight": 0.1399,
             "effective_weight": 0.0901,
-            "normalized_weight": 0.1676,
+            "normalized_weight": 0.1681,
             "contribution_points": 0.52,
             "available": true
           },
@@ -5902,8 +5906,8 @@
             "quality": 75.0,
             "base_weight": 0.1317,
             "effective_weight": 0.0988,
-            "normalized_weight": 0.1837,
-            "contribution_points": 6.16,
+            "normalized_weight": 0.1842,
+            "contribution_points": 6.18,
             "available": true
           },
           {
@@ -5913,7 +5917,7 @@
             "quality": 35.0,
             "base_weight": 0.082,
             "effective_weight": 0.0287,
-            "normalized_weight": 0.0534,
+            "normalized_weight": 0.0535,
             "contribution_points": 0.59,
             "available": true
           }
@@ -6615,7 +6619,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -7116,7 +7120,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -7965,7 +7969,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -8828,7 +8832,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -9735,7 +9739,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -10593,7 +10597,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -11458,7 +11462,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -11909,7 +11913,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -12339,7 +12343,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -12367,19 +12371,19 @@
         "securities"
       ],
       "current": {
-        "score": 40.5,
-        "band": "약불리",
-        "quality_score": 36.0,
-        "data_coverage_pct": 69.2,
-        "quality_weighted_coverage_pct": 48.2,
+        "score": 44.9,
+        "band": "중립",
+        "quality_score": 44.0,
+        "data_coverage_pct": 88.2,
+        "quality_weighted_coverage_pct": 55.9,
         "factors": {
           "earnings_momentum": {
-            "score": null,
-            "quality": 0.0,
-            "available": false,
-            "source": "산업 고유 실적·상업화 신호",
-            "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-            "proxy": true
+            "score": 87.29,
+            "quality": 40.8,
+            "available": true,
+            "source": "DART 공시 분기 영업이익 YoY",
+            "detail": "분기 YoY 93.2% (1개사)",
+            "proxy": false
           },
           "demand_cycle": {
             "score": null,
@@ -12426,13 +12430,13 @@
           {
             "factor": "earnings_momentum",
             "label": "산업 실적 모멘텀",
-            "score": null,
-            "quality": 0.0,
+            "score": 87.29,
+            "quality": 40.8,
             "base_weight": 0.1901,
-            "effective_weight": 0.0,
-            "normalized_weight": 0.0,
-            "contribution_points": 0.0,
-            "available": false
+            "effective_weight": 0.0776,
+            "normalized_weight": 0.1387,
+            "contribution_points": 5.17,
+            "available": true
           },
           {
             "factor": "demand_cycle",
@@ -12463,8 +12467,8 @@
             "quality": 65.7,
             "base_weight": 0.3899,
             "effective_weight": 0.2562,
-            "normalized_weight": 0.5317,
-            "contribution_points": -3.76,
+            "normalized_weight": 0.458,
+            "contribution_points": -3.24,
             "available": true
           },
           {
@@ -12474,8 +12478,8 @@
             "quality": 100.0,
             "base_weight": 0.1845,
             "effective_weight": 0.1845,
-            "normalized_weight": 0.383,
-            "contribution_points": -9.12,
+            "normalized_weight": 0.3299,
+            "contribution_points": -7.86,
             "available": true
           },
           {
@@ -12485,7 +12489,7 @@
             "quality": 35.0,
             "base_weight": 0.1175,
             "effective_weight": 0.0411,
-            "normalized_weight": 0.0853,
+            "normalized_weight": 0.0735,
             "contribution_points": 0.02,
             "available": true
           }
@@ -12493,18 +12497,18 @@
         "status": "estimated",
         "score_source": "estimated",
         "observed_score": null,
-        "estimated_score": 40.5,
+        "estimated_score": 44.9,
         "observed_coverage_pct": 0.0,
-        "estimated_quality": 36.0,
-        "available_factor_count": 3,
-        "notes": "지표 3개로 산출한 추정점수입니다."
+        "estimated_quality": 44.0,
+        "available_factor_count": 4,
+        "notes": "지표 4개로 산출한 추정점수입니다."
       },
       "forecast_3m": {
         "score": 45.6,
         "band": "중립",
-        "delta_points": 5.1,
-        "direction": "개선",
-        "change_strength": "조금",
+        "delta_points": 0.7,
+        "direction": "유지",
+        "change_strength": "거의 변화 없음",
         "quality_score": 25.0,
         "data_coverage_pct": 100.0,
         "quality_weighted_coverage_pct": 67.4,
@@ -12751,7 +12755,7 @@
         "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
       },
       "interpretation": {
-        "headline": "추정 약불리 40.5/100",
+        "headline": "추정 중립 44.9/100",
         "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
         "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
       },
@@ -12778,7 +12782,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -13643,7 +13647,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -14451,7 +14455,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -14963,7 +14967,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -15434,7 +15438,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -15934,7 +15938,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -16380,7 +16384,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -17196,7 +17200,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -17676,7 +17680,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -18144,7 +18148,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -18623,7 +18627,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -19072,7 +19076,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -19551,7 +19555,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -20394,7 +20398,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -20882,7 +20886,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -21731,7 +21735,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -22584,7 +22588,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -23434,7 +23438,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -23924,7 +23928,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -24406,7 +24410,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -24925,7 +24929,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -25812,7 +25816,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -26338,7 +26342,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -26854,7 +26858,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -27370,7 +27374,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -27894,7 +27898,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -28420,7 +28424,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -28927,7 +28931,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -29437,7 +29441,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -29947,7 +29951,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -30459,7 +30463,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -30932,7 +30936,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -31412,7 +31416,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -31888,7 +31892,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -32364,7 +32368,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -32869,7 +32873,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -33345,7 +33349,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -34220,7 +34224,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -34712,7 +34716,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -35189,7 +35193,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -36028,7 +36032,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -36516,7 +36520,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -36991,7 +36995,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -37470,7 +37474,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -37974,7 +37978,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -38475,7 +38479,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -38953,7 +38957,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -39429,7 +39433,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -39905,7 +39909,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -40415,7 +40419,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -41287,7 +41291,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -42165,7 +42169,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -43042,7 +43046,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -43916,7 +43920,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -44439,7 +44443,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -45325,7 +45329,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -46223,7 +46227,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -47097,7 +47101,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -47982,7 +47986,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -48869,7 +48873,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -49742,7 +49746,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -50630,7 +50634,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -51505,7 +51509,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -52401,7 +52405,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -53298,7 +53302,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -54172,7 +54176,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -55023,7 +55027,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -55894,7 +55898,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -56782,7 +56786,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -57292,7 +57296,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -58169,7 +58173,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -59074,7 +59078,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -59590,7 +59594,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -60466,7 +60470,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -60980,7 +60984,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -61863,7 +61867,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -62751,7 +62755,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -63638,7 +63642,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -64158,7 +64162,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -65035,7 +65039,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -65919,7 +65923,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -66439,7 +66443,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -66953,7 +66957,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -67452,7 +67456,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -67931,7 +67935,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -68439,7 +68443,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -68926,7 +68930,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+          "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
@@ -68989,29 +68993,29 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.39,
+      "age_hours": 5.59,
       "source_generated_at": "2026-08-13T14:17:01.813388+09:00",
-      "source_age_hours": 8.31,
+      "source_age_hours": 11.51,
       "http_calls": 0,
       "error": ""
     },
     "korea_equity": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "cache-not-modified",
       "stale": false,
-      "age_hours": 2.39,
+      "age_hours": 0.0,
       "source_generated_at": "2026-08-13T05:19:23.727682+00:00",
-      "source_age_hours": 8.27,
-      "http_calls": 0,
+      "source_age_hours": 11.47,
+      "http_calls": 1,
       "error": ""
     },
     "global_bundle": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.39,
+      "age_hours": 5.59,
       "source_generated_at": "2026-08-12T18:12:31.164521+00:00",
-      "source_age_hours": 19.39,
+      "source_age_hours": 22.59,
       "http_calls": 0,
       "error": ""
     },
@@ -69019,9 +69023,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.39,
+      "age_hours": 5.59,
       "source_generated_at": "2026-08-13T09:50:27.841029+00:00",
-      "source_age_hours": 3.76,
+      "source_age_hours": 6.96,
       "http_calls": 0,
       "error": ""
     },
@@ -69029,9 +69033,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.39,
+      "age_hours": 5.59,
       "source_generated_at": "2026-08-02",
-      "source_age_hours": 277.6,
+      "source_age_hours": 280.8,
       "http_calls": 0,
       "error": ""
     },
@@ -69041,13 +69045,13 @@
       "stale": false,
       "age_hours": null,
       "source_generated_at": "2026-08-13T12:31:57.659280+00:00",
-      "source_age_hours": 1.06,
+      "source_age_hours": 4.26,
       "http_calls": 0,
       "error": ""
     }
   },
   "call_efficiency": {
-    "upstream_http_calls_this_run": 0,
+    "upstream_http_calls_this_run": 1,
     "normal_upstream_http_call_target": 6,
     "krx_bulk_calls_this_run": 8,
     "krx_normal_target_calls": 8,
@@ -69074,7 +69078,7 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-13T13:36:02.275212+00:00"
+    "generated_at_utc": "2026-08-13T16:48:02.663086+00:00"
   },
   "limitations": [
     "산업별 생산·출하·재고·주문·가격·마진 원자료가 없으면 현재·전망 점수를 산출하지 않고 데이터 부족으로 표시합니다.",
