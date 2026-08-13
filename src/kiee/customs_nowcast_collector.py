@@ -20,15 +20,17 @@ from typing import Any
 
 from .util import age_hours, clamp, finite, read_json, utc_now_iso, write_json
 
-BASE_URL    = "https://apis.data.go.kr/1220000/Itemtrade/getItemtradeList"
-OUTPUT_RAW  = "input/customs_nowcast_raw.json"
-CACHE_TTL_H = 12
-QUALITY_CAP = 65.0
-SHRINKAGE   = 0.70
-MAX_CALLS   = 30
+BASE_URL       = "https://apis.data.go.kr/1220000/Itemtrade/getItemtradeList"
+OUTPUT_RAW     = "input/customs_nowcast_raw.json"
+CACHE_TTL_H    = 12
+QUALITY_CAP    = 65.0
+SHRINKAGE      = 0.70
+MAX_CALLS      = 20   # 30→20 (속도 우선)
+MAX_INDUSTRIES = 15   # 앞 15개 산업만 수집
+API_TIMEOUT    = 8    # 25→8초 (무응답 조기 탈출)
 
 
-def _get_xml(url: str, params: dict[str, Any], timeout: int = 25) -> ET.Element:
+def _get_xml(url: str, params: dict[str, Any], timeout: int = API_TIMEOUT) -> ET.Element:
     query = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
     req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-customs/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -163,7 +165,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     results: list[dict] = []
     diagnostics: list[str] = []
 
-    for industry_key, ind_cfg in industry_configs.items():
+    for industry_key, ind_cfg in list(industry_configs.items())[:MAX_INDUSTRIES]:
         if call_count[0] >= MAX_CALLS:
             diagnostics.append("call cap reached")
             break
