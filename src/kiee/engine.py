@@ -104,6 +104,12 @@ def run_engine(
     boom = (boom_source.payload or {}) if boom_source and boom_source.ok else {}
     cycle_source = sources.get("industry_cycle")
     industry_cycle = (cycle_source.payload or {}) if cycle_source and cycle_source.ok else {}
+    # 관세청 nowcasting 데이터 로드 (선택적 — 없으면 None으로 유지)
+    nowcast_raw_path = root / "input" / "customs_nowcast_raw.json"
+    nowcast_data = read_json(nowcast_raw_path) if nowcast_raw_path.exists() else None
+    # DART 분기 실적 데이터 로드 (선택적)
+    dart_raw_path = root / "input" / "dart_earnings_raw.json"
+    dart_data = read_json(dart_raw_path) if dart_raw_path.exists() else None
 
     direct_market = collect_sector_market(
         root, industries, boom, stock_module=stock_module, allow_live=allow_live_krx,
@@ -114,16 +120,13 @@ def run_engine(
     prospective_before = read_summary(root)
     as_of = utc_now_iso()
     results = [
-        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before)
+        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
 
     prospective_after = update_registry(root, results, direct_market, policy, as_of)
-    # Always perform one local-only re-score after registry update so every per-industry
-    # prospective_validation block is synchronized with the just-written registry summary
-    # (registered/evaluated counts included). This adds zero network/API calls.
     results = [
-        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after)
+        score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
 

@@ -5,6 +5,7 @@ from statistics import mean
 from typing import Any
 
 from .util import clamp, finite, find_month_row, nested, roundn, weighted_average
+from .regime_detector import detect_regime, apply_regime_weights
 
 FACTOR_ORDER = [
     "earnings_momentum",
@@ -520,6 +521,104 @@ def _pending_stage(reason: str) -> dict[str, Any]:
     }
 
 
+def _apply_dart_earnings_to_factors(
+    factors: dict[str, Any],
+    dart_metric: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """
+    DART 분기 영업이익 YoY를 earnings_momentum 팩터에 반영.
+    기존 팩터가 있으면 blending(DART 35%), 없으면 단독 사용.
+    """
+    if not dart_metric or not isinstance(dart_metric, dict):
+        return factors
+    d_score = finite(dart_metric.get("score"))
+    d_quality = finite(dart_metric.get("quality"), 0.0) or 0.0
+    if d_score is None or d_quality <= 0:
+        return factors
+
+    factors = dict(factors)
+    em = factors.get("earnings_momentum") or {}
+    surprise = dart_metric.get("surprise", False)
+
+    if em.get("available") and em.get("score") is not None:
+        old_score = float(em["score"])
+        # DART를 35% 가중 blending, 서프라이즈이면 45%
+        dart_weight = 0.45 if surprise else 0.35
+        blended = old_score * (1 - dart_weight) + d_score * dart_weight
+        factors["earnings_momentum"] = dict(em)
+        factors["earnings_momentum"]["score"] = roundn(blended, 2)
+        factors["earnings_momentum"]["quality"] = clamp(
+            em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100
+        )
+        factors["earnings_momentum"]["source"] = em.get("source", "") + " + DART 분기 OP YoY"
+        factors["earnings_momentum"]["dart_earnings_applied"] = True
+        if surprise:
+            factors["earnings_momentum"]["surprise"] = True
+    else:
+        factors["earnings_momentum"] = _factor(
+            d_score, d_quality * 0.85,
+            "DART 공시 분기 영업이익 YoY",
+            f"분기 YoY {dart_metric.get('median_yoy_pct',0):.1f}% ({dart_metric.get('n_firms',0)}개사)",
+            proxy=False,
+        )
+        if surprise:
+            factors["earnings_momentum"]["surprise"] = True
+    return factors
+
+
+def _apply_nowcast_to_factors(
+    factors: dict[str, Any],
+    nowcast_metric: dict[str, Any] | None,
+    industry: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    관세청 nowcast 지표를 estimated 팩터에 반영.
+    - production_shipments → earnings_momentum 보강
+    - 수출 비중이 높은 산업은 demand_cycle에도 부분 반영
+    품질은 QUALITY_CAP(65) 상한, shrinkage 적용된 점수 사용.
+    """
+    if not nowcast_metric or not isinstance(nowcast_metric, dict):
+        return factors
+    nc_score = finite(nowcast_metric.get("score"))
+    nc_quality = finite(nowcast_metric.get("quality"), 0.0) or 0.0
+    if nc_score is None or nc_quality <= 0:
+        return factors
+
+    factors = dict(factors)
+    sens = industry.get("sensitivities") or {}
+    export_sens = clamp(abs(float(sens.get("krw_weakness", 0.0))), 0.0, 1.0)  # 원화약세 민감도 ≈ 수출 의존도 proxy
+
+    # earnings_momentum 보강 (수출이 실적 선행지표)
+    em = factors.get("earnings_momentum") or {}
+    if em.get("available") and em.get("score") is not None:
+        # 기존 팩터와 blending — nowcast는 보조(25% 비중)
+        old_score = float(em["score"])
+        blended = old_score * 0.75 + nc_score * 0.25
+        factors["earnings_momentum"] = dict(em)
+        factors["earnings_momentum"]["score"] = roundn(blended, 2)
+        factors["earnings_momentum"]["source"] = em.get("source", "") + " + 관세청 수출 nowcast"
+        factors["earnings_momentum"]["nowcast_applied"] = True
+    elif not em.get("available"):
+        # 팩터 자체가 없었으면 nowcast 단독 사용 (낮은 quality)
+        factors["earnings_momentum"] = _factor(nc_score, min(nc_quality * 0.6, 35.0),
+            "관세청 수출입 속보 nowcast (단독)", "실물 팩터 없음 — nowcast 보조치만 사용", proxy=True)
+
+    # demand_cycle: 수출 의존도 높은 산업(export_sens > 0.5)에만 부분 반영
+    if export_sens >= 0.5:
+        dc = factors.get("demand_cycle") or {}
+        if dc.get("available") and dc.get("score") is not None:
+            old_dc = float(dc["score"])
+            blended_dc = old_dc * 0.8 + nc_score * 0.2
+            factors["demand_cycle"] = dict(dc)
+            factors["demand_cycle"]["score"] = roundn(blended_dc, 2)
+            factors["demand_cycle"]["nowcast_applied"] = True
+        elif not dc.get("available"):
+            factors["demand_cycle"] = _factor(nc_score, min(nc_quality * 0.5, 30.0),
+                "관세청 수출 nowcast → 수요 대용치", "수출 민감도 높은 산업 한정", proxy=True)
+
+    return factors
+
+
 def _build_estimated_current(
     industry: dict[str, Any],
     policy: dict[str, Any],
@@ -528,17 +627,29 @@ def _build_estimated_current(
     korea_equity: dict[str, Any],
     boom: dict[str, Any],
     direct: dict[str, Any],
+    nowcast_metric: dict[str, Any] | None = None,
+    regime: dict[str, Any] | None = None,
+    dart_metric: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """
     observed 데이터가 없을 때 매크로+테마+KRX로 추정 현재 점수를 산출.
+    nowcast_metric: 관세청 수출입 속보 지표 (있으면 팩터 보강).
     단일 지표만 있으면 중립 방향으로 수축. 완전 데이터 없으면 None 반환.
     """
     factors, meta = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, False)
+    # nowcasting 반영
+    if nowcast_metric:
+        factors = _apply_nowcast_to_factors(factors, nowcast_metric, industry)
+    # DART 분기 영업이익 반영
+    if dart_metric:
+        factors = _apply_dart_earnings_to_factors(factors, dart_metric)
+    # 레짐 가중치 적용 (factors 산출 후 aggregate 시 사용)
     available_count = sum(1 for f in factors.values() if f.get("available"))
     if available_count == 0:
         return None
 
-    weights = industry.get("weights_current") or {}
+    base_weights = industry.get("weights_current") or {}
+    weights = apply_regime_weights(base_weights, regime) if regime else base_weights
     agg = _aggregate_score(factors, weights)
 
     # 단일 지표 과의존 방지: 지표 1~2개면 50 방향 강하게 수축
@@ -580,6 +691,7 @@ def _build_estimated_forecast(
     boom: dict[str, Any],
     direct: dict[str, Any],
     current_score: float | None,
+    regime: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """
     관측 피드 없을 때 매크로+테마+금융환경으로 3개월 전망 추정.
@@ -589,7 +701,8 @@ def _build_estimated_forecast(
     if available_count == 0:
         return None
 
-    weights = industry.get("weights_3m") or {}
+    base_weights_3m = industry.get("weights_3m") or {}
+    weights = apply_regime_weights(base_weights_3m, regime) if regime else base_weights_3m
     agg = _aggregate_score(factors, weights)
 
     if available_count <= 1:
@@ -637,6 +750,9 @@ def _pending_industry_result(
     kr: dict[str, Any] | None = None,
     gl: dict[str, Any] | None = None,
     korea_equity: dict[str, Any] | None = None,
+    nowcast_metric: dict[str, Any] | None = None,
+    regime: dict[str, Any] | None = None,
+    dart_metric: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     observed 피드 없을 때: estimated 레이어로 fallback 시도.
@@ -652,11 +768,11 @@ def _pending_industry_result(
     gl = gl or {}
     korea_equity = korea_equity or {}
 
-    estimated_current = _build_estimated_current(industry, policy, kr, gl, korea_equity, boom, direct) if allow_estimated else None
+    estimated_current = _build_estimated_current(industry, policy, kr, gl, korea_equity, boom, direct, nowcast_metric=nowcast_metric, regime=regime, dart_metric=dart_metric) if allow_estimated else None
     estimated_forecast = None
     if estimated_current is not None:
         c_score = estimated_current["score"]
-        estimated_forecast = _build_estimated_forecast(industry, policy, kr, gl, korea_equity, boom, direct, c_score)
+        estimated_forecast = _build_estimated_forecast(industry, policy, kr, gl, korea_equity, boom, direct, c_score, regime=regime)
 
     theme = _theme_signal(industry, boom, policy)
 
@@ -880,6 +996,7 @@ def _feed_stage(
     korea_equity: dict[str, Any] | None = None,
     boom: dict[str, Any] | None = None,
     direct: dict[str, Any] | None = None,
+    dart_metric: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """피드 스테이지를 렌더링. 팩터분해를 복구하고 quality를 정보량에 정직하게 연동."""
     stage = stage if isinstance(stage, dict) else {}
@@ -960,6 +1077,9 @@ def _feed_stage(
     b = boom or {}
     dm = direct or {}
     factors = _feed_stage_factors(stage, policy, k, g, ke, b, ind, dm, future, quality)
+    # DART 영업이익 현재 팩터 보강 (observed 경로에서도 earnings_momentum 정밀화)
+    if dart_metric and horizon == "current":
+        factors = _apply_dart_earnings_to_factors(factors, dart_metric)
 
     # ── 총점과 팩터 기여 정보 ─────────────────────────────────────────────────
     weights = ind.get("weights_3m" if future else "weights_current") or {}
@@ -1017,15 +1137,24 @@ def _scored_industry_result_from_feed(
     kr: dict[str, Any] | None = None,
     gl: dict[str, Any] | None = None,
     korea_equity: dict[str, Any] | None = None,
+    regime: dict[str, Any] | None = None,
+    dart_metric: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     boom = boom or {}
     kr = kr or {}
     gl = gl or {}
     korea_equity = korea_equity or {}
 
+    # 레짐 가중치를 industry의 weights에 반영한 임시 복사본 생성
+    if regime:
+        industry = dict(industry)
+        industry["weights_current"] = apply_regime_weights(industry.get("weights_current") or {}, regime)
+        industry["weights_3m"]      = apply_regime_weights(industry.get("weights_3m") or {}, regime)
+
     current = _feed_stage(
         cycle_row.get("current"), policy, "current",
         industry=industry, kr=kr, gl=gl, korea_equity=korea_equity, boom=boom, direct=direct,
+        dart_metric=dart_metric if dart_metric else None,
     )
     current_score = finite(current.get("score"))
     forecasts = cycle_row.get("forecasts") if isinstance(cycle_row.get("forecasts"), dict) else {}
@@ -1065,6 +1194,9 @@ def _scored_industry_result_from_feed(
         "current": "industry_observed_metrics_only",
         "future": "industry_leading_metrics_plus_sensitive_macro_estimated" if forecast_3m.get("score_source") == "estimated" else "industry_leading_metrics_plus_sensitive_macro",
         "data_status": "scored" if current.get("status") == "scored" else "insufficient_data",
+        "regime": (regime.get("primary_regime") if regime else None) or "neutral",
+        "regime_label": (regime.get("primary_label") if regime else None) or "중립",
+        "regime_active": [r["name"] for r in (regime.get("active_regimes") or [])],
         "current_inputs": industry.get("current_metric_groups") or [],
         "leading_inputs": industry.get("leading_metric_groups") or [],
         "specialized_current_metrics": industry.get("specialized_current_metrics") or [],
@@ -1119,6 +1251,32 @@ def _scored_industry_result_from_feed(
     }
 
 
+def _extract_nowcast_metric(nowcast_data: dict[str, Any] | None, industry_key: str) -> dict[str, Any] | None:
+    """customs_nowcast_raw.json에서 해당 산업의 nowcast metric 추출."""
+    if not nowcast_data or not isinstance(nowcast_data, dict):
+        return None
+    if nowcast_data.get("status") not in {"raw", "scored"}:
+        return None
+    for ind in (nowcast_data.get("industries") or []):
+        if isinstance(ind, dict) and str(ind.get("industry_key", "")) == industry_key:
+            metrics = (ind.get("current") or {}).get("metrics") or []
+            return metrics[0] if metrics else None
+    return None
+
+
+def _extract_dart_earnings_metric(dart_data: dict[str, Any] | None, industry_key: str) -> dict[str, Any] | None:
+    """dart_earnings_raw.json에서 해당 산업의 earnings metric 추출."""
+    if not dart_data or not isinstance(dart_data, dict):
+        return None
+    if dart_data.get("status") not in {"raw", "scored"}:
+        return None
+    for ind in (dart_data.get("industries") or []):
+        if isinstance(ind, dict) and str(ind.get("industry_key", "")) == industry_key:
+            metrics = (ind.get("current") or {}).get("metrics") or []
+            return metrics[0] if metrics else None
+    return None
+
+
 def score_industry(
     industry: dict[str, Any],
     policy: dict[str, Any],
@@ -1130,11 +1288,17 @@ def score_industry(
     direct_market: dict[str, Any],
     freshness_quality: float,
     prospective_summary: dict[str, Any],
+    nowcast_data: dict[str, Any] | None = None,
+    dart_data: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     kr = _extract_korea(korea_rate, korea_equity)
     gl = _extract_global(global_bundle)
     direct = (direct_market.get("industries") or {}).get(industry["key"]) or {}
     cycle_row = _industry_cycle_row(industry_cycle, industry["key"])
+    nowcast_metric = _extract_nowcast_metric(nowcast_data, industry["key"])
+    dart_metric = _extract_dart_earnings_metric(dart_data, industry["key"])
+    # ── 매크로 레짐 감지 (per-industry 가중치 조정용) ─────────────────────────
+    _regime = detect_regime(gl, kr)
 
     # 피드가 명시적으로 pending 상태(status="pending" 또는 industries 비어있음)이면
     # estimated도 산출하지 않는다 — 수집기 미연결 명시 신호.
@@ -1157,9 +1321,13 @@ def score_industry(
             kr=kr if allow_estimated else None,
             gl=gl if allow_estimated else None,
             korea_equity=korea_equity if allow_estimated else None,
+            nowcast_metric=nowcast_metric if allow_estimated else None,
+            regime=_regime if allow_estimated else None,
+            dart_metric=dart_metric if allow_estimated else None,
         )
 
     return _scored_industry_result_from_feed(
         industry, cycle_row, direct, policy, prospective_summary,
         boom=boom, kr=kr, gl=gl, korea_equity=korea_equity,
+        regime=_regime, dart_metric=dart_metric,
     )
