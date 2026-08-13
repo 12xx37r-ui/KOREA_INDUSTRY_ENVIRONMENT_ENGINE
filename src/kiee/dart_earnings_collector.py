@@ -37,11 +37,14 @@ OUTPUT_RAW       = "input/dart_earnings_raw.json"
 CORPCODE_CACHE   = "input_cache/dart_corpcode_map.json"   # stock_code → corp_code 캐시
 QUALITY_CAP      = 72.0
 SHRINKAGE        = 0.80
-MAX_CALLS        = 120     # corpCode ZIP 1회 + 회사당 2회 × 최대 3개사 × 17개 산업 = 103
+# ZIP 1회 + 폴백 포함 산업당 최대 12회 × 17개 핵심산업 + 여유 = 220
+MAX_CALLS        = 220
 CACHE_TTL_H      = 24
 CORPCODE_TTL_H   = 168     # corp_code 맵은 1주일 캐시 (자주 안 바뀜)
 MIN_BASKET_CNT   = 2
 MAX_FIRMS        = 3       # 산업당 최대 조회 기업 수
+# 당해 연도 데이터 없을 때 몇 년 전까지 폴백할지 (2 = 최대 2년 전까지 시도)
+MAX_YEAR_FALLBACK = 2
 
 # 분기 공시 코드
 _REPRT_CODE = {"1Q": "11013", "HY": "11012", "3Q": "11014", "FY": "11011"}
@@ -175,6 +178,34 @@ def _surprise_flag(yoy_list: list[float]) -> bool:
     return yoy_list[-1] > 0 and yoy_list[-1] > sum(yoy_list[:-1]) / len(yoy_list[:-1]) * 1.5
 
 
+def _fetch_op_with_fallback(
+    corp_code: str,
+    base_year: int,
+    reprt_code: str,
+    api_key: str,
+    call_count: list[int],
+    max_calls: int,
+) -> tuple[float | None, float | None, int]:
+    """
+    (cur_op, prev_op, actual_year) 반환.
+    base_year 데이터가 없으면 base_year-1, base_year-2 순으로 폴백.
+    actual_year: 실제로 cur_op를 찾은 연도 (prev_op = actual_year-1).
+    """
+    for offset in range(MAX_YEAR_FALLBACK + 1):
+        ref_year = base_year - offset
+        if call_count[0] + 2 > max_calls:
+            return None, None, ref_year
+        call_count[0] += 1
+        cur_op = _fetch_op(corp_code, ref_year, reprt_code, api_key)
+        time.sleep(0.12)
+        call_count[0] += 1
+        prev_op = _fetch_op(corp_code, ref_year - 1, reprt_code, api_key)
+        time.sleep(0.12)
+        if cur_op is not None and prev_op is not None and prev_op != 0:
+            return cur_op, prev_op, ref_year
+    return None, None, base_year
+
+
 def collect_industry(
     industry: dict[str, Any],
     api_key: str,
@@ -184,75 +215,82 @@ def collect_industry(
     current_year: int,
     qcode: str,
     reprt_code: str,
-) -> dict[str, Any] | None:
+) -> tuple[dict[str, Any] | None, str]:
+    """(metric | None, detail_msg) 반환."""
     basket = industry.get("krx_basket") or []
     if len(basket) < MIN_BASKET_CNT:
-        return None
+        return None, "basket<min"
 
     # stock_code → corp_code 변환 (API 호출 없음)
-    firms = []
-    for sc in basket[:MAX_FIRMS * 2]:   # 여유분 확보
-        cc = corp_map.get(str(sc).zfill(6)) or corp_map.get(str(sc))
+    firms: list[tuple[str, str]] = []
+    map_misses: list[str] = []
+    for sc in basket[:MAX_FIRMS * 2]:
+        key6 = str(sc).zfill(6)
+        cc = corp_map.get(key6) or corp_map.get(str(sc))
         if cc:
             firms.append((sc, cc))
+        else:
+            map_misses.append(key6)
         if len(firms) >= MAX_FIRMS:
             break
 
     if not firms:
-        return None
+        return None, f"corp_map miss: {map_misses[:3]}"
 
     yoy_list: list[float] = []
-    n_fetched = 0
+    used_year = current_year
+    api_empty_count = 0
 
     for stock_code, corp_code in firms:
-        if call_count[0] + 2 > max_calls:
-            break
-
-        # 당해 분기 OP
-        call_count[0] += 1
-        cur_op = _fetch_op(corp_code, current_year, reprt_code, api_key)
-        time.sleep(0.12)
-
-        # 전년 동 분기 OP
-        call_count[0] += 1
-        prev_year = current_year - 1
-        # FY는 전년도, 나머지는 전년 동 분기
-        prev_op = _fetch_op(corp_code, prev_year, reprt_code, api_key)
-        time.sleep(0.12)
-
-        if cur_op is not None and prev_op and prev_op != 0:
+        cur_op, prev_op, actual_year = _fetch_op_with_fallback(
+            corp_code, current_year, reprt_code, api_key, call_count, max_calls
+        )
+        if cur_op is not None and prev_op is not None and prev_op != 0:
             yoy = (cur_op / abs(prev_op) - 1.0) * 100.0
             yoy_list.append(yoy)
-            n_fetched += 1
+            used_year = actual_year
+        else:
+            api_empty_count += 1
 
     if not yoy_list:
-        return None
+        detail = f"API empty (map_ok={len(firms)}, misses={map_misses[:2]})"
+        if map_misses:
+            detail += f", corp_map miss: {map_misses[:2]}"
+        return None, detail
 
+    n_fetched = len(yoy_list)
     yoy_list.sort()
     median_yoy = yoy_list[len(yoy_list) // 2]
     pct_score  = clamp(50.0 + median_yoy / 100.0 * 50.0, 0.0, 100.0)
     score      = clamp(50.0 + (pct_score - 50.0) * SHRINKAGE, 0.0, 100.0)
-    quality    = clamp(QUALITY_CAP * (0.5 + 0.5 * min(n_fetched / MAX_FIRMS, 1.0)), 0.0, QUALITY_CAP)
+    # 폴백 연도 사용 시 quality 10% 감산 (데이터 신선도 반영)
+    freshness  = 1.0 if used_year >= current_year else max(0.7, 1.0 - 0.1 * (current_year - used_year))
+    quality    = clamp(QUALITY_CAP * (0.5 + 0.5 * min(n_fetched / MAX_FIRMS, 1.0)) * freshness, 0.0, QUALITY_CAP)
     surprise   = _surprise_flag(yoy_list)
+    fallback_note = f" (폴백 {used_year}년 기준)" if used_year < current_year else ""
 
-    return {
-        "id":                f"dart_earnings_{industry['key']}",
-        "factor":            "earnings_momentum",
-        "value":             round(median_yoy, 2),
-        "unit":              "영업이익 YoY % (중앙값)",
+    metric = {
+        "id":                  f"dart_earnings_{industry['key']}",
+        "factor":              "earnings_momentum",
+        "value":               round(median_yoy, 2),
+        "unit":                "영업이익 YoY % (중앙값)",
         "long_run_percentile": round(pct_score, 3),
-        "score":             round(score, 4),
-        "quality":           round(quality, 1),
-        "source":            f"DART 공시 {qcode} 영업이익 ({n_fetched}개사 중앙값)",
-        "series_id":         f"dart_op_{industry['key']}",
-        "as_of":             f"{current_year}-{qcode}",
-        "available":         True,
-        "is_dart_earnings":  True,
-        "median_yoy_pct":    round(median_yoy, 2),
-        "n_firms":           n_fetched,
-        "surprise":          surprise,
-        "note":              f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
+        "score":               round(score, 4),
+        "quality":             round(quality, 1),
+        "source":              f"DART 공시 {qcode} 영업이익 ({n_fetched}개사 중앙값){fallback_note}",
+        "series_id":           f"dart_op_{industry['key']}",
+        "as_of":               f"{used_year}-{qcode}",
+        "available":           True,
+        "is_dart_earnings":    True,
+        "median_yoy_pct":      round(median_yoy, 2),
+        "n_firms":             n_fetched,
+        "api_empty_firms":     api_empty_count,
+        "surprise":            surprise,
+        "reference_year":      used_year,
+        "note":                f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll{fallback_note}. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
     }
+    detail = f"score={score:.1f} yoy={median_yoy:.1f}% n={n_fetched} year={used_year} surprise={surprise}"
+    return metric, detail
 
 
 # ── 메인 수집 ─────────────────────────────────────────────────────────────────
@@ -321,7 +359,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         if not key:
             continue
         try:
-            metric = collect_industry(
+            metric, detail = collect_industry(
                 ind, api_key, corp_map, call_count, MAX_CALLS,
                 current_year, qcode, reprt_code,
             )
@@ -330,12 +368,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
                     "industry_key": key,
                     "current": {"metrics": [metric], "dart_earnings": True},
                 })
-                diagnostics.append(
-                    f"{key}: score={metric['score']:.1f} yoy={metric['median_yoy_pct']}%"
-                    f" n={metric['n_firms']} surprise={metric['surprise']}"
-                )
+                diagnostics.append(f"{key}: {detail}")
             else:
-                diagnostics.append(f"{key}: no earnings data (corp_map miss or API empty)")
+                diagnostics.append(f"{key}: no data — {detail}")
         except Exception as e:
             diagnostics.append(f"{key}: error {str(e)[:80]}")
 
