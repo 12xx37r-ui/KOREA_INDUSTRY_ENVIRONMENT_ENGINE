@@ -644,12 +644,15 @@ def _pending_industry_result(
     """
     boom = boom or {}
     policy = policy or {}
+
+    # kr=None이면 estimated 비활성 (feed_pending 상태) — or {} 변환 전에 체크
+    allow_estimated = kr is not None and gl is not None and korea_equity is not None
+
     kr = kr or {}
     gl = gl or {}
     korea_equity = korea_equity or {}
 
-    # estimated 현재 점수 시도
-    estimated_current = _build_estimated_current(industry, policy, kr, gl, korea_equity, boom, direct)
+    estimated_current = _build_estimated_current(industry, policy, kr, gl, korea_equity, boom, direct) if allow_estimated else None
     estimated_forecast = None
     if estimated_current is not None:
         c_score = estimated_current["score"]
@@ -1133,13 +1136,27 @@ def score_industry(
     direct = (direct_market.get("industries") or {}).get(industry["key"]) or {}
     cycle_row = _industry_cycle_row(industry_cycle, industry["key"])
 
+    # 피드가 명시적으로 pending 상태(status="pending" 또는 industries 비어있음)이면
+    # estimated도 산출하지 않는다 — 수집기 미연결 명시 신호.
+    feed_pending = (
+        isinstance(industry_cycle, dict)
+        and (
+            industry_cycle.get("status") == "pending"
+            or not industry_cycle.get("industries")
+        )
+    )
+
     if not cycle_row or not isinstance(cycle_row.get("current"), dict) or not finite(cycle_row.get("current", {}).get("score")):
-        # observed 피드 없음 → estimated 레이어 시도
+        # feed_pending이면 null 유지, 연결됐으나 해당 산업 없으면 estimated 시도
+        allow_estimated = not feed_pending
         return _pending_industry_result(
             industry, direct,
             "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다.",
             prospective_summary,
-            boom=boom, policy=policy, kr=kr, gl=gl, korea_equity=korea_equity,
+            boom=boom, policy=policy,
+            kr=kr if allow_estimated else None,
+            gl=gl if allow_estimated else None,
+            korea_equity=korea_equity if allow_estimated else None,
         )
 
     return _scored_industry_result_from_feed(
