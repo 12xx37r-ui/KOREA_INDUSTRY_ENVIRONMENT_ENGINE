@@ -127,6 +127,13 @@ def run_engine(
         for industry in industries
     ]
 
+    # ── OOS 상태 요약을 engine_health에도 반영 ───────────────────────────────
+    oos_status = str(prospective_after.get("status", "PENDING"))
+    oos_cases = int(prospective_after.get("evaluated_cases", 0))
+    from .scoring import _oos_bridge_limits
+    oos_limits = _oos_bridge_limits(oos_status, oos_cases, policy)
+    oos_health_note = f"OOS {oos_status} ({oos_cases}건 평가): 현재 bridge 허용한도 ±{oos_limits['max_points']}pt"
+
     # 출력 계약 강제 정규화: score=None이면 quality_score도 반드시 0.0
     # (scoring.py가 score를 None으로 내리면서 quality를 남겨두는 경우 방어)
     _SCORE_BLOCKS = ("current", "forecast_3m", "forecast_3_6m", "forecast_6_12m")
@@ -299,6 +306,10 @@ def run_engine(
         "direct_krx_diagnostics": direct_market.get("diagnostics") or [],
         "call_efficiency": overall["call_efficiency"],
         "prospective_validation": prospective_after,
+        "oos_bridge_status": oos_status,
+        "oos_bridge_evaluated_cases": oos_cases,
+        "oos_bridge_max_adjustment_points": oos_limits["max_points"],
+        "oos_bridge_note": oos_health_note,
     })
     _append_history(root, as_of, results)
     return overall
