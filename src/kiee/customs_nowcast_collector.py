@@ -1,6 +1,6 @@
 """
 customs_nowcast_collector.py
-관세청 HS 품목별 수출입 실적 API.
+관세청 HS 품목별 수출입 실적 API (Itemtrade/getItemtradeList).
 
 Secret : CUSTOMS_API_KEY (data.go.kr 일반 인증키)
 출력   : input/customs_nowcast_raw.json
@@ -22,28 +22,23 @@ from typing import Any
 
 from .util import age_hours, clamp, read_json, utc_now_iso, write_json
 
-# API 400 지속 발생 — 재활성화 전까지 수집 비활성화
-# 원인: hsSgn 파라미터 규격/엔드포인트 불일치 또는 서비스 미등록
 CUSTOMS_DISABLED = False
 
 ENDPOINTS = [
-    "https://apis.data.go.kr/1220000/impExpHsItemList/getImpExpHsItemList",
-    "https://apis.data.go.kr/1220000/need2MainItemList/getNeed2MainItemList",
+    "https://apis.data.go.kr/1220000/Itemtrade/getItemtradeList",
 ]
 OUTPUT_RAW     = "input/customs_nowcast_raw.json"
 CACHE_TTL_H    = 12
 QUALITY_CAP    = 65.0
 SHRINKAGE      = 0.70
-MAX_CALLS      = 12    # 빠르게 실패 확인 후 종료
+MAX_CALLS      = 25
 MAX_INDUSTRIES = 10
 API_TIMEOUT    = 8
-# 연속 400 오류 허용 횟수 — 초과 시 즉시 종료
 MAX_CONSECUTIVE_ERRORS = 3
 
 
 def _request(url: str, api_key: str, other_params: dict[str, Any], timeout: int = API_TIMEOUT) -> tuple[str, int]:
     """(응답 텍스트, HTTP 상태코드) 반환. serviceKey 이중 인코딩 방지."""
-    # data.go.kr 키는 인코딩/디코딩 형태 모두 존재 — 디코딩 후 재인코딩으로 통일
     decoded_key = urllib.parse.unquote(api_key)
     encoded_key = urllib.parse.quote(decoded_key, safe="")
     rest = urllib.parse.urlencode({k: v for k, v in other_params.items() if v is not None})
@@ -76,25 +71,21 @@ def _ref_months(now: datetime) -> tuple[tuple[int, int], tuple[int, int]]:
 
 def _probe_endpoint(api_key: str, diag: list[str]) -> tuple[str, dict[str, str]] | None:
     """
-    동작하는 엔드포인트 + 파라미터 형식을 자동 탐색.
-    성공하면 (endpoint_url, base_params_template) 반환, 실패하면 None.
+    관세청 ItemtradeList 정식 규격 파라미터 탐색.
     """
     test_hs = "8542310000"  # 10자리 HSK 코드 필수
-    test_ym = "202607"
-    # 시도할 파라미터 조합 — searchBseYm + hsSgn 이 정식 파라미터명
+    test_ym = "202606"      # 확정 실적 조회를 위한 기본 연월
+
     param_variants = [
-        {"searchBseYm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"searchBseYm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1", "_type": "xml"},
-        {"yyyyMm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs, "numOfRows": "5", "pageNo": "1"},
-        {"yyyyMm": test_ym, "hsCd": test_hs, "numOfRows": "5", "pageNo": "1"},
+        {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs},
+        {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs, "_type": "xml"},
+        {"strtYymm": test_ym, "endYymm": test_ym, "hsSgn": test_hs, "numOfRows": "10", "pageNo": "1"},
     ]
     for endpoint in ENDPOINTS:
         for params in param_variants:
             text, code = _request(endpoint, api_key, params)
             tag = f"probe {endpoint.split('/')[-1]} {list(params.keys())[:2]}"
-            if code == 200:
+            if code == 200 and ("<resultCode>00</resultCode>" in text or "<items>" in text):
                 diag.append(f"{tag}: OK code=200 snippet={text[:80]!r}")
                 return endpoint, params
             else:
@@ -119,7 +110,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         return result
 
     if CUSTOMS_DISABLED:
-        return _pending("관세청 API 일시 비활성화 — hsSgn 파라미터 규격 확인 후 재활성화 예정", 0)
+        return _pending("관세청 API 일시 비활성화", 0)
 
     if not api_key:
         return _pending("CUSTOMS_API_KEY 미설정")
@@ -146,7 +137,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
 
     # ── 엔드포인트 자동 탐색 ──────────────────────────────────────────────────
     probe = _probe_endpoint(api_key, diag)
-    call_count[0] += len(ENDPOINTS) * 6  # probe 호출 수 근사
+    call_count[0] += len(ENDPOINTS) * 3
     if probe is None:
         return _pending(
             "관세청 API 엔드포인트 탐색 실패 (400/인증 오류) — "
@@ -167,7 +158,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         hs_codes = ind_cfg.get("hs_codes", [])
         if not hs_codes:
             continue
-        hs = hs_codes[0]
+        hs = str(hs_codes[0]).strip()
         exp_w = float(ind_cfg.get("export_weight", 0.7))
         imp_w = float(ind_cfg.get("import_weight", 0.3))
 
@@ -175,29 +166,16 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         for year, month in [(cur_year, cur_month), (prev_year, prev_month)]:
             if call_count[0] >= MAX_CALLS:
                 break
-            params = dict(base_params)
             ym = f"{year}{month:02d}"
-            if "searchBseYm" in params:
-                params["searchBseYm"] = ym
-            elif "yyyyMm" in params:
-                params["yyyyMm"] = ym
-            elif "yyyymm" in params:
-                params["yyyymm"] = ym
-            elif "strtYymm" in params:
-                params["strtYymm"] = ym
-                params["endYymm"] = ym
-            else:
-                params["year"] = str(year)
-                params["month"] = f"{month:02d}"
-            for hk in ("hsSgn", "hsCd", "hscd"):
-                if hk in params:
-                    params[hk] = hs
-                    break
+            params = dict(base_params)
+            params["strtYymm"] = ym
+            params["endYymm"] = ym
+            params["hsSgn"] = hs
 
             call_count[0] += 1
             text, code = _request(endpoint, api_key, params)
             if code != 200:
-                diag.append(f"{industry_key} {year}{month:02d}: HTTP {code}")
+                diag.append(f"{industry_key} {ym}: HTTP {code}")
                 continue
             try:
                 root_el = ET.fromstring(text)
@@ -206,8 +184,11 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
                 yearly.setdefault(yk, {"exp": 0.0, "imp": 0.0})
                 for item in items:
                     row = {c.tag: (c.text or "").strip() for c in item}
-                    exp = _number(row.get("expAmt") or row.get("expDlr") or row.get("exportAmt"))
-                    imp = _number(row.get("impAmt") or row.get("impDlr") or row.get("importAmt"))
+                    # 총계 행 제외
+                    if row.get("year") == "총계":
+                        continue
+                    exp = _number(row.get("expDlr") or row.get("expAmt") or row.get("exportAmt"))
+                    imp = _number(row.get("impDlr") or row.get("impAmt") or row.get("importAmt"))
                     if exp:
                         yearly[yk]["exp"] += exp
                     if imp:
