@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0.0",
   "engine_version": "korea-equity-environment-v1.2-close-per-earnings-fallback",
-  "generated_at_utc": "2026-08-14T04:34:03.798829+00:00",
+  "generated_at_utc": "2026-08-14T09:55:28.137639+00:00",
   "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
-  "score": 65,
+  "score": 66,
   "score_valid": true,
   "bias": "약우호",
   "data_coverage_pct": 100,
@@ -90,9 +90,9 @@
     },
     "credit_spread": {
       "available": true,
-      "score_normalized": -0.946875,
-      "spread_pct_point": 0.707,
-      "percentile": 0.973437,
+      "score_normalized": -0.871875,
+      "spread_pct_point": 0.696,
+      "percentile": 0.935937,
       "history_samples": 320,
       "history_source": "same_run_ecos_history",
       "detail": "AA- 회사채3년-국고채3년의 동일날짜 스프레드 과거분포 백분위. 좁을수록 우호."
@@ -162,11 +162,11 @@
     },
     "credit": {
       "available": true,
-      "corp_aa_minus_3y_pct": 4.488,
-      "corp_as_of": "20260813",
-      "gov_3y_pct": 3.781,
-      "gov_as_of": "20260813",
-      "spread_pct_point": 0.707,
+      "corp_aa_minus_3y_pct": 4.492,
+      "corp_as_of": "20260814",
+      "gov_3y_pct": 3.796,
+      "gov_as_of": "20260814",
+      "spread_pct_point": 0.696,
       "spread_history": [
         {
           "date": "20250206",
@@ -2405,9 +2405,15 @@
           "corp_aa_minus_3y_pct": 4.488,
           "gov_3y_pct": 3.781,
           "spread_pct_point": 0.707
+        },
+        {
+          "date": "20260814",
+          "corp_aa_minus_3y_pct": 4.492,
+          "gov_3y_pct": 3.796,
+          "spread_pct_point": 0.696
         }
       ],
-      "history_samples": 373,
+      "history_samples": 374,
       "stale": false,
       "source": "한국은행 ECOS 시장금리(일별)",
       "source_url": "https://ecos.bok.or.kr/",
