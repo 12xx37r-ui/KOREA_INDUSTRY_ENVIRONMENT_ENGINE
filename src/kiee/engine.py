@@ -22,9 +22,11 @@ def _company_rows(industry: dict[str, Any], names: dict[str, str]) -> list[dict[
     rows: list[dict[str, Any]] = []
     for raw in industry.get("krx_basket") or []:
         ticker = str(raw).zfill(6)
+        raw_name = str(names.get(ticker) or "").strip()
+        name = raw_name if raw_name and raw_name != ticker and not raw_name.isdigit() else ""
         rows.append({
             "ticker": ticker,
-            "name": names.get(ticker) or ticker,
+            "name": name,
             "market": "KR",
             "representative": True,
         })
@@ -326,7 +328,7 @@ def run_engine(
             "forecast_6_12m": {k: row["forecast_6_12m"].get(k) for k in ("score", "band", "quality_score", "status")},
             "quality": row.get("quality"),
             "score_model": row.get("score_model"),
-            "companies": row.get("companies") or [{"ticker": str(t).zfill(6), "name": str(t).zfill(6), "market": "KR", "representative": True} for t in basket],
+            "companies": row.get("companies") or [{"ticker": str(t).zfill(6), "name": "", "market": "KR", "representative": True} for t in basket],
         })
     write_json(output_dir / "industry_dashboard.json", {
         "schema_version": "1.0.0",
