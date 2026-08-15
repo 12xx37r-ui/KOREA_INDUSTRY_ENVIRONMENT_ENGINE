@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "status": "raw",
-  "generated_at_utc": "2026-08-15T11:38:07.865876+00:00",
+  "generated_at_utc": "2026-08-15T14:15:37.847788+00:00",
   "collector": "dart-earnings-v3.4-axis-gap-retry",
   "quarter": "HY",
   "reference_year": 2026,
@@ -3646,30 +3646,11 @@
   "scored_industry_count": 101,
   "revenue_enabled_industry_count": 101,
   "axis_complete_industry_count": 101,
-  "external_calls": 97,
+  "external_calls": 1,
   "diagnostics": [
     "corp_map_size=3983 quarter=HY year=2026 calls_used=1",
-    "previous_same_period=83 revenue_complete=82 gap_first=true",
-    "plant: op=90.0 revenue=57.128984916362526 n=2 year=2026",
-    "construction_machinery: op=90.0 revenue=86.0 n=2 year=2026",
-    "power_equipment: op=75.75467126305017 revenue=57.88859391844307 n=3 year=2026",
-    "hvac_elevator: op=70.93630740325406 revenue=53.12485476687691 n=1 year=2026",
-    "nonferrous: op=63.51269204281412 revenue=73.97145916751747 n=2 year=2026",
-    "petrochemicals: op=90.0 revenue=62.77433589244888 n=3 year=2026",
-    "cement_glass_ceramics: op=61.84630943382838 revenue=49.08690507287049 n=2 year=2026",
-    "paper_packaging: op=90.0 revenue=58.45977204135433 n=2 year=2026",
-    "industrial_gases: op=61.57296790793041 revenue=58.304542299173704 n=1 year=2026",
-    "waste_recycling: op=61.8092678191869 revenue=39.08549295820879 n=1 year=2026",
-    "oil_gas_lng: op=76.7570212639758 revenue=58.28317956233965 n=3 year=2026",
-    "renewable_solar_wind: op=68.06535147828342 revenue=61.45308782065324 n=2 year=2026",
-    "nuclear: op=56.36710364211784 revenue=64.75737594163628 n=3 year=2026",
-    "ess_smartgrid_evcharging: op=74.35751456093092 revenue=53.816299867899176 n=3 year=2026",
-    "pharma: op=63.64442285405661 revenue=53.75954632195567 n=2 year=2026",
-    "diagnostics: op=10.0 revenue=54.319183502606315 n=3 year=2026",
-    "cro_cdmo: op=59.32247618351443 revenue=53.20937274119562 n=3 year=2026",
-    "api_health_supplements: op=66.68303030774466 revenue=71.22158523333682 n=2 year=2026",
-    "shipbuilding: op=89.2151103908962 revenue=73.48616380467365 n=1 year=2026",
-    "financial_cache_entries=96"
+    "previous_same_period=101 revenue_complete=101 gap_first=true",
+    "financial_cache_entries=0"
   ],
   "note": "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. 동일 대표기업을 여러 산업이 공유할 때 DART 재무응답을 run 내부 캐시로 재사용하고 gap 산업은 최대 3개 대표기업까지 확인한다. 매출만 확보된 row를 완료로 오인하지 않고 영업이익·마진까지 필요한 축을 재시도한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
 }
