@@ -5,6 +5,7 @@ import json
 import os
 import urllib.parse
 import urllib.request
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -44,12 +45,15 @@ class _CallBudget:
     scope_attempts: int = 0
     errors: list[str] | None = None
     events: list[str] | None = None
+    deadline_at: float | None = None
 
     def start_scope(self, limit: int) -> None:
         self.scope_limit = max(1, int(limit))
         self.scope_attempts = 0
 
     def allow(self) -> None:
+        if self.deadline_at is not None and time.monotonic() >= self.deadline_at:
+            raise RuntimeError("KOSIS runtime budget reached")
         if self.attempts >= self.limit:
             raise RuntimeError("KOSIS external-call cap reached")
         if self.scope_limit is not None and self.scope_attempts >= self.scope_limit:
@@ -58,7 +62,9 @@ class _CallBudget:
         self.scope_attempts += 1
 
 
-def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: int = 25) -> Any:
+def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: int | None = None) -> Any:
+    if timeout is None:
+        timeout = max(3, min(12, int(os.getenv("KOSIS_REQUEST_TIMEOUT_SECONDS", "6"))))
     query = urllib.parse.urlencode({key: value for key, value in params.items() if value not in (None, "")})
     request = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-industry-cycle/1.0"})
     budget.allow()
@@ -75,13 +81,14 @@ def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: in
 def _get_data_json(params: dict[str, Any], budget: _CallBudget, allow_fallback: bool = True) -> Any:
     """Use the main KOSIS data host, then one bounded SSO-host fallback."""
     try:
-        return _get_json(DATA_URL, params, budget, timeout=20)
+        timeout = max(4, min(15, int(os.getenv("KOSIS_DATA_TIMEOUT_SECONDS", "8"))))
+        return _get_json(DATA_URL, params, budget, timeout=timeout)
     except (TimeoutError, urllib.error.URLError) as first_error:
         if not allow_fallback:
             raise
         if budget.events is not None:
             budget.events.append(f"data_host_fallback: {type(first_error).__name__}")
-        return _get_json(DATA_FALLBACK_URL, params, budget, timeout=20)
+        return _get_json(DATA_FALLBACK_URL, params, budget, timeout=timeout)
 
 
 def _rows(payload: Any) -> list[dict[str, Any]]:
@@ -357,7 +364,14 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     previous = read_json(output, {}) or {}
     metric_rows: dict[str, list[dict[str, Any]]] = {}
     diagnostics: list[str] = []
-    budget = _CallBudget(max(1, int(config.get("max_external_calls", 6))), errors=[], events=[])
+    runtime_seconds = max(20, min(180, int(config.get("max_runtime_seconds", 90))))
+    budget = _CallBudget(
+        max(1, int(config.get("max_external_calls", 24))),
+        errors=[], events=[], deadline_at=time.monotonic() + runtime_seconds,
+    )
+    # 한 번 성공한 동일 원표는 같은 run에서 재사용한다. 생산·출하와 재고처럼
+    # 같은 대형 KOSIS 표를 쓰는 축이 검색/다운로드를 중복하지 않게 한다.
+    shared_table_rows: dict[str, tuple[str, str, list[dict[str, Any]]]] = {}
     # 광공업(manufacturing) 전용 시리즈 — non_mfg 체크 적용
     MFG_SERIES = {"production_shipments", "inventory_cycle", "utilization", "pmi_bsi"}
 
@@ -372,7 +386,15 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         budget.start_scope(int(spec.get("max_external_calls", 1)))
         is_mfg_series = name in MFG_SERIES
         try:
-            org_id, table_id, rows = _choose_table(api_key, spec, budget)
+            reuse_group = str(spec.get("reuse_group") or "").strip()
+            if reuse_group and reuse_group in shared_table_rows:
+                org_id, table_id, rows = shared_table_rows[reuse_group]
+                if budget.events is not None:
+                    budget.events.append(f"reuse_table[{reuse_group}]: {org_id}/{table_id} rows={len(rows)}")
+            else:
+                org_id, table_id, rows = _choose_table(api_key, spec, budget)
+                if reuse_group:
+                    shared_table_rows[reuse_group] = (org_id, table_id, rows)
             source = f"KOSIS org={org_id} table={table_id} factor={name}"
             metric_rows[name] = []
             for industry in universe.get("industries") or []:
@@ -419,7 +441,8 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     result = {
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
-        "collector": "kosis-industry-cycle-v2", "external_calls": budget.attempts,
+        "collector": "kosis-industry-cycle-v2.1-fast", "external_calls": budget.attempts,
+        "runtime_budget_seconds": runtime_seconds,
         "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
     # Preserve the last valid raw observations when a transient KOSIS outage

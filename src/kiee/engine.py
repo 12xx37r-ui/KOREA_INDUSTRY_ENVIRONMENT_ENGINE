@@ -314,11 +314,36 @@ def run_engine(
         "industries": dashboard_rows,
     })
     # ────────────────────────────────────────────────────────────────────────
+    # 현재 산업점수의 실제자료/보조 proxy 사용량을 health에 노출한다.
+    # 값이 존재한다는 사실과 산업 고유 원자료가 있다는 사실을 혼동하지 않도록 한다.
+    _current_factor_rows = []
+    _core_direct_industries = 0
+    _core_keys = ("earnings_momentum", "demand_cycle", "pricing_margin")
+    for _row in results:
+        _factors = (_row.get("current") or {}).get("factors") or {}
+        for _factor in _factors.values():
+            if isinstance(_factor, dict) and _factor.get("available"):
+                _current_factor_rows.append(_factor)
+        if all(
+            isinstance(_factors.get(_k), dict)
+            and _factors[_k].get("available")
+            and not _factors[_k].get("proxy")
+            for _k in _core_keys
+        ):
+            _core_direct_industries += 1
+    _proxy_current_factor_count = sum(1 for _f in _current_factor_rows if _f.get("proxy"))
+    _direct_current_factor_count = len(_current_factor_rows) - _proxy_current_factor_count
     write_json(output_dir / "engine_health.json", {
         "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
         "source_status": _source_status(sources),
         "freshness_quality_score": round(freshness, 1),
+        "current_factor_available_count": len(_current_factor_rows),
+        "current_factor_direct_count": _direct_current_factor_count,
+        "current_factor_proxy_count": _proxy_current_factor_count,
+        "current_factor_proxy_pct": round((_proxy_current_factor_count / len(_current_factor_rows) * 100.0), 1) if _current_factor_rows else 0.0,
+        "core_current_direct_industry_count": _core_direct_industries,
+        "core_current_direct_industry_pct": round((_core_direct_industries / len(results) * 100.0), 1) if results else 0.0,
         "direct_krx_available": direct_krx_available,
         "direct_krx_source_mode": direct_market.get("source_mode"),
         "direct_krx_credentials_configured": direct_market.get("krx_credentials_configured") is True,

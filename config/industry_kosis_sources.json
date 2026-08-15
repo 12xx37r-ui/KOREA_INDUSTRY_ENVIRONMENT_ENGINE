@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0.0",
   "cache_ttl_hours": 24,
-  "max_external_calls": 56,
+  "max_external_calls": 24,
   "series": {
     "production_shipments": {
       "factor": "production_shipments",
-      "max_external_calls": 8,
-      "probe_candidates": 3,
+      "max_external_calls": 6,
+      "probe_candidates": 2,
       "search_terms": [
         "시도/산업별 광공업생산지수"
       ],
@@ -37,12 +37,13 @@
       "item_keywords": [
         "생산",
         "출하"
-      ]
+      ],
+      "reuse_group": "industrial_activity"
     },
     "inventory_cycle": {
       "factor": "inventory_cycle",
-      "max_external_calls": 8,
-      "probe_candidates": 3,
+      "max_external_calls": 6,
+      "probe_candidates": 2,
       "search_terms": [
         "시도/산업별 광공업생산지수"
       ],
@@ -70,11 +71,12 @@
       ],
       "item_keywords": [
         "재고"
-      ]
+      ],
+      "reuse_group": "industrial_activity"
     },
     "utilization": {
       "factor": "utilization",
-      "max_external_calls": 8,
+      "max_external_calls": 4,
       "probe_candidates": 0,
       "search_terms": [],
       "preferred_tables": [
@@ -96,7 +98,7 @@
     },
     "pmi_bsi": {
       "factor": "pmi_bsi",
-      "max_external_calls": 8,
+      "max_external_calls": 4,
       "probe_candidates": 2,
       "search_terms": [
         "기업경기실사지수 제조업"
@@ -125,8 +127,8 @@
     },
     "service_production": {
       "factor": "sales_earnings",
-      "max_external_calls": 6,
-      "probe_candidates": 3,
+      "max_external_calls": 4,
+      "probe_candidates": 2,
       "search_terms": [
         "서비스업생산지수"
       ],
@@ -169,7 +171,7 @@
     "retail_sales": {
       "factor": "demand_cycle",
       "max_external_calls": 4,
-      "probe_candidates": 3,
+      "probe_candidates": 2,
       "search_terms": [
         "소매판매액지수"
       ],
@@ -200,7 +202,7 @@
     },
     "employment": {
       "factor": "employment",
-      "max_external_calls": 6,
+      "max_external_calls": 4,
       "probe_candidates": 2,
       "search_terms": [
         "산업별 종사자 사업체노동력조사"
@@ -439,5 +441,8 @@
       "used_cars",
       "utilities_power"
     ]
-  }
+  },
+  "max_runtime_seconds": 90,
+  "request_timeout_seconds": 6,
+  "data_timeout_seconds": 8
 }
