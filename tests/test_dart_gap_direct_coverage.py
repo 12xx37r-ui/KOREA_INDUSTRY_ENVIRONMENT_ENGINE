@@ -41,7 +41,7 @@ def test_dart_revenue_replaces_proxy_demand_without_extra_metric_source():
 
 
 def test_gap_collector_uses_multiple_firms_and_quality_denominator_remains_two():
-    assert COLLECTOR_VERSION == "dart-earnings-v3.3-gap-multifirm-cache"
+    assert COLLECTOR_VERSION == "dart-earnings-v3.4-axis-gap-retry"
     assert MAX_FIRMS == 3
     assert TARGET_FIRMS_FOR_FULL_QUALITY == 2
 
