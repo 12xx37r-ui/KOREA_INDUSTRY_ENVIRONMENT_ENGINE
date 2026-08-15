@@ -1,34 +1,34 @@
 {
   "status": "ok",
-  "generated_at_utc": "2026-08-15T11:08:19.828494+00:00",
+  "generated_at_utc": "2026-08-15T11:38:22.368149+00:00",
   "source_status": {
     "korea_rate_fx": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.72,
+      "age_hours": 3.22,
       "source_generated_at": "2026-08-15T14:34:15.045604+09:00",
-      "source_age_hours": 5.56,
+      "source_age_hours": 6.06,
       "http_calls": 0,
       "error": ""
     },
     "korea_equity": {
       "ok": true,
-      "mode": "cache-fresh",
+      "mode": "cache-not-modified",
       "stale": false,
-      "age_hours": 2.72,
+      "age_hours": 0.0,
       "source_generated_at": "2026-08-15T05:35:12.408783+00:00",
-      "source_age_hours": 5.55,
-      "http_calls": 0,
+      "source_age_hours": 6.05,
+      "http_calls": 1,
       "error": ""
     },
     "global_bundle": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.72,
+      "age_hours": 3.22,
       "source_generated_at": "2026-08-14T18:11:01.120568+00:00",
-      "source_age_hours": 16.95,
+      "source_age_hours": 17.45,
       "http_calls": 0,
       "error": ""
     },
@@ -36,9 +36,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.72,
+      "age_hours": 3.22,
       "source_generated_at": "2026-08-15T07:47:12.538551+00:00",
-      "source_age_hours": 3.35,
+      "source_age_hours": 3.85,
       "http_calls": 0,
       "error": ""
     },
@@ -46,9 +46,9 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 2.72,
+      "age_hours": 3.22,
       "source_generated_at": "2026-08-02",
-      "source_age_hours": 323.14,
+      "source_age_hours": 323.64,
       "http_calls": 0,
       "error": ""
     },
@@ -58,38 +58,28 @@
       "stale": false,
       "age_hours": null,
       "source_generated_at": "2026-08-15T10:01:24.344074+00:00",
-      "source_age_hours": 1.11,
+      "source_age_hours": 1.61,
       "http_calls": 0,
       "error": ""
     }
   },
-  "freshness_quality_score": 91.4,
+  "freshness_quality_score": 91.3,
   "current_factor_available_count": 606,
-  "current_factor_direct_count": 501,
-  "current_factor_proxy_count": 105,
-  "current_factor_proxy_pct": 17.3,
+  "current_factor_direct_count": 503,
+  "current_factor_proxy_count": 103,
+  "current_factor_proxy_pct": 17.0,
   "current_factor_provenance_counts": {
-    "direct": 501,
+    "direct": 503,
     "macro_derived": 101,
-    "gap_proxy": 4
+    "gap_proxy": 2
   },
   "current_factor_macro_derived_count": 101,
-  "current_factor_gap_proxy_count": 4,
-  "current_factor_gap_proxy_pct_ex_macro": 0.8,
+  "current_factor_gap_proxy_count": 2,
+  "current_factor_gap_proxy_pct_ex_macro": 0.4,
   "current_gap_proxy_by_factor": {
-    "earnings_momentum": [
-      {
-        "industry_key": "paper_packaging",
-        "industry_label": "제지·포장·골판지"
-      }
-    ],
+    "earnings_momentum": [],
     "demand_cycle": [],
-    "pricing_margin": [
-      {
-        "industry_key": "paper_packaging",
-        "industry_label": "제지·포장·골판지"
-      }
-    ],
+    "pricing_margin": [],
     "valuation": [
       {
         "industry_key": "real_estate_reit",
@@ -101,20 +91,18 @@
       }
     ]
   },
-  "core_current_gap_industry_count": 1,
-  "core_current_gap_industry_keys": [
-    "paper_packaging"
-  ],
+  "core_current_gap_industry_count": 0,
+  "core_current_gap_industry_keys": [],
   "current_direct_by_factor": {
-    "earnings_momentum": 100,
+    "earnings_momentum": 101,
     "demand_cycle": 101,
-    "pricing_margin": 100,
+    "pricing_margin": 101,
     "financial_conditions": 0,
     "market_internals": 101,
     "valuation": 99
   },
-  "core_current_direct_industry_count": 100,
-  "core_current_direct_industry_pct": 99.0,
+  "core_current_direct_industry_count": 101,
+  "core_current_direct_industry_pct": 100.0,
   "direct_krx_available": true,
   "direct_krx_source_mode": "live-pykrx-bulk",
   "direct_krx_credentials_configured": true,
@@ -143,7 +131,7 @@
   },
   "direct_krx_diagnostics": [],
   "call_efficiency": {
-    "upstream_http_calls_this_run": 0,
+    "upstream_http_calls_this_run": 1,
     "normal_upstream_http_call_target": 6,
     "krx_bulk_calls_this_run": 8,
     "krx_normal_target_calls": 8,
@@ -170,7 +158,7 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-15T11:08:19.914853+00:00"
+    "generated_at_utc": "2026-08-15T11:38:22.466893+00:00"
   },
   "oos_bridge_status": "PENDING",
   "oos_bridge_evaluated_cases": 0,

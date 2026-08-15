@@ -15,28 +15,31 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 52.1,
-        "quality": 40.2,
+        "score": 56.09,
+        "quality": 52.92,
         "available": true,
-        "source": "산업 고유 실적·상업화 신호",
+        "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 26.39,
-        "quality": 85.0,
+        "score": 40.66,
+        "quality": 81.1,
         "available": true,
-        "source": "KOSIS·공식 산업수요 직접관측",
+        "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 52.29,
-        "quality": 40.2,
+        "score": 53.17,
+        "quality": 44.400000000000006,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 29.93,
@@ -68,34 +71,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 52.1,
-        "quality": 40.2,
+        "score": 56.09,
+        "quality": 52.9,
         "base_weight": 0.1779,
-        "effective_weight": 0.0715,
-        "normalized_weight": 0.1166,
-        "contribution_points": 0.24,
+        "effective_weight": 0.0941,
+        "normalized_weight": 0.1483,
+        "contribution_points": 0.9,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 26.39,
-        "quality": 85.0,
+        "score": 40.66,
+        "quality": 81.1,
         "base_weight": 0.2766,
-        "effective_weight": 0.2351,
-        "normalized_weight": 0.3833,
-        "contribution_points": -9.05,
+        "effective_weight": 0.2244,
+        "normalized_weight": 0.3535,
+        "contribution_points": -3.3,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 52.29,
-        "quality": 40.2,
+        "score": 53.17,
+        "quality": 44.4,
         "base_weight": 0.2223,
-        "effective_weight": 0.0894,
-        "normalized_weight": 0.1456,
-        "contribution_points": 0.33,
+        "effective_weight": 0.0987,
+        "normalized_weight": 0.1555,
+        "contribution_points": 0.49,
         "available": true
       },
       {
@@ -105,8 +108,8 @@
         "quality": 64.7,
         "base_weight": 0.1171,
         "effective_weight": 0.0758,
-        "normalized_weight": 0.1235,
-        "contribution_points": -2.48,
+        "normalized_weight": 0.1194,
+        "contribution_points": -2.4,
         "available": true
       },
       {
@@ -116,8 +119,8 @@
         "quality": 91.2,
         "base_weight": 0.1238,
         "effective_weight": 0.1129,
-        "normalized_weight": 0.1841,
-        "contribution_points": 7.03,
+        "normalized_weight": 0.1779,
+        "contribution_points": 6.8,
         "available": true
       },
       {
@@ -127,7 +130,7 @@
         "quality": 35.0,
         "base_weight": 0.0823,
         "effective_weight": 0.0288,
-        "normalized_weight": 0.0469,
+        "normalized_weight": 0.0454,
         "contribution_points": -0.08,
         "available": true
       }
@@ -718,6 +721,9 @@
     "valuation_score": 48.27,
     "valuation_quality": 35.0,
     "valuation_method": "provisional_cross_section_shrunk",
+    "reit_dividend_yield_fallback": false,
+    "median_dividend_yield_pct": 1.67,
+    "broad_market_median_dividend_yield_pct": 2.68,
     "valuation_history_ready": false,
     "valuation_history_samples": 0,
     "valuation_historical_score": null,
@@ -828,7 +834,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T11:08:19.914853+00:00"
+      "generated_at_utc": "2026-08-15T11:38:22.466893+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,

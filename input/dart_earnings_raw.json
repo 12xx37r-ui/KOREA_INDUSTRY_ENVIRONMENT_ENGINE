@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "status": "raw",
-  "generated_at_utc": "2026-08-15T11:08:07.578480+00:00",
+  "generated_at_utc": "2026-08-15T11:38:07.865876+00:00",
   "collector": "dart-earnings-v3.4-axis-gap-retry",
   "quarter": "HY",
   "reference_year": 2026,
@@ -193,22 +193,30 @@
           {
             "id": "dart_earnings_shipbuilding",
             "factor": "earnings_momentum",
-            "value": 413.18,
+            "value": 98.04,
             "unit": "영업이익 YoY % (중앙값)",
-            "long_run_percentile": 100.0,
-            "score": 90.0,
-            "quality": 64.8,
-            "source": "DART 공시 HY 영업이익 (2개사 중앙값) (폴백 2025년 기준)",
+            "long_run_percentile": 99.019,
+            "score": 89.2151,
+            "quality": 54.0,
+            "source": "DART 공시 HY 실제 실적 (1개사)",
             "series_id": "dart_op_shipbuilding",
-            "as_of": "2025-HY",
+            "as_of": "2026-HY",
             "available": true,
             "is_dart_earnings": true,
-            "median_yoy_pct": 413.18,
-            "n_firms": 2,
-            "api_empty_firms": 0,
-            "surprise": true,
-            "reference_year": 2025,
-            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll (폴백 2025년 기준). 품질상한 72.0, shrinkage 0.8"
+            "median_yoy_pct": 98.04,
+            "n_firms": 1,
+            "median_revenue_yoy_pct": 65.24,
+            "revenue_score": 73.4862,
+            "revenue_quality": 54.0,
+            "revenue_n_firms": 1,
+            "api_empty_firms": 2,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 2.24,
+            "margin_score": 58.399,
+            "margin_quality": 52.2,
+            "margin_n_firms": 1,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
           }
         ],
         "dart_earnings": true
@@ -2985,58 +2993,683 @@
         ],
         "dart_earnings": true
       }
+    },
+    {
+      "industry_key": "plant",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_plant",
+            "factor": "earnings_momentum",
+            "value": 182.56,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_plant",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 182.56,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 19.8,
+            "revenue_score": 57.129,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 1,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 7.749,
+            "margin_score": 79.06,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "construction_machinery",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_construction_machinery",
+            "factor": "earnings_momentum",
+            "value": 521.53,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_construction_machinery",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 521.53,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 151.54,
+            "revenue_score": 86.0,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 6.087,
+            "margin_score": 72.8248,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "power_equipment",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_power_equipment",
+            "factor": "earnings_momentum",
+            "value": 64.39,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 82.193,
+            "score": 75.7547,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_power_equipment",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 64.39,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 21.91,
+            "revenue_score": 57.8886,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 4.097,
+            "margin_score": 65.3645,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "hvac_elevator",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_hvac_elevator",
+            "factor": "earnings_momentum",
+            "value": 52.34,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 76.17,
+            "score": 70.9363,
+            "quality": 54.0,
+            "source": "DART 공시 HY 실제 실적 (1개사)",
+            "series_id": "dart_op_hvac_elevator",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 52.34,
+            "n_firms": 1,
+            "median_revenue_yoy_pct": 8.68,
+            "revenue_score": 53.1249,
+            "revenue_quality": 54.0,
+            "revenue_n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 3.495,
+            "margin_score": 63.1044,
+            "margin_quality": 52.2,
+            "margin_n_firms": 1,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "nonferrous",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_nonferrous",
+            "factor": "earnings_momentum",
+            "value": 33.78,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 66.891,
+            "score": 63.5127,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_nonferrous",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 33.78,
+            "n_firms": 1,
+            "median_revenue_yoy_pct": 66.59,
+            "revenue_score": 73.9715,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 1.283,
+            "margin_score": 54.8105,
+            "margin_quality": 52.2,
+            "margin_n_firms": 1,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "petrochemicals",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_petrochemicals",
+            "factor": "earnings_momentum",
+            "value": 419.7,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_petrochemicals",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 419.7,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 35.48,
+            "revenue_score": 62.7743,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 11.268,
+            "margin_score": 87.5,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "cement_glass_ceramics",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_cement_glass_ceramics",
+            "factor": "earnings_momentum",
+            "value": 29.62,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 64.808,
+            "score": 61.8463,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_cement_glass_ceramics",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 29.62,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": -2.54,
+            "revenue_score": 49.0869,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 4.945,
+            "margin_score": 68.5421,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "paper_packaging",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_paper_packaging",
+            "factor": "earnings_momentum",
+            "value": 162.76,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 100.0,
+            "score": 90.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_paper_packaging",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 162.76,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 23.5,
+            "revenue_score": 58.4598,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 1,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 5.149,
+            "margin_score": 69.309,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "industrial_gases",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_industrial_gases",
+            "factor": "earnings_momentum",
+            "value": 28.93,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 64.466,
+            "score": 61.573,
+            "quality": 54.0,
+            "source": "DART 공시 HY 실제 실적 (1개사)",
+            "series_id": "dart_op_industrial_gases",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 28.93,
+            "n_firms": 1,
+            "median_revenue_yoy_pct": 23.07,
+            "revenue_score": 58.3045,
+            "revenue_quality": 54.0,
+            "revenue_n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 0.719,
+            "margin_score": 52.6949,
+            "margin_quality": 52.2,
+            "margin_n_firms": 1,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "waste_recycling",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_waste_recycling",
+            "factor": "earnings_momentum",
+            "value": 29.52,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 64.762,
+            "score": 61.8093,
+            "quality": 54.0,
+            "source": "DART 공시 HY 실제 실적 (1개사)",
+            "series_id": "dart_op_waste_recycling",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 29.52,
+            "n_firms": 1,
+            "median_revenue_yoy_pct": -30.32,
+            "revenue_score": 39.0855,
+            "revenue_quality": 54.0,
+            "revenue_n_firms": 1,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 9.368,
+            "margin_score": 85.13,
+            "margin_quality": 52.2,
+            "margin_n_firms": 1,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "oil_gas_lng",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_oil_gas_lng",
+            "factor": "earnings_momentum",
+            "value": 66.89,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 83.446,
+            "score": 76.757,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_oil_gas_lng",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 66.89,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 23.01,
+            "revenue_score": 58.2832,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 12.781,
+            "margin_score": 87.5,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "renewable_solar_wind",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_renewable_solar_wind",
+            "factor": "earnings_momentum",
+            "value": 45.16,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 72.582,
+            "score": 68.0654,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_renewable_solar_wind",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 45.16,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 31.81,
+            "revenue_score": 61.4531,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 1,
+            "surprise": false,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 20.914,
+            "margin_score": 87.5,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "nuclear",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_nuclear",
+            "factor": "earnings_momentum",
+            "value": 15.92,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 57.959,
+            "score": 56.3671,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_nuclear",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 15.92,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 40.99,
+            "revenue_score": 64.7574,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 0.718,
+            "margin_score": 52.6914,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "ess_smartgrid_evcharging",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_ess_smartgrid_evcharging",
+            "factor": "earnings_momentum",
+            "value": 60.89,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 80.447,
+            "score": 74.3575,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_ess_smartgrid_evcharging",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 60.89,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 10.6,
+            "revenue_score": 53.8163,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 2.218,
+            "margin_score": 58.3162,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "pharma",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_pharma",
+            "factor": "earnings_momentum",
+            "value": 34.11,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 67.056,
+            "score": 63.6444,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_pharma",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 34.11,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 10.44,
+            "revenue_score": 53.7595,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 1,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 1.845,
+            "margin_score": 56.9206,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "diagnostics",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_diagnostics",
+            "factor": "earnings_momentum",
+            "value": -135.47,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 0.0,
+            "score": 10.0,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_diagnostics",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": -135.47,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 12.0,
+            "revenue_score": 54.3192,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": 13.119,
+            "margin_score": 87.5,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "cro_cdmo",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_cro_cdmo",
+            "factor": "earnings_momentum",
+            "value": 23.31,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 61.653,
+            "score": 59.3225,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (3개사)",
+            "series_id": "dart_op_cro_cdmo",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 23.31,
+            "n_firms": 3,
+            "median_revenue_yoy_pct": 8.91,
+            "revenue_score": 53.2094,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 3,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": -2.053,
+            "margin_score": 42.3005,
+            "margin_quality": 72.0,
+            "margin_n_firms": 3,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
+    },
+    {
+      "industry_key": "api_health_supplements",
+      "current": {
+        "metrics": [
+          {
+            "id": "dart_earnings_api_health_supplements",
+            "factor": "earnings_momentum",
+            "value": 41.71,
+            "unit": "영업이익 YoY % (중앙값)",
+            "long_run_percentile": 70.854,
+            "score": 66.683,
+            "quality": 72.0,
+            "source": "DART 공시 HY 실제 실적 (2개사)",
+            "series_id": "dart_op_api_health_supplements",
+            "as_of": "2026-HY",
+            "available": true,
+            "is_dart_earnings": true,
+            "median_yoy_pct": 41.71,
+            "n_firms": 2,
+            "median_revenue_yoy_pct": 58.95,
+            "revenue_score": 71.2216,
+            "revenue_quality": 72.0,
+            "revenue_n_firms": 2,
+            "api_empty_firms": 0,
+            "surprise": true,
+            "reference_year": 2026,
+            "median_margin_delta_ppt": -2.053,
+            "margin_score": 42.3005,
+            "margin_quality": 72.0,
+            "margin_n_firms": 2,
+            "note": "DART corpCode ZIP 매핑 → fnlttSinglAcntAll. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산."
+          }
+        ],
+        "dart_earnings": true
+      }
     }
   ],
-  "scored_industry_count": 83,
-  "revenue_enabled_industry_count": 82,
-  "axis_complete_industry_count": 82,
-  "external_calls": 109,
+  "scored_industry_count": 101,
+  "revenue_enabled_industry_count": 101,
+  "axis_complete_industry_count": 101,
+  "external_calls": 97,
   "diagnostics": [
     "corp_map_size=3983 quarter=HY year=2026 calls_used=1",
-    "previous_same_period=67 revenue_complete=59 gap_first=true",
-    "retail: op=90.0 revenue=51.45443904234138 n=2 year=2026",
-    "hotel: op=39.94428759453223 revenue=48.48474148128529 n=2 year=2026",
-    "steel_materials: op=63.955937930683106 revenue=73.97145916751747 n=3 year=2026",
-    "chemicals: op=90.0 revenue=66.92318105775415 n=2 year=2026",
-    "refining_energy: op=90.0 revenue=68.36783135073895 n=2 year=2026",
-    "biotechnology: op=72.74056382106212 revenue=64.51834018018286 n=3 year=2026",
-    "medical_devices: op=10.0 revenue=86.0 n=2 year=2026",
-    "food_beverage: op=53.66263734714194 revenue=55.39280608581686 n=2 year=2026",
-    "tires: op=51.612788759602495 revenue=53.28720381850994 n=3 year=2026",
-    "semiconductor_equipment: op=90.0 revenue=69.59250526234945 n=2 year=2026",
-    "clothing: op=90.0 revenue=52.67343973517117 n=2 year=2026",
-    "home_appliance: op=61.81626621501289 revenue=55.24274740822976 n=2 year=2026",
-    "pcb_mlcc: op=90.0 revenue=72.7132634736092 n=2 year=2026",
-    "automotive_parts: op=51.120837774739144 revenue=51.41565174558277 n=3 year=2026",
-    "furniture_interior: op=90.0 revenue=46.69310319012089 n=1 year=2026",
-    "food: op=69.02745346871095 revenue=55.39280608581686 n=2 year=2026",
-    "beverage_alcohol: op=50.29693576313456 revenue=50.84746333811107 n=3 year=2026",
-    "agri_farm: op=57.87649700912124 revenue=58.48718607004243 n=1 year=2026",
-    "fisheries_livestock: op=57.87649700912124 revenue=58.48718607004243 n=2 year=2026",
-    "machinery: op=63.60462236896409 revenue=51.46473899888935 n=3 year=2026",
-    "automation_robot: op=33.09063016749358 revenue=84.25042205381553 n=3 year=2026",
-    "rail: op=56.36710364211784 revenue=54.78471818255518 n=2 year=2026",
-    "shipping: op=70.74716414709982 revenue=60.695611890891506 n=1 year=2026",
-    "plant: no data — API empty (map_ok=3, misses=[])",
-    "construction_machinery: no data — API empty (map_ok=2, misses=[])",
-    "power_equipment: no data — API empty (map_ok=3, misses=[])",
-    "hvac_elevator: no data — API empty (map_ok=2, misses=[])",
-    "nonferrous: no data — API empty (map_ok=3, misses=[])",
-    "petrochemicals: no data — API empty (map_ok=3, misses=[])",
-    "cement_glass_ceramics: no data — API empty (map_ok=2, misses=[])",
-    "paper_packaging: no data — API empty (map_ok=2, misses=['002010']), corp_map miss: ['002010']",
-    "industrial_gases: no data — API empty (map_ok=2, misses=[])",
-    "waste_recycling: no data — API empty (map_ok=2, misses=[])",
-    "oil_gas_lng: no data — API empty (map_ok=3, misses=[])",
-    "renewable_solar_wind: no data — API empty (map_ok=3, misses=[])",
-    "nuclear: no data — API empty (map_ok=3, misses=[])",
-    "ess_smartgrid_evcharging: no data — API empty (map_ok=3, misses=[])",
-    "pharma: no data — API empty (map_ok=3, misses=[])",
-    "diagnostics: no data — API empty (map_ok=3, misses=[])",
-    "cro_cdmo: no data — API empty (map_ok=3, misses=[])",
-    "api_health_supplements: no data — API empty (map_ok=2, misses=[])",
-    "shipbuilding: no data — API empty (map_ok=3, misses=[])",
-    "financial_cache_entries=108"
+    "previous_same_period=83 revenue_complete=82 gap_first=true",
+    "plant: op=90.0 revenue=57.128984916362526 n=2 year=2026",
+    "construction_machinery: op=90.0 revenue=86.0 n=2 year=2026",
+    "power_equipment: op=75.75467126305017 revenue=57.88859391844307 n=3 year=2026",
+    "hvac_elevator: op=70.93630740325406 revenue=53.12485476687691 n=1 year=2026",
+    "nonferrous: op=63.51269204281412 revenue=73.97145916751747 n=2 year=2026",
+    "petrochemicals: op=90.0 revenue=62.77433589244888 n=3 year=2026",
+    "cement_glass_ceramics: op=61.84630943382838 revenue=49.08690507287049 n=2 year=2026",
+    "paper_packaging: op=90.0 revenue=58.45977204135433 n=2 year=2026",
+    "industrial_gases: op=61.57296790793041 revenue=58.304542299173704 n=1 year=2026",
+    "waste_recycling: op=61.8092678191869 revenue=39.08549295820879 n=1 year=2026",
+    "oil_gas_lng: op=76.7570212639758 revenue=58.28317956233965 n=3 year=2026",
+    "renewable_solar_wind: op=68.06535147828342 revenue=61.45308782065324 n=2 year=2026",
+    "nuclear: op=56.36710364211784 revenue=64.75737594163628 n=3 year=2026",
+    "ess_smartgrid_evcharging: op=74.35751456093092 revenue=53.816299867899176 n=3 year=2026",
+    "pharma: op=63.64442285405661 revenue=53.75954632195567 n=2 year=2026",
+    "diagnostics: op=10.0 revenue=54.319183502606315 n=3 year=2026",
+    "cro_cdmo: op=59.32247618351443 revenue=53.20937274119562 n=3 year=2026",
+    "api_health_supplements: op=66.68303030774466 revenue=71.22158523333682 n=2 year=2026",
+    "shipbuilding: op=89.2151103908962 revenue=73.48616380467365 n=1 year=2026",
+    "financial_cache_entries=96"
   ],
   "note": "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. 동일 대표기업을 여러 산업이 공유할 때 DART 재무응답을 run 내부 캐시로 재사용하고 gap 산업은 최대 3개 대표기업까지 확인한다. 매출만 확보된 row를 완료로 오인하지 않고 영업이익·마진까지 필요한 축을 재시도한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
 }
