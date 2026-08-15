@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "cache_ttl_hours": 24,
   "max_external_calls": 24,
   "series": {
@@ -146,7 +146,7 @@
       ],
       "periods": 12,
       "direct_probe_candidates": 1,
-      "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 서비스업생산 표를 탐색.",
+      "note": "서비스업 생산 직접표를 우선 조회하며, 산업별 명시 키워드만 사용해 비제조업 오매칭을 방지.",
       "covered_industries": [
         "convenience_store",
         "department_store",
@@ -173,7 +173,85 @@
         "생산지수",
         "불변지수",
         "총지수"
-      ]
+      ],
+      "industry_keywords": {
+        "finance": [
+          "금융업",
+          "금융 및 보험업"
+        ],
+        "insurance": [
+          "보험업",
+          "보험 및 연금업"
+        ],
+        "securities": [
+          "금융 지원 서비스업",
+          "증권"
+        ],
+        "telecom": [
+          "전기통신업",
+          "통신업"
+        ],
+        "travel": [
+          "여행사업",
+          "여행사 및 기타 여행보조 서비스업"
+        ],
+        "hotel": [
+          "숙박업",
+          "호텔업"
+        ],
+        "parcel_logistics": [
+          "택배업",
+          "소화물 전문 운송업"
+        ],
+        "shipping": [
+          "수상 운송업",
+          "해상 운송업"
+        ],
+        "transport_logistics": [
+          "운수 및 창고업",
+          "운송업"
+        ],
+        "healthcare_services": [
+          "보건업",
+          "의료업"
+        ],
+        "gaming": [
+          "정보서비스업",
+          "소프트웨어 개발 및 공급업"
+        ],
+        "real_estate_reit": [
+          "부동산업",
+          "부동산 임대 및 공급업"
+        ],
+        "food_service": [
+          "음식점업",
+          "음식점 및 주점업"
+        ],
+        "leisure_sports": [
+          "스포츠 및 오락관련 서비스업",
+          "오락관련 서비스업"
+        ],
+        "retail": [
+          "소매업",
+          "자동차 제외 소매업"
+        ],
+        "online_shopping": [
+          "무점포 소매업",
+          "전자상거래 소매업"
+        ],
+        "department_store": [
+          "종합 소매업",
+          "백화점"
+        ],
+        "convenience_store": [
+          "음ㆍ식료품 위주 종합 소매업",
+          "편의점"
+        ],
+        "food_distribution": [
+          "음ㆍ식료품 및 담배 소매업",
+          "식료품 소매업"
+        ]
+      }
     },
     "retail_sales": {
       "factor": "demand_cycle",
@@ -192,7 +270,7 @@
       ],
       "periods": 12,
       "direct_probe_candidates": 1,
-      "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 소매판매 표를 탐색.",
+      "note": "소매판매 직접표를 우선 조회하며, 산업별 명시 키워드로 유통 세부업종을 연결.",
       "covered_industries": [
         "retail",
         "convenience_store",
@@ -207,7 +285,35 @@
         "판매",
         "불변",
         "지수"
-      ]
+      ],
+      "industry_keywords": {
+        "retail": [
+          "소매판매액지수",
+          "소매업"
+        ],
+        "convenience_store": [
+          "편의점"
+        ],
+        "department_store": [
+          "백화점"
+        ],
+        "online_shopping": [
+          "무점포소매",
+          "인터넷쇼핑"
+        ],
+        "food_distribution": [
+          "음식료품",
+          "식료품"
+        ],
+        "clothing": [
+          "의복",
+          "의류"
+        ],
+        "home_appliance": [
+          "가전제품",
+          "가전"
+        ]
+      }
     },
     "employment": {
       "factor": "employment",
