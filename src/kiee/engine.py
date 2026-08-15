@@ -314,16 +314,19 @@ def run_engine(
         "industries": dashboard_rows,
     })
     # ────────────────────────────────────────────────────────────────────────
-    # 현재 산업점수의 실제자료/보조 proxy 사용량을 health에 노출한다.
-    # 값이 존재한다는 사실과 산업 고유 원자료가 있다는 사실을 혼동하지 않도록 한다.
+    # 현재 6축의 출처를 direct / macro_derived / gap_proxy로 분리한다.
+    # financial_conditions는 설계상 거시환경 파생축이므로 산업자료 누락 proxy와
+    # 같은 통계에 넣지 않는다.
     _current_factor_rows = []
+    _current_factor_rows_with_axis = []
     _core_direct_industries = 0
     _core_keys = ("earnings_momentum", "demand_cycle", "pricing_margin")
     for _row in results:
         _factors = (_row.get("current") or {}).get("factors") or {}
-        for _factor in _factors.values():
+        for _axis, _factor in _factors.items():
             if isinstance(_factor, dict) and _factor.get("available"):
                 _current_factor_rows.append(_factor)
+                _current_factor_rows_with_axis.append((_axis, _factor))
         if all(
             isinstance(_factors.get(_k), dict)
             and _factors[_k].get("available")
@@ -331,8 +334,20 @@ def run_engine(
             for _k in _core_keys
         ):
             _core_direct_industries += 1
+
+    def _factor_provenance(_axis, _factor):
+        if _factor.get("provenance") == "macro_derived" or _axis == "financial_conditions":
+            return "macro_derived"
+        if _factor.get("proxy"):
+            return "gap_proxy"
+        return "direct"
+
+    _provenance_counts = {"direct": 0, "macro_derived": 0, "gap_proxy": 0}
+    for _axis, _factor in _current_factor_rows_with_axis:
+        _provenance_counts[_factor_provenance(_axis, _factor)] += 1
     _proxy_current_factor_count = sum(1 for _f in _current_factor_rows if _f.get("proxy"))
     _direct_current_factor_count = len(_current_factor_rows) - _proxy_current_factor_count
+    _gap_proxy_denominator = _provenance_counts["direct"] + _provenance_counts["gap_proxy"]
     write_json(output_dir / "engine_health.json", {
         "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
@@ -342,6 +357,10 @@ def run_engine(
         "current_factor_direct_count": _direct_current_factor_count,
         "current_factor_proxy_count": _proxy_current_factor_count,
         "current_factor_proxy_pct": round((_proxy_current_factor_count / len(_current_factor_rows) * 100.0), 1) if _current_factor_rows else 0.0,
+        "current_factor_provenance_counts": _provenance_counts,
+        "current_factor_macro_derived_count": _provenance_counts["macro_derived"],
+        "current_factor_gap_proxy_count": _provenance_counts["gap_proxy"],
+        "current_factor_gap_proxy_pct_ex_macro": round((_provenance_counts["gap_proxy"] / _gap_proxy_denominator * 100.0), 1) if _gap_proxy_denominator else 0.0,
         "current_direct_by_factor": {
             _axis: sum(1 for _row in results if ((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available") and not (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
             for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "financial_conditions", "market_internals", "valuation")

@@ -382,6 +382,9 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
         has_fin_sens = any(abs(float(sens.get(k, 0))) > 0.05 for k in ("rate_relief", "krw_weakness", "liquidity", "credit_health"))
         if has_fin_sens:
             financial = _factor(fin_score, fin_q * 0.75, "한국 금리·원화·유동성·신용 (현재 민감도 추정)", str(fin_detail), proxy=True)
+            # 이 축은 산업 고유 원자료의 누락 대용치가 아니라 설계상 거시환경을
+            # 산업 민감도로 변환한 값이다. health에서는 gap proxy와 분리한다.
+            financial["provenance"] = "macro_derived"
         else:
             financial = _factor(None, 0.0, "산업 고유 금융환경 지표 연결 대기", "금리·환율 민감도가 낮아 제외")
 
@@ -1085,6 +1088,7 @@ def _direct_observed_axis_factors(stage: dict[str, Any]) -> dict[str, dict[str, 
 
     demand_pieces = pieces({
         "production_shipments": 0.35,
+        "sales_earnings": 0.35,
         "utilization": 0.30,
         "pmi_bsi": 0.20,
         "employment": 0.15,

@@ -407,13 +407,15 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
                 covered = {str(x) for x in (spec.get("covered_industries") or []) if str(x)}
                 if covered and key not in covered:
                     continue
-                keywords = list(overrides.get(key) or [])
+                # 서비스/소매 표는 제조업용 전역 keyword override와 분류체계가
+                # 다르므로 series별 명시 키워드를 우선한다. 명시 키워드가 없으면
+                # 기존 전역 override로 fallback하며, 둘 다 없으면 임의 라벨 추정을
+                # 하지 않는다.
+                series_keywords = spec.get("industry_keywords") or {}
+                keywords = list(series_keywords.get(key) or overrides.get(key) or [])
                 if not keywords:
-                    # 오버라이드가 없는 산업은 결합 라벨 전체 문자열로는 KOSIS
-                    # 원본 행 라벨과 거의 일치하지 않으므로, 무의미한 빈 매칭
-                    # 대신 진단에 남기고 이 산업은 건너뛴다.
                     diagnostics.append(
-                        f"{name}: industry={key} skipped (no keyword override configured)"
+                        f"{name}: industry={key} skipped (no explicit industry keyword configured)"
                     )
                     continue
                 grouped = _series_by_label(
@@ -441,7 +443,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     result = {
         "schema_version": "1.0.0", "status": "raw" if by_key else "pending",
         "generated_at_utc": utc_now_iso(), "industries": list(by_key.values()),
-        "collector": "kosis-industry-cycle-v2.1-fast", "external_calls": budget.attempts,
+        "collector": "kosis-industry-cycle-v2.2-direct-service", "external_calls": budget.attempts,
         "runtime_budget_seconds": runtime_seconds,
         "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
     }
