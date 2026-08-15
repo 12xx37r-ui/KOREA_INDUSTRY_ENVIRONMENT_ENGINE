@@ -25,20 +25,22 @@
         "surprise": true
       },
       "demand_cycle": {
-        "score": 87.5,
-        "quality": 85.0,
+        "score": 79.06,
+        "quality": 81.1,
         "available": true,
-        "source": "KOSIS·공식 산업수요 직접관측",
+        "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 52.25,
-        "quality": 50.7,
+        "score": 54.17,
+        "quality": 58.155,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 49.26,
@@ -81,23 +83,23 @@
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 87.5,
-        "quality": 85.0,
+        "score": 79.06,
+        "quality": 81.1,
         "base_weight": 0.2953,
-        "effective_weight": 0.251,
-        "normalized_weight": 0.3695,
-        "contribution_points": 13.86,
+        "effective_weight": 0.2395,
+        "normalized_weight": 0.3527,
+        "contribution_points": 10.25,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 52.25,
-        "quality": 50.7,
+        "score": 54.17,
+        "quality": 58.2,
         "base_weight": 0.1516,
-        "effective_weight": 0.0769,
-        "normalized_weight": 0.1132,
-        "contribution_points": 0.25,
+        "effective_weight": 0.0882,
+        "normalized_weight": 0.1299,
+        "contribution_points": 0.54,
         "available": true
       },
       {
@@ -107,7 +109,7 @@
         "quality": 64.6,
         "base_weight": 0.1172,
         "effective_weight": 0.0757,
-        "normalized_weight": 0.1114,
+        "normalized_weight": 0.1115,
         "contribution_points": -0.08,
         "available": true
       },
@@ -830,7 +832,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
+      "generated_at_utc": "2026-08-15T10:42:54.996894+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,

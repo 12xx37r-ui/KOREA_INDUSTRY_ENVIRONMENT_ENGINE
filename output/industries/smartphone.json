@@ -6,35 +6,38 @@
     "모바일기기"
   ],
   "current": {
-    "score": 49.1,
+    "score": 52.5,
     "band": "중립",
     "quality_score": 55.0,
     "data_coverage_pct": 100,
-    "quality_weighted_coverage_pct": 50.8,
+    "quality_weighted_coverage_pct": 53.7,
     "factors": {
       "earnings_momentum": {
-        "score": 51.1,
-        "quality": 40.8,
+        "score": 64.72,
+        "quality": 46.08,
         "available": true,
-        "source": "산업 고유 실적·상업화 신호",
+        "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 47.98,
-        "quality": 40.8,
+        "score": 51.19,
+        "quality": 44.75999999999999,
         "available": true,
-        "source": "산업 고유 실물·확산 신호",
+        "source": "산업 고유 실물·확산 신호 + DART 매출 YoY",
         "detail": "현재 수요·경기 축은 해당 산업 실물신호와 산업 확산도만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 51.31,
-        "quality": 40.8,
+        "score": 57.53,
+        "quality": 44.79,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 43.34,
@@ -66,34 +69,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 51.1,
-        "quality": 40.8,
+        "score": 64.72,
+        "quality": 46.1,
         "base_weight": 0.2217,
-        "effective_weight": 0.0904,
-        "normalized_weight": 0.178,
-        "contribution_points": 0.2,
+        "effective_weight": 0.1021,
+        "normalized_weight": 0.1903,
+        "contribution_points": 2.8,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 47.98,
-        "quality": 40.8,
+        "score": 51.19,
+        "quality": 44.8,
         "base_weight": 0.2758,
-        "effective_weight": 0.1125,
-        "normalized_weight": 0.2214,
-        "contribution_points": -0.45,
+        "effective_weight": 0.1234,
+        "normalized_weight": 0.23,
+        "contribution_points": 0.27,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.31,
-        "quality": 40.8,
+        "score": 57.53,
+        "quality": 44.8,
         "base_weight": 0.1511,
-        "effective_weight": 0.0616,
-        "normalized_weight": 0.1213,
-        "contribution_points": 0.16,
+        "effective_weight": 0.0677,
+        "normalized_weight": 0.1261,
+        "contribution_points": 0.95,
         "available": true
       },
       {
@@ -103,8 +106,8 @@
         "quality": 64.6,
         "base_weight": 0.1167,
         "effective_weight": 0.0754,
-        "normalized_weight": 0.1484,
-        "contribution_points": -0.99,
+        "normalized_weight": 0.1405,
+        "contribution_points": -0.94,
         "available": true
       },
       {
@@ -114,8 +117,8 @@
         "quality": 100.0,
         "base_weight": 0.1323,
         "effective_weight": 0.1323,
-        "normalized_weight": 0.2603,
-        "contribution_points": 0.42,
+        "normalized_weight": 0.2464,
+        "contribution_points": 0.4,
         "available": true
       },
       {
@@ -125,15 +128,15 @@
         "quality": 35.0,
         "base_weight": 0.1025,
         "effective_weight": 0.0359,
-        "normalized_weight": 0.0706,
-        "contribution_points": -0.44,
+        "normalized_weight": 0.0669,
+        "contribution_points": -0.42,
         "available": true
       }
     ],
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 49.1,
+    "estimated_score": 52.5,
     "observed_coverage_pct": 0.0,
     "estimated_quality": 55.0,
     "available_factor_count": 6,
@@ -142,9 +145,9 @@
   "forecast_3m": {
     "score": 48.6,
     "band": "중립",
-    "delta_points": -0.5,
-    "direction": "유지",
-    "change_strength": "거의 변화 없음",
+    "delta_points": -3.9,
+    "direction": "악화",
+    "change_strength": "조금",
     "quality_score": 45.0,
     "data_coverage_pct": 100.0,
     "quality_weighted_coverage_pct": 54.9,
@@ -431,7 +434,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 중립 49.1/100",
+    "headline": "추정 중립 52.5/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -458,7 +461,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
+      "generated_at_utc": "2026-08-15T10:42:54.996894+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,

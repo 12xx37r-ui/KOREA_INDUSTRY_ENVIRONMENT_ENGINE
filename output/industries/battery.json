@@ -15,29 +15,32 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 42.0,
-        "quality": 58.08,
+        "score": 70.35,
+        "quality": 65.28,
         "available": true,
         "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
         "proxy": false,
-        "dart_earnings_applied": true
+        "dart_earnings_applied": true,
+        "surprise": true
       },
       "demand_cycle": {
-        "score": 65.28,
-        "quality": 85.0,
+        "score": 62.7,
+        "quality": 81.1,
         "available": true,
-        "source": "KOSIS·공식 산업수요 직접관측",
+        "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 54.66,
-        "quality": 60.8,
+        "score": 58.03,
+        "quality": 64.72,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 46.09,
@@ -69,34 +72,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 42.0,
-        "quality": 58.1,
+        "score": 70.35,
+        "quality": 65.3,
         "base_weight": 0.1998,
-        "effective_weight": 0.116,
-        "normalized_weight": 0.1675,
-        "contribution_points": -1.34,
+        "effective_weight": 0.1304,
+        "normalized_weight": 0.1845,
+        "contribution_points": 3.75,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 65.28,
-        "quality": 85.0,
+        "score": 62.7,
+        "quality": 81.1,
         "base_weight": 0.2577,
-        "effective_weight": 0.2191,
-        "normalized_weight": 0.3163,
-        "contribution_points": 4.83,
+        "effective_weight": 0.209,
+        "normalized_weight": 0.2957,
+        "contribution_points": 3.76,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 54.66,
-        "quality": 60.8,
+        "score": 58.03,
+        "quality": 64.7,
         "base_weight": 0.2521,
-        "effective_weight": 0.1533,
-        "normalized_weight": 0.2213,
-        "contribution_points": 1.03,
+        "effective_weight": 0.1632,
+        "normalized_weight": 0.2308,
+        "contribution_points": 1.85,
         "available": true
       },
       {
@@ -106,7 +109,7 @@
         "quality": 65.0,
         "base_weight": 0.0935,
         "effective_weight": 0.0608,
-        "normalized_weight": 0.0877,
+        "normalized_weight": 0.086,
         "contribution_points": -0.34,
         "available": true
       },
@@ -117,8 +120,8 @@
         "quality": 100.0,
         "base_weight": 0.1148,
         "effective_weight": 0.1148,
-        "normalized_weight": 0.1657,
-        "contribution_points": 5.33,
+        "normalized_weight": 0.1624,
+        "contribution_points": 5.23,
         "available": true
       },
       {
@@ -128,8 +131,8 @@
         "quality": 35.0,
         "base_weight": 0.0821,
         "effective_weight": 0.0287,
-        "normalized_weight": 0.0415,
-        "contribution_points": -0.34,
+        "normalized_weight": 0.0407,
+        "contribution_points": -0.33,
         "available": true
       }
     ],
@@ -838,7 +841,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
+      "generated_at_utc": "2026-08-15T10:42:54.996894+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
