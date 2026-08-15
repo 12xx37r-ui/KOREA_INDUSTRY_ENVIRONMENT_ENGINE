@@ -342,6 +342,10 @@ def run_engine(
         "current_factor_direct_count": _direct_current_factor_count,
         "current_factor_proxy_count": _proxy_current_factor_count,
         "current_factor_proxy_pct": round((_proxy_current_factor_count / len(_current_factor_rows) * 100.0), 1) if _current_factor_rows else 0.0,
+        "current_direct_by_factor": {
+            _axis: sum(1 for _row in results if ((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available") and not (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
+            for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "financial_conditions", "market_internals", "valuation")
+        },
         "core_current_direct_industry_count": _core_direct_industries,
         "core_current_direct_industry_pct": round((_core_direct_industries / len(results) * 100.0), 1) if results else 0.0,
         "direct_krx_available": direct_krx_available,

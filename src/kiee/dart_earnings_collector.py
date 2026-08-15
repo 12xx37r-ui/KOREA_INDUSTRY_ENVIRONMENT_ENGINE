@@ -134,28 +134,39 @@ def _load_corpcode_map(root: Path, api_key: str, call_count: list[int]) -> dict[
 
 # ── 분기 영업이익 조회 ────────────────────────────────────────────────────────
 
-def _fetch_op(corp_code: str, year: int, reprt_code: str, api_key: str) -> float | None:
-    """단일 기업 특정 분기 영업이익(원). CFS 우선, 없으면 OFS."""
+def _fetch_financials(corp_code: str, year: int, reprt_code: str, api_key: str) -> tuple[float | None, float | None]:
+    """Return (operating_profit, revenue) from one full-account request per fs_div.
+
+    ``fnlttSinglAcntAll`` already returns both accounts, so reading revenue here
+    adds no DART API call versus the previous operating-profit-only collector.
+    """
     for fs_div in ("CFS", "OFS"):
         try:
             data = _get_json("fnlttSinglAcntAll.json", {
-                "corp_code":  corp_code,
-                "bsns_year":  str(year),
+                "corp_code": corp_code,
+                "bsns_year": str(year),
                 "reprt_code": reprt_code,
-                "fs_div":     fs_div,
+                "fs_div": fs_div,
             }, api_key)
             if data.get("status") not in ("000", None):
                 continue
+            op: float | None = None
+            revenue: float | None = None
             for row in _rows(data):
-                nm  = str(row.get("account_nm") or "").strip()
+                nm = str(row.get("account_nm") or "").strip()
                 aid = str(row.get("account_id") or "").strip()
+                val = _number(row.get("thstrm_amount") or row.get("thstrm_add_amount"))
+                if val is None:
+                    continue
                 if nm in ("영업이익", "영업이익(손실)") or "ProfitLossFromOperating" in aid:
-                    val = _number(row.get("thstrm_amount") or row.get("thstrm_add_amount"))
-                    if val is not None:
-                        return val
+                    op = val
+                if nm in ("매출액", "수익(매출액)", "영업수익") or aid.endswith("Revenue") or "RevenueFromContractsWithCustomers" in aid:
+                    revenue = val
+            if op is not None or revenue is not None:
+                return op, revenue
         except Exception:
             pass
-    return None
+    return None, None
 
 
 # ── 분기 자동 선택 (현재 월 기준) ────────────────────────────────────────────
@@ -190,25 +201,21 @@ def _fetch_op_with_fallback(
     api_key: str,
     call_count: list[int],
     max_calls: int,
-) -> tuple[float | None, float | None, int]:
-    """
-    (cur_op, prev_op, actual_year) 반환.
-    base_year 데이터가 없으면 base_year-1, base_year-2 순으로 폴백.
-    actual_year: 실제로 cur_op를 찾은 연도 (prev_op = actual_year-1).
-    """
+) -> tuple[float | None, float | None, float | None, float | None, int]:
+    """Return current/previous OP and revenue using the same two account calls."""
     for offset in range(MAX_YEAR_FALLBACK + 1):
         ref_year = base_year - offset
         if call_count[0] + 2 > max_calls:
-            return None, None, ref_year
+            return None, None, None, None, ref_year
         call_count[0] += 1
-        cur_op = _fetch_op(corp_code, ref_year, reprt_code, api_key)
+        cur_op, cur_rev = _fetch_financials(corp_code, ref_year, reprt_code, api_key)
         time.sleep(API_SLEEP)
         call_count[0] += 1
-        prev_op = _fetch_op(corp_code, ref_year - 1, reprt_code, api_key)
+        prev_op, prev_rev = _fetch_financials(corp_code, ref_year - 1, reprt_code, api_key)
         time.sleep(API_SLEEP)
         if cur_op is not None and prev_op is not None and prev_op != 0:
-            return cur_op, prev_op, ref_year
-    return None, None, base_year
+            return cur_op, prev_op, cur_rev, prev_rev, ref_year
+    return None, None, None, None, base_year
 
 
 def collect_industry(
@@ -243,16 +250,21 @@ def collect_industry(
         return None, f"corp_map miss: {map_misses[:3]}"
 
     yoy_list: list[float] = []
+    margin_delta_list: list[float] = []
     used_year = current_year
     api_empty_count = 0
 
     for stock_code, corp_code in firms:
-        cur_op, prev_op, actual_year = _fetch_op_with_fallback(
+        cur_op, prev_op, cur_rev, prev_rev, actual_year = _fetch_op_with_fallback(
             corp_code, current_year, reprt_code, api_key, call_count, max_calls
         )
         if cur_op is not None and prev_op is not None and prev_op != 0:
             yoy = (cur_op / abs(prev_op) - 1.0) * 100.0
             yoy_list.append(yoy)
+            if cur_rev not in (None, 0) and prev_rev not in (None, 0):
+                cur_margin = cur_op / abs(cur_rev) * 100.0
+                prev_margin = prev_op / abs(prev_rev) * 100.0
+                margin_delta_list.append(cur_margin - prev_margin)
             used_year = actual_year
         else:
             api_empty_count += 1
@@ -273,6 +285,16 @@ def collect_industry(
     quality    = clamp(QUALITY_CAP * (0.5 + 0.5 * min(n_fetched / MAX_FIRMS, 1.0)) * freshness, 0.0, QUALITY_CAP)
     surprise   = _surprise_flag(yoy_list)
     fallback_note = f" (폴백 {used_year}년 기준)" if used_year < current_year else ""
+    median_margin_delta = None
+    margin_score = None
+    margin_quality = 0.0
+    if margin_delta_list:
+        margin_delta_list.sort()
+        median_margin_delta = margin_delta_list[len(margin_delta_list) // 2]
+        # ±10%p margin change spans the useful 0~100 range, then shrink toward neutral.
+        raw_margin_score = clamp(50.0 + median_margin_delta * 5.0, 0.0, 100.0)
+        margin_score = clamp(50.0 + (raw_margin_score - 50.0) * 0.75, 0.0, 100.0)
+        margin_quality = clamp(QUALITY_CAP * (0.45 + 0.55 * min(len(margin_delta_list) / MAX_FIRMS, 1.0)) * freshness, 0.0, QUALITY_CAP)
 
     metric = {
         "id":                  f"dart_earnings_{industry['key']}",
@@ -292,7 +314,11 @@ def collect_industry(
         "api_empty_firms":     api_empty_count,
         "surprise":            surprise,
         "reference_year":      used_year,
-        "note":                f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll{fallback_note}. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
+        "median_margin_delta_ppt": round(median_margin_delta, 3) if median_margin_delta is not None else None,
+        "margin_score":        round(margin_score, 4) if margin_score is not None else None,
+        "margin_quality":      round(margin_quality, 1),
+        "margin_n_firms":      len(margin_delta_list),
+        "note":                f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll{fallback_note}. 동일 응답의 매출액+영업이익으로 마진 변화도 계산. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
     }
     detail = f"score={score:.1f} yoy={median_yoy:.1f}% n={n_fetched} year={used_year} surprise={surprise}"
     return metric, detail
@@ -308,7 +334,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         result: dict[str, Any] = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "dart-earnings-v3", "reason": reason,
+            "collector": "dart-earnings-v3.1-margin", "reason": reason,
             "external_calls": calls,
         }
         if diag:
@@ -383,7 +409,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "schema_version":       "1.0.0",
         "status":               "raw" if results else "pending",
         "generated_at_utc":     utc_now_iso(),
-        "collector":            "dart-earnings-v3",
+        "collector":            "dart-earnings-v3.1-margin",
         "quarter":              qcode,
         "reference_year":       current_year,
         "industries":           results,
@@ -392,7 +418,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "diagnostics":          diagnostics,
         "note": (
             "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 "
-            "fnlttSinglAcntAll로 분기 영업이익 YoY 수집. earnings_momentum 팩터 보강용."
+            "fnlttSinglAcntAll로 분기 영업이익 YoY와 영업이익률 변화를 같은 호출에서 수집. earnings_momentum·pricing_margin 직접관측 보강용."
         ),
     }
     if not results:

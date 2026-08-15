@@ -619,9 +619,12 @@ def _apply_dart_earnings_to_factors(
     factors: dict[str, Any],
     dart_metric: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """
-    DART 분기 영업이익 YoY를 earnings_momentum 팩터에 반영.
-    기존 팩터가 있으면 blending(DART 35%), 없으면 단독 사용.
+    """Apply directly observed DART operating-profit and operating-margin signals.
+
+    If the pre-existing axis is only a proxy, DART replaces it instead of being
+    blended into a proxy and still counted as proxy.  A genuinely direct axis is
+    blended conservatively.  No additional HTTP request is required for the margin
+    signal: DART's full-account response already contains revenue and operating profit.
     """
     if not dart_metric or not isinstance(dart_metric, dict):
         return factors
@@ -633,32 +636,56 @@ def _apply_dart_earnings_to_factors(
     factors = dict(factors)
     em = factors.get("earnings_momentum") or {}
     surprise = dart_metric.get("surprise", False)
+    dart_direct = _factor(
+        d_score, d_quality * 0.85,
+        "DART 공시 분기 영업이익 YoY",
+        f"분기 YoY {dart_metric.get('median_yoy_pct',0):.1f}% ({dart_metric.get('n_firms',0)}개사)",
+        proxy=False,
+    )
+    dart_direct["dart_earnings_applied"] = True
+    if surprise:
+        dart_direct["surprise"] = True
 
-    if em.get("available") and em.get("score") is not None:
+    if em.get("available") and em.get("score") is not None and not em.get("proxy"):
         old_score = float(em["score"])
-        # DART를 35% 가중 blending, 서프라이즈이면 45%
         dart_weight = 0.45 if surprise else 0.35
         blended = old_score * (1 - dart_weight) + d_score * dart_weight
-        factors["earnings_momentum"] = dict(em)
-        factors["earnings_momentum"]["score"] = roundn(blended, 2)
-        factors["earnings_momentum"]["quality"] = clamp(
-            em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100
-        )
-        factors["earnings_momentum"]["source"] = em.get("source", "") + " + DART 분기 OP YoY"
-        factors["earnings_momentum"]["dart_earnings_applied"] = True
+        merged = dict(em)
+        merged["score"] = roundn(blended, 2)
+        merged["quality"] = clamp(em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100)
+        merged["source"] = em.get("source", "") + " + DART 분기 OP YoY"
+        merged["dart_earnings_applied"] = True
+        merged["proxy"] = False
         if surprise:
-            factors["earnings_momentum"]["surprise"] = True
+            merged["surprise"] = True
+        factors["earnings_momentum"] = merged
     else:
-        factors["earnings_momentum"] = _factor(
-            d_score, d_quality * 0.85,
-            "DART 공시 분기 영업이익 YoY",
-            f"분기 YoY {dart_metric.get('median_yoy_pct',0):.1f}% ({dart_metric.get('n_firms',0)}개사)",
+        # A direct filing is preferable to an estimated proxy axis.
+        factors["earnings_momentum"] = dart_direct
+
+    margin_score = finite(dart_metric.get("margin_score"))
+    margin_quality = finite(dart_metric.get("margin_quality"), 0.0) or 0.0
+    margin_delta = finite(dart_metric.get("median_margin_delta_ppt"))
+    if margin_score is not None and margin_quality > 0:
+        direct_margin = _factor(
+            margin_score, margin_quality,
+            "DART 공시 영업이익률 YoY 변화",
+            f"영업이익률 전년동기 대비 {margin_delta:+.2f}%p ({dart_metric.get('margin_n_firms',0)}개사)" if margin_delta is not None else "공시 영업이익률 변화",
             proxy=False,
         )
-        if surprise:
-            factors["earnings_momentum"]["surprise"] = True
+        direct_margin["dart_margin_applied"] = True
+        pm = factors.get("pricing_margin") or {}
+        if pm.get("available") and pm.get("score") is not None and not pm.get("proxy"):
+            merged_pm = dict(pm)
+            merged_pm["score"] = roundn(float(pm["score"]) * 0.65 + margin_score * 0.35, 2)
+            merged_pm["quality"] = clamp((finite(pm.get("quality"), 0.0) or 0.0) * 0.65 + margin_quality * 0.35, 0, 100)
+            merged_pm["source"] = pm.get("source", "") + " + DART 영업마진 변화"
+            merged_pm["proxy"] = False
+            merged_pm["dart_margin_applied"] = True
+            factors["pricing_margin"] = merged_pm
+        else:
+            factors["pricing_margin"] = direct_margin
     return factors
-
 
 def _apply_nowcast_to_factors(
     factors: dict[str, Any],
@@ -1015,6 +1042,73 @@ def _oos_bridge_limits(oos_status: str, evaluated_cases: int, policy: dict[str, 
         return {"max_points": 2.0, "allowed_auxiliary": False, "allowed_primary": False}
 
 
+def _direct_observed_axis_factors(stage: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Map normalized *observed* cycle metrics onto the public six-axis model.
+
+    The cycle feed historically exposed factors such as ``production_shipments``
+    and ``utilization`` while the public model uses ``earnings_momentum`` and
+    ``demand_cycle``.  Those observations were therefore only anchoring the total
+    score and the six public factors still looked like proxies.  This mapper keeps
+    the original metric values and qualities, but promotes only axes that have a
+    real observed input.  Missing axes remain untouched and are filled by the
+    existing bounded proxy path.
+    """
+    metrics = [m for m in (stage.get("metrics") or []) if isinstance(m, dict) and m.get("available") is True]
+
+    def pieces(names: dict[str, float]) -> list[tuple[float | None, float, float]]:
+        out: list[tuple[float | None, float, float]] = []
+        for m in metrics:
+            f = str(m.get("factor") or "").strip()
+            if f not in names:
+                continue
+            score = finite(m.get("score"), m.get("long_run_percentile"))
+            q = finite(m.get("quality"), 0.0) or 0.0
+            if score is None or q <= 0:
+                continue
+            out.append((score, names[f], q))
+        return out
+
+    result: dict[str, dict[str, Any]] = {}
+    earnings_pieces = pieces({
+        "production_shipments": 0.55,
+        "sales_earnings": 0.30,
+        "employment": 0.15,
+        "earnings_momentum": 1.00,
+    })
+    if earnings_pieces:
+        result["earnings_momentum"] = _combine_factor(
+            earnings_pieces,
+            "KOSIS·공식 산업실물 직접관측",
+            "생산·출하/서비스생산·고용 등 실제 산업 관측치로 구성한 현재 실적 모멘텀입니다.",
+            proxy=False,
+        )
+
+    demand_pieces = pieces({
+        "production_shipments": 0.35,
+        "utilization": 0.30,
+        "pmi_bsi": 0.20,
+        "employment": 0.15,
+        "demand_cycle": 1.00,
+    })
+    if demand_pieces:
+        result["demand_cycle"] = _combine_factor(
+            demand_pieces,
+            "KOSIS·공식 산업수요 직접관측",
+            "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
+            proxy=False,
+        )
+
+    pricing_pieces = pieces({"price_margin": 1.00, "pricing_margin": 1.00})
+    if pricing_pieces:
+        result["pricing_margin"] = _combine_factor(
+            pricing_pieces,
+            "공식 산업 가격·마진 직접관측",
+            "가격·마진 또는 공시 영업마진의 실제 관측치입니다.",
+            proxy=False,
+        )
+    return result
+
+
 def _feed_stage_factors(stage: dict[str, Any], policy: dict[str, Any], kr: dict[str, Any], gl: dict[str, Any], korea_equity: dict[str, Any], boom: dict[str, Any], industry: dict[str, Any], direct: dict[str, Any], future: bool, quality: float) -> dict[str, Any]:
     """
     피드 단계의 6축 팩터 분해.
@@ -1048,10 +1142,17 @@ def _feed_stage_factors(stage: dict[str, Any], policy: dict[str, Any], kr: dict[
                 factors[key] = dict(macro_factors.get(key) or _factor(None, 0.0, "연결대기", "보강자료 없음", True))
         return factors
 
-    # 피드에 factor_scores 없음 → 매크로·테마·KRX로 6축 구성
+    # 피드에 표준 factor_scores가 없더라도 raw metrics 자체가 실제 관측치일 수 있다.
+    # 먼저 기존 매크로/시장 보강 경로를 만들고, 직접 관측이 있는 공개축만 그 값으로 교체한다.
     macro_factors, _ = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, future)
+    if not future:
+        direct_observed = _direct_observed_axis_factors(stage)
+        for axis, observed_factor in direct_observed.items():
+            if observed_factor.get("available"):
+                macro_factors[axis] = observed_factor
 
-    # 피드 총점이 있으면, 팩터들을 피드 총점 방향으로 보정
+    # 피드 총점이 있으면, *proxy 축만* 피드 총점 방향으로 보정한다.
+    # 실제 KOSIS/DART 관측축을 총점 앵커 때문에 다시 proxy로 강등하지 않는다.
     feed_total = finite(stage.get("score"))
     if feed_total is not None:
         # 팩터들의 가중평균을 피드 총점과 blend
@@ -1062,7 +1163,7 @@ def _feed_stage_factors(stage: dict[str, Any], policy: dict[str, Any], kr: dict[
         if abs(macro_total - 50.0) > 0.01:
             adjustment = (feed_total - macro_total) * blend_weight
             for key, factor in macro_factors.items():
-                if factor.get("available") and factor.get("score") is not None:
+                if factor.get("available") and factor.get("score") is not None and factor.get("proxy"):
                     new_score = clamp(float(factor["score"]) + adjustment, 0, 100)
                     macro_factors[key] = dict(factor)
                     macro_factors[key]["score"] = roundn(new_score, 2)

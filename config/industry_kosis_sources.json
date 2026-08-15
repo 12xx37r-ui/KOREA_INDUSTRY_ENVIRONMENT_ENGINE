@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "cache_ttl_hours": 24,
   "max_external_calls": 24,
   "series": {
@@ -10,7 +10,9 @@
       "search_terms": [
         "시도/산업별 광공업생산지수"
       ],
-      "preferred_tables": [],
+      "preferred_tables": [
+        "DT_1F02011"
+      ],
       "keywords": [
         "반도체",
         "전자부품",
@@ -26,9 +28,9 @@
         "플라스틱",
         "전기장비"
       ],
-      "periods": 24,
+      "periods": 12,
       "direct_probe_candidates": 1,
-      "note": "KOSIS 통합검색으로 최신 산업별 광공업 생산/출하 표를 동적 탐색. 고정 구형 table id 사용 안 함.",
+      "note": "검증된 광공업 생산·출하·재고 표 DT_1F02011을 직접 1회 조회하고, 실패 시에만 제한된 검색으로 대체. inventory_cycle과 원표 재사용.",
       "active": true,
       "table_title_hints": [
         "시도/산업별 광공업생산지수",
@@ -47,7 +49,9 @@
       "search_terms": [
         "시도/산업별 광공업생산지수"
       ],
-      "preferred_tables": [],
+      "preferred_tables": [
+        "DT_1F02011"
+      ],
       "keywords": [
         "반도체",
         "전자부품",
@@ -61,10 +65,10 @@
         "고무",
         "플라스틱"
       ],
-      "periods": 24,
+      "periods": 12,
       "direct_probe_candidates": 1,
       "active": true,
-      "note": "동일 공식 산업별 광공업 표에서 재고 계열만 분리해 재고사이클 입력으로 사용.",
+      "note": "검증된 DT_1F02011 원표를 production_shipments와 같은 run에서 재사용해 재고 계열만 분리.",
       "table_title_hints": [
         "시도/산업별 광공업생산지수",
         "산업별 광공업생산지수"
@@ -132,13 +136,16 @@
       "search_terms": [
         "서비스업생산지수"
       ],
-      "preferred_tables": [],
+      "preferred_tables": [
+        "DT_1JH30001",
+        "DT_1JH30000"
+      ],
       "table_title_hints": [
         "서비스업생산지수",
         "서비스업동향"
       ],
-      "periods": 24,
-      "direct_probe_candidates": 2,
+      "periods": 12,
+      "direct_probe_candidates": 1,
       "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 서비스업생산 표를 탐색.",
       "covered_industries": [
         "convenience_store",
@@ -175,13 +182,15 @@
       "search_terms": [
         "소매판매액지수"
       ],
-      "preferred_tables": [],
+      "preferred_tables": [
+        "DT_1K9A001"
+      ],
       "table_title_hints": [
         "소매판매액지수",
         "소매판매지수",
         "소매판매"
       ],
-      "periods": 24,
+      "periods": 12,
       "direct_probe_candidates": 1,
       "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 소매판매 표를 탐색.",
       "covered_industries": [
