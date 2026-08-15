@@ -40,9 +40,9 @@ def test_dart_revenue_replaces_proxy_demand_without_extra_metric_source():
     assert "매출액 YoY" in out["demand_cycle"]["source"]
 
 
-def test_gap_collector_uses_one_firm_but_quality_denominator_remains_two():
-    assert COLLECTOR_VERSION == "dart-earnings-v3.2-gap-first-revenue"
-    assert MAX_FIRMS == 1
+def test_gap_collector_uses_multiple_firms_and_quality_denominator_remains_two():
+    assert COLLECTOR_VERSION == "dart-earnings-v3.3-gap-multifirm-cache"
+    assert MAX_FIRMS == 3
     assert TARGET_FIRMS_FOR_FULL_QUALITY == 2
 
 
@@ -76,13 +76,11 @@ def test_cycle_direct_axes_and_same_period_cache(tmp_path: Path):
 def test_workflow_runs_kosis_before_dart_gap_collection():
     root = Path(__file__).resolve().parents[1]
     text = (root / ".github" / "workflows" / "daily-industry-environment.yml").read_text(encoding="utf-8")
-    cycle_pos = text.find("PYTHONPATH=src python -m kiee.industry_cycle_feed")
-    dart_pos = text.find("PYTHONPATH=src python -m kiee.dart_earnings_collector")
-    engine_pos = text.find("PYTHONPATH=src python -m kiee.cli")
-    assert cycle_pos >= 0, "workflow에 industry_cycle_feed 실행 단계가 없습니다"
-    assert dart_pos >= 0, "workflow에 DART gap collector 실행 단계가 없습니다"
-    assert engine_pos >= 0, "workflow에 industry engine 실행 단계가 없습니다"
-    assert cycle_pos < dart_pos < engine_pos, "workflow 순서는 industry_cycle_feed -> DART gap collector -> engine 이어야 합니다"
+    cycle_cmd = "python -m kiee.industry_cycle_feed"
+    dart_cmd = "python -m kiee.dart_earnings_collector"
+    engine_cmd = "python -m kiee.cli"
+    assert cycle_cmd in text and dart_cmd in text and engine_cmd in text
+    assert text.index(cycle_cmd) < text.index(dart_cmd) < text.index(engine_cmd)
 
 
 def test_revenue_only_filing_still_builds_direct_demand_signal(monkeypatch):
@@ -100,3 +98,46 @@ def test_revenue_only_filing_still_builds_direct_demand_signal(monkeypatch):
     assert metric["revenue_quality"] > 0
     assert metric["revenue_n_firms"] == 1
     assert "revenue=" in detail
+
+
+def test_collect_industry_reuses_financial_cache_across_shared_company(monkeypatch):
+    import kiee.dart_earnings_collector as dec
+    calls = []
+    def fake_fetch(corp_code, year, reprt_code, api_key, cache=None):
+        key=(corp_code, year, reprt_code)
+        if cache is not None and key in cache:
+            return cache[key]
+        calls.append(key)
+        value=(120.0 if year == 2026 else 100.0, 1000.0 if year == 2026 else 900.0)
+        if cache is not None:
+            cache[key]=value
+        return value
+    monkeypatch.setattr(dec, "_fetch_financials", fake_fetch)
+    monkeypatch.setattr(dec.time, "sleep", lambda *_: None)
+    cache = {}
+    count=[0]
+    for key in ("cloud", "internet_platform"):
+        metric, _ = collect_industry(
+            {"key": key, "krx_basket": ["000001"]},
+            "dummy", {"000001":"corp"}, count, 10, 2026, "HY", "11012", cache,
+        )
+        assert metric is not None
+    assert len(calls) == 2
+    assert count[0] == 2
+
+def test_collect_industry_uses_second_firm_when_first_has_revenue_only(monkeypatch):
+    import kiee.dart_earnings_collector as dec
+    def fake_fallback(corp_code, *args, **kwargs):
+        if corp_code == "corp1":
+            return None, None, 120.0, 100.0, 2026
+        return 130.0, 100.0, 1100.0, 1000.0, 2026
+    monkeypatch.setattr(dec, "_fetch_op_with_fallback", fake_fallback)
+    monkeypatch.setattr(dec.time, "sleep", lambda *_: None)
+    metric, _ = collect_industry(
+        {"key":"retail", "krx_basket":["000001","000002"]},
+        "dummy", {"000001":"corp1","000002":"corp2"}, [0], 20, 2026, "HY", "11012", {},
+    )
+    assert metric is not None
+    assert metric["score"] is not None
+    assert metric["margin_score"] is not None
+    assert metric["revenue_n_firms"] == 2
