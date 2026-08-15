@@ -74,27 +74,6 @@ jobs:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
         run: PYTHONPATH=src python -m kiee.kosis_table_probe
 
-      - name: Collect DART earnings momentum
-        env:
-          DART_API_KEY: ${{ secrets.DART_API_KEY }}
-        run: |
-          if [ -n "${DART_API_KEY:-}" ]; then
-            echo "DART_KEY_CONFIGURED=true"
-            PYTHONPATH=src python -m kiee.dart_earnings_collector --root . || echo "DART earnings failed (non-fatal)"
-          else
-            echo "DART_KEY_CONFIGURED=false — skipping DART earnings"
-          fi
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          p = Path('input/dart_earnings_raw.json')
-          if p.exists():
-              d = json.loads(p.read_text(encoding='utf-8'))
-              print(f"dart_earnings: status={d.get('status')} industries={len(d.get('industries', []))} calls={d.get('external_calls', 0)}")
-          else:
-              print("dart_earnings: file not found (OK if key not configured)")
-          PY
-
       - name: Collect customs nowcasting data
         env:
           CUSTOMS_API_KEY: ${{ secrets.CUSTOMS_API_KEY }}
@@ -162,6 +141,28 @@ jobs:
           print('INDUSTRY_CYCLE_LOCAL_PATH=', cycle.get('local_path'))
           assert cycle.get('local_path') == 'input/industry_cycle_latest.json'
           PY
+
+      - name: Collect DART earnings / revenue / margin gaps
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          if [ -n "${DART_API_KEY:-}" ]; then
+            echo "DART_KEY_CONFIGURED=true"
+            PYTHONPATH=src python -m kiee.dart_earnings_collector --root . || echo "DART direct fundamentals failed (non-fatal)"
+          else
+            echo "DART_KEY_CONFIGURED=false — skipping DART earnings"
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('input/dart_earnings_raw.json')
+          if p.exists():
+              d = json.loads(p.read_text(encoding='utf-8'))
+              print(f"dart_earnings: status={d.get('status')} industries={len(d.get('industries', []))} calls={d.get('external_calls', 0)}")
+          else:
+              print("dart_earnings: file not found (OK if key not configured)")
+          PY
+
 
       - name: Run industry engine
         env:
