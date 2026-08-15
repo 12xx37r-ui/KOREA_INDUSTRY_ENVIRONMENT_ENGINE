@@ -44,6 +44,8 @@ def _rows(frame: Any) -> dict[str, dict[str, float | None]]:
             "change_pct": _row_value(row, ("등락률", "등락률(%)", "변동률", "수익률")),
             "per": _row_value(row, ("PER", "PER(배)")),
             "pbr": _row_value(row, ("PBR", "PBR(배)")),
+            "div": _row_value(row, ("DIV", "배당수익률", "배당수익률(%)")),
+            "dps": _row_value(row, ("DPS", "주당배당금")),
             "net_value": _row_value(row, ("순매수거래대금", "순매수", "순매수금액", "거래대금")),
         }
     return out
@@ -584,6 +586,11 @@ def collect_sector_market(
     ]
     broad_per = median(broad_pers) if broad_pers else None
     broad_pbr = median(broad_pbrs) if broad_pbrs else None
+    broad_divs = [
+        float(v.get("div")) for v in fundamental_all.values()
+        if finite(v.get("div")) is not None and float(v.get("div")) > 0
+    ]
+    broad_div = median(broad_divs) if broad_divs else None
 
     valuation_history = read_json(_valuation_history_path(root), {}) or {}
     current_week = _valuation_week_key(end)
@@ -649,6 +656,22 @@ def collect_sector_market(
         ]
         cross_section_valuation_score = _relative_valuation_score(sector_pers, sector_pbrs, broad_per, broad_pbr)
 
+        # REITs often have no usable PER/PBR in the KRX fundamental table.
+        # Fall back to KRX dividend yield from the same already-fetched bulk table,
+        # so this remains a direct sector-basket observation with zero extra calls.
+        sector_divs = [
+            float(fundamental_all[code]["div"]) for code in members
+            if code in fundamental_all
+            and finite(fundamental_all[code].get("div")) is not None
+            and float(fundamental_all[code]["div"]) > 0
+        ]
+        reit_dividend_fallback = False
+        if key in {"real_estate_reit", "reit_office_logistics"} and cross_section_valuation_score is None and sector_divs and broad_div and broad_div > 0:
+            sector_div = median(sector_divs)
+            if sector_div and sector_div > 0:
+                cross_section_valuation_score = clamp(50.0 + 18.0 * math.log(sector_div / broad_div), 0.0, 100.0)
+                reit_dividend_fallback = True
+
         requested = len(basket)
         member_cov = (len(members) / requested) if requested else 0.0
         breadth_penalty = min(1.0, len(members) / 4.0)
@@ -658,7 +681,7 @@ def collect_sector_market(
         )
         if len(members) <= 1:
             market_quality = min(market_quality, 55.0)
-        valuation_cov = (max(len(sector_pers), len(sector_pbrs)) / len(members)) if members else 0.0
+        valuation_cov = (max(len(sector_pers), len(sector_pbrs), len(sector_divs) if reit_dividend_fallback else 0) / len(members)) if members else 0.0
         raw_valuation_quality = (
             round(100 * (0.65 * valuation_cov + 0.35 * breadth_penalty), 1)
             if cross_section_valuation_score is not None else 0.0
@@ -689,7 +712,14 @@ def collect_sector_market(
             "market_internal_quality": market_quality,
             "valuation_score": roundn(valuation_score, 2),
             "valuation_quality": roundn(valuation_quality, 1),
-            "valuation_method": calibrated_val.get("method"),
+            "valuation_method": (
+                "reit_dividend_yield_provisional"
+                if reit_dividend_fallback and not calibrated_val.get("history_ready")
+                else calibrated_val.get("method")
+            ),
+            "reit_dividend_yield_fallback": reit_dividend_fallback,
+            "median_dividend_yield_pct": roundn(median(sector_divs), 3) if sector_divs else None,
+            "broad_market_median_dividend_yield_pct": roundn(broad_div, 3),
             "valuation_history_ready": calibrated_val.get("history_ready") is True,
             "valuation_history_samples": int(calibrated_val.get("history_samples") or 0),
             "valuation_historical_score": roundn(calibrated_val.get("historical_score"), 2),
