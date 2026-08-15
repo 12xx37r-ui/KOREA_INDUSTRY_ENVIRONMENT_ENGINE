@@ -15,31 +15,31 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 66.01,
+        "score": 50.18,
         "quality": 46.4,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 99.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "산업 고유 실적·상업화 신호",
+        "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
+        "proxy": false
       },
       "demand_cycle": {
-        "score": 67.05,
-        "quality": 46.4,
+        "score": 99.31,
+        "quality": 85.0,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 99.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "KOSIS·공식 산업수요 직접관측",
+        "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
+        "proxy": false
       },
       "pricing_margin": {
-        "score": 65.63,
+        "score": 49.8,
         "quality": 46.4,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 99.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "산업 고유 상업화·투자 신호",
+        "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
+        "proxy": false
       },
       "financial_conditions": {
-        "score": 60.32,
+        "score": 58.0,
         "quality": 65.0,
         "available": true,
         "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
@@ -47,87 +47,87 @@
         "proxy": true
       },
       "market_internals": {
-        "score": 100.0,
+        "score": 92.1,
         "quality": 91.2,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 99.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "해당 산업 KRX 대표바스켓 내부환경",
+        "detail": "현재 산업점수에는 해당 산업 대표바스켓의 수익률·상승 breadth·수급만 반영합니다.",
+        "proxy": false
       },
       "valuation": {
-        "score": 63.38,
+        "score": 47.55,
         "quality": 35.0,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 99.3에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "해당 산업 대표바스켓 PER·PBR",
+        "detail": "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
+        "proxy": false
       }
     },
     "contributions": [
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 66.01,
+        "score": 50.18,
         "quality": 46.4,
         "base_weight": 0.2414,
         "effective_weight": 0.112,
-        "normalized_weight": 0.2044,
-        "contribution_points": 3.27,
+        "normalized_weight": 0.1921,
+        "contribution_points": 0.03,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 67.05,
-        "quality": 46.4,
+        "score": 99.31,
+        "quality": 85.0,
         "base_weight": 0.091,
-        "effective_weight": 0.0422,
-        "normalized_weight": 0.0771,
-        "contribution_points": 1.31,
+        "effective_weight": 0.0774,
+        "normalized_weight": 0.1327,
+        "contribution_points": 6.54,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 65.63,
+        "score": 49.8,
         "quality": 46.4,
         "base_weight": 0.2991,
         "effective_weight": 0.1388,
-        "normalized_weight": 0.2533,
-        "contribution_points": 3.96,
+        "normalized_weight": 0.2381,
+        "contribution_points": -0.05,
         "available": true
       },
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "score": 60.32,
+        "score": 58.0,
         "quality": 65.0,
         "base_weight": 0.0924,
         "effective_weight": 0.0601,
-        "normalized_weight": 0.1097,
-        "contribution_points": 1.13,
+        "normalized_weight": 0.1031,
+        "contribution_points": 0.82,
         "available": true
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "score": 100.0,
+        "score": 92.1,
         "quality": 91.2,
         "base_weight": 0.1746,
         "effective_weight": 0.1592,
-        "normalized_weight": 0.2906,
-        "contribution_points": 14.53,
+        "normalized_weight": 0.2731,
+        "contribution_points": 11.5,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 63.38,
+        "score": 47.55,
         "quality": 35.0,
         "base_weight": 0.1015,
         "effective_weight": 0.0355,
-        "normalized_weight": 0.0648,
-        "contribution_points": 0.87,
+        "normalized_weight": 0.0609,
+        "contribution_points": -0.15,
         "available": true
       }
     ],
@@ -818,7 +818,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T08:34:29.714112+00:00"
+      "generated_at_utc": "2026-08-15T08:42:30.715123+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,

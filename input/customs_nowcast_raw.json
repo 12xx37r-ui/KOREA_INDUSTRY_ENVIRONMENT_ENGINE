@@ -1,15 +1,49 @@
 {
   "schema_version": "1.0.0",
-  "status": "pending",
-  "generated_at_utc": "2026-08-15T08:34:15.776300+00:00",
-  "industries": [],
+  "status": "raw",
+  "generated_at_utc": "2026-08-15T08:41:48.492649+00:00",
   "collector": "customs-nowcast-v3",
-  "reason": "관세청 API 엔드포인트 탐색 실패 (400/인증 오류) — CUSTOMS_API_KEY가 이 서비스에 등록됐는지 확인 필요",
-  "external_calls": 3,
+  "reference_month": "202607",
+  "industries": [
+    {
+      "industry_key": "shipbuilding",
+      "current": {
+        "metrics": [
+          {
+            "id": "customs_nowcast_8901200000",
+            "factor": "production_shipments",
+            "score": 85.0,
+            "quality": 65.0,
+            "source": "관세청 HS=8901200000 202607",
+            "as_of": "2026-07-01",
+            "available": true,
+            "is_nowcast": true,
+            "exp_yoy_score": 100.0,
+            "imp_yoy_score": 100.0,
+            "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
+          }
+        ],
+        "nowcast": true
+      },
+      "as_of": "202607"
+    }
+  ],
+  "scored_industry_count": 1,
+  "external_calls": 23,
   "diagnostics": [
     "ref=202607",
-    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1",
-    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1",
-    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1"
-  ]
+    "probe getItemtradeList ['strtYymm', 'endYymm']: OK code=200 snippet='<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><header><result'",
+    "endpoint_ok=getItemtradeList params=['strtYymm', 'endYymm', 'hsSgn']",
+    "semiconductor: no positive values",
+    "display: no positive values",
+    "automotive: no positive values",
+    "automotive_parts: no positive values",
+    "battery: no positive values",
+    "shipbuilding: score=85.0 exp=100.0 imp=100.0",
+    "steel_materials: no positive values",
+    "chemicals: no positive values",
+    "petrochemicals: no positive values",
+    "refining_energy: no positive values"
+  ],
+  "missing_data_policy": "do_not_impute_or_neutral_fill"
 }

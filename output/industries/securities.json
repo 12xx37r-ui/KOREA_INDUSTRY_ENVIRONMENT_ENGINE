@@ -6,19 +6,19 @@
     "securities"
   ],
   "current": {
-    "score": 46.5,
+    "score": 50.6,
     "band": "중립",
-    "quality_score": 36.0,
+    "quality_score": 44.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 62.2,
+    "quality_weighted_coverage_pct": 64.4,
     "factors": {
       "earnings_momentum": {
-        "score": 70.65,
-        "quality": 49.8,
+        "score": 90.0,
+        "quality": 61.2,
         "available": true,
-        "source": "한국시장 이익환경·KRX 업종 현재 대용치 + DART 분기 OP YoY",
-        "detail": "DART/산업 고유 실적지표가 비어 있을 때만 사용하는 저품질 보조치이며, 실제 실적자료가 들어오면 즉시 대체됩니다.",
-        "proxy": true,
+        "source": "DART 공시 분기 영업이익 YoY",
+        "detail": "분기 YoY 397.5% (2개사)",
+        "proxy": false,
         "dart_earnings_applied": true,
         "surprise": true
       },
@@ -67,12 +67,12 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 70.65,
-        "quality": 49.8,
+        "score": 90.0,
+        "quality": 61.2,
         "base_weight": 0.1902,
-        "effective_weight": 0.0947,
-        "normalized_weight": 0.1522,
-        "contribution_points": 3.14,
+        "effective_weight": 0.1164,
+        "normalized_weight": 0.1808,
+        "contribution_points": 7.23,
         "available": true
       },
       {
@@ -82,8 +82,8 @@
         "quality": 38.8,
         "base_weight": 0.0701,
         "effective_weight": 0.0272,
-        "normalized_weight": 0.0437,
-        "contribution_points": -0.22,
+        "normalized_weight": 0.0422,
+        "contribution_points": -0.21,
         "available": true
       },
       {
@@ -93,8 +93,8 @@
         "quality": 38.5,
         "base_weight": 0.048,
         "effective_weight": 0.0185,
-        "normalized_weight": 0.0297,
-        "contribution_points": -0.11,
+        "normalized_weight": 0.0287,
+        "contribution_points": -0.1,
         "available": true
       },
       {
@@ -104,8 +104,8 @@
         "quality": 65.7,
         "base_weight": 0.3894,
         "effective_weight": 0.2559,
-        "normalized_weight": 0.4112,
-        "contribution_points": -2.41,
+        "normalized_weight": 0.3973,
+        "contribution_points": -2.32,
         "available": true
       },
       {
@@ -115,8 +115,8 @@
         "quality": 100.0,
         "base_weight": 0.1849,
         "effective_weight": 0.1849,
-        "normalized_weight": 0.2972,
-        "contribution_points": -4.1,
+        "normalized_weight": 0.2872,
+        "contribution_points": -3.97,
         "available": true
       },
       {
@@ -126,7 +126,7 @@
         "quality": 35.0,
         "base_weight": 0.1173,
         "effective_weight": 0.0411,
-        "normalized_weight": 0.066,
+        "normalized_weight": 0.0638,
         "contribution_points": 0.02,
         "available": true
       }
@@ -134,18 +134,18 @@
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 46.5,
+    "estimated_score": 50.6,
     "observed_coverage_pct": 0.0,
-    "estimated_quality": 36.0,
+    "estimated_quality": 44.0,
     "available_factor_count": 6,
     "notes": "지표 6개로 산출한 추정점수입니다."
   },
   "forecast_3m": {
     "score": 47.3,
     "band": "중립",
-    "delta_points": 0.8,
-    "direction": "유지",
-    "change_strength": "거의 변화 없음",
+    "delta_points": -3.4,
+    "direction": "악화",
+    "change_strength": "조금",
     "quality_score": 25.0,
     "data_coverage_pct": 100.0,
     "quality_weighted_coverage_pct": 67.0,
@@ -392,7 +392,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 중립 46.5/100",
+    "headline": "추정 중립 50.6/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -419,7 +419,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T08:34:29.714112+00:00"
+      "generated_at_utc": "2026-08-15T08:42:30.715123+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,
