@@ -1,34 +1,46 @@
 {
   "status": "ok",
-  "generated_at_utc": "2026-08-15T11:38:22.368149+00:00",
+  "generated_at_utc": "2026-08-15T11:54:25.873440+00:00",
   "source_status": {
     "korea_rate_fx": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.22,
+      "age_hours": 3.49,
       "source_generated_at": "2026-08-15T14:34:15.045604+09:00",
-      "source_age_hours": 6.06,
+      "source_age_hours": 6.33,
+      "cache_ttl_hours": 6.0,
+      "stale_after_hours": 72.0,
+      "source_age_ratio_to_stale": 0.088,
+      "freshness_state": "aging",
       "http_calls": 0,
       "error": ""
     },
     "korea_equity": {
       "ok": true,
-      "mode": "cache-not-modified",
+      "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 0.0,
+      "age_hours": 0.27,
       "source_generated_at": "2026-08-15T05:35:12.408783+00:00",
-      "source_age_hours": 6.05,
-      "http_calls": 1,
+      "source_age_hours": 6.32,
+      "cache_ttl_hours": 3.0,
+      "stale_after_hours": 120.0,
+      "source_age_ratio_to_stale": 0.053,
+      "freshness_state": "aging",
+      "http_calls": 0,
       "error": ""
     },
     "global_bundle": {
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.22,
+      "age_hours": 3.49,
       "source_generated_at": "2026-08-14T18:11:01.120568+00:00",
-      "source_age_hours": 17.45,
+      "source_age_hours": 17.72,
+      "cache_ttl_hours": 6.0,
+      "stale_after_hours": 72.0,
+      "source_age_ratio_to_stale": 0.246,
+      "freshness_state": "aging",
       "http_calls": 0,
       "error": ""
     },
@@ -36,9 +48,13 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.22,
+      "age_hours": 3.49,
       "source_generated_at": "2026-08-15T07:47:12.538551+00:00",
-      "source_age_hours": 3.85,
+      "source_age_hours": 4.12,
+      "cache_ttl_hours": 6.0,
+      "stale_after_hours": 72.0,
+      "source_age_ratio_to_stale": 0.057,
+      "freshness_state": "fresh",
       "http_calls": 0,
       "error": ""
     },
@@ -46,9 +62,13 @@
       "ok": true,
       "mode": "cache-fresh",
       "stale": false,
-      "age_hours": 3.22,
+      "age_hours": 3.49,
       "source_generated_at": "2026-08-02",
-      "source_age_hours": 323.64,
+      "source_age_hours": 323.9,
+      "cache_ttl_hours": 24.0,
+      "stale_after_hours": 336.0,
+      "source_age_ratio_to_stale": 0.964,
+      "freshness_state": "near_stale",
       "http_calls": 0,
       "error": ""
     },
@@ -58,12 +78,16 @@
       "stale": false,
       "age_hours": null,
       "source_generated_at": "2026-08-15T10:01:24.344074+00:00",
-      "source_age_hours": 1.61,
+      "source_age_hours": 1.88,
+      "cache_ttl_hours": 24.0,
+      "stale_after_hours": 240.0,
+      "source_age_ratio_to_stale": 0.008,
+      "freshness_state": "fresh",
       "http_calls": 0,
       "error": ""
     }
   },
-  "freshness_quality_score": 91.3,
+  "freshness_quality_score": 91.2,
   "current_factor_available_count": 606,
   "current_factor_direct_count": 503,
   "current_factor_proxy_count": 103,
@@ -71,15 +95,20 @@
   "current_factor_provenance_counts": {
     "direct": 503,
     "macro_derived": 101,
-    "gap_proxy": 2
+    "gap_proxy": 0,
+    "structural_pending": 2
   },
   "current_factor_macro_derived_count": 101,
-  "current_factor_gap_proxy_count": 2,
-  "current_factor_gap_proxy_pct_ex_macro": 0.4,
+  "current_factor_gap_proxy_count": 0,
+  "current_factor_gap_proxy_pct_ex_macro": 0.0,
+  "current_factor_structural_pending_count": 2,
   "current_gap_proxy_by_factor": {
     "earnings_momentum": [],
     "demand_cycle": [],
     "pricing_margin": [],
+    "valuation": []
+  },
+  "current_structural_pending_by_factor": {
     "valuation": [
       {
         "industry_key": "real_estate_reit",
@@ -91,8 +120,7 @@
       }
     ]
   },
-  "core_current_gap_industry_count": 0,
-  "core_current_gap_industry_keys": [],
+  "structural_pending_note": "REIT valuation 2개는 일반 산업 데이터 gap이 아니라 REIT 전용 valuation 직접소스 대기입니다. 기존 점수 산식은 변경하지 않습니다.",
   "current_direct_by_factor": {
     "earnings_momentum": 101,
     "demand_cycle": 101,
@@ -103,6 +131,8 @@
   },
   "core_current_direct_industry_count": 101,
   "core_current_direct_industry_pct": 100.0,
+  "core_current_gap_industry_count": 0,
+  "core_current_gap_industry_keys": [],
   "direct_krx_available": true,
   "direct_krx_source_mode": "live-pykrx-bulk",
   "direct_krx_credentials_configured": true,
@@ -131,7 +161,7 @@
   },
   "direct_krx_diagnostics": [],
   "call_efficiency": {
-    "upstream_http_calls_this_run": 1,
+    "upstream_http_calls_this_run": 0,
     "normal_upstream_http_call_target": 6,
     "krx_bulk_calls_this_run": 8,
     "krx_normal_target_calls": 8,
@@ -158,7 +188,7 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-15T11:38:22.466893+00:00"
+    "generated_at_utc": "2026-08-15T11:54:25.974810+00:00"
   },
   "oos_bridge_status": "PENDING",
   "oos_bridge_evaluated_cases": 0,
