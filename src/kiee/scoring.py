@@ -265,6 +265,84 @@ def _combine_factor(pieces: list[tuple[float | None, float, float]], source: str
     return _factor(score, q, source, detail, proxy)
 
 
+def _current_gap_proxy_factors(
+    industry: dict[str, Any],
+    policy: dict[str, Any],
+    kr: dict[str, Any],
+    gl: dict[str, Any],
+    korea_equity: dict[str, Any],
+    direct: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Low-quality, current-only gap fillers.
+
+    These are used only when an industry-specific observed factor is missing.  They
+    never overwrite KOSIS/DART/customs/theme observations and are quality-capped so
+    the aggregate remains visibly less reliable than a true industry observation.
+    """
+    cfg = policy.get("current_gap_proxy") or {}
+    if cfg.get("enabled") is False:
+        return {}
+    cap = clamp(finite(cfg.get("max_quality"), 40.0) or 40.0, 5.0, 50.0)
+    direct_score = finite(direct.get("market_internal_score"))
+    direct_q = min(cap, finite(direct.get("market_internal_quality"), 0.0) or 0.0)
+    kr_score = finite(kr.get("equity_score"))
+    gl_consumer = finite(gl.get("consumer_current"))
+    gl_macro = finite(gl.get("macro_current"))
+    gl_macro_q = min(cap, finite(gl.get("macro_quality"), 0.0) or 0.0)
+
+    consumer_sens = clamp(abs(float((industry.get("sensitivities") or {}).get("consumer_cycle", 0.0))), 0.0, 1.0)
+    global_demand = None
+    if gl_consumer is not None or gl_macro is not None:
+        c = gl_consumer if gl_consumer is not None else 50.0
+        m = gl_macro if gl_macro is not None else 50.0
+        global_demand = clamp(50.0 + (c - 50.0) * max(0.35, consumer_sens) + (m - 50.0) * 0.25, 0, 100)
+
+    broad_earn, broad_earn_q = _broad_normalized_component(korea_equity, "earnings_revision", 0.35)
+    earnings = _combine_factor(
+        [
+            (broad_earn, 0.60, min(cap, broad_earn_q)),
+            (direct_score, 0.40, min(cap, direct_q)),
+        ],
+        "한국시장 이익환경·KRX 업종 현재 대용치",
+        "DART/산업 고유 실적지표가 비어 있을 때만 사용하는 저품질 보조치이며, 실제 실적자료가 들어오면 즉시 대체됩니다.",
+        proxy=True,
+    )
+    if earnings.get("available"):
+        earnings["quality"] = min(float(earnings.get("quality") or 0.0), min(cap, 35.0))
+
+    demand = _combine_factor(
+        [
+            (direct_score, float(cfg.get("demand_direct_weight", 0.45)), direct_q),
+            (kr_score, float(cfg.get("demand_korea_weight", 0.25)), min(cap, 35.0) if kr_score is not None else 0.0),
+            (global_demand, float(cfg.get("demand_global_weight", 0.30)), gl_macro_q),
+        ],
+        "KRX 업종바스켓·한국증시·글로벌 경기 현재 대용치",
+        "산업 고유 수요지표가 비어 있을 때만 사용하는 저품질 보조치입니다.",
+        proxy=True,
+    )
+    if demand.get("available"):
+        demand["quality"] = min(float(demand.get("quality") or 0.0), cap)
+
+    cost_pressure = finite(gl.get("cost_pressure_current"))
+    cost_sens = float((industry.get("sensitivities") or {}).get("cost_relief", 0.0))
+    cost_score = clamp(50.0 - ((cost_pressure if cost_pressure is not None else 50.0) - 50.0) * cost_sens, 0, 100) if cost_pressure is not None else None
+    pricing = _combine_factor(
+        [
+            (cost_score, float(cfg.get("pricing_cost_weight", 0.75)), min(cap, 38.0) if cost_score is not None else 0.0),
+            (direct_score, float(cfg.get("pricing_market_weight", 0.25)), min(cap, direct_q)),
+        ],
+        "글로벌 원가압력·KRX 업종 현재 대용치",
+        "산업 고유 가격·스프레드가 비어 있을 때만 사용하는 저품질 보조치입니다.",
+        proxy=True,
+    )
+    if pricing.get("available"):
+        pricing["quality"] = min(float(pricing.get("quality") or 0.0), cap)
+
+    # BSI/PMI gap signal is not exposed as a seventh public factor.  It is folded
+    # into demand only at a very small capped quality when a broad macro signal exists.
+    return {"earnings_momentum": earnings, "demand_cycle": demand, "pricing_margin": pricing}
+
+
 def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[str, Any], gl: dict[str, Any], korea_equity: dict[str, Any], boom: dict[str, Any], direct: dict[str, Any], future: bool) -> tuple[dict[str, Any], dict[str, Any]]:
     shrink = float(policy.get("broad_proxy_deviation_shrinkage", 0.35))
     theme = _theme_signal(industry, boom, policy)
@@ -291,6 +369,13 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
             "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
             proxy=not theme.get("available"),
         )
+        gap_proxy = _current_gap_proxy_factors(industry, policy, kr, gl, korea_equity, direct)
+        if not earnings.get("available") and (gap_proxy.get("earnings_momentum") or {}).get("available"):
+            earnings = gap_proxy["earnings_momentum"]
+        if not demand.get("available") and (gap_proxy.get("demand_cycle") or {}).get("available"):
+            demand = gap_proxy["demand_cycle"]
+        if not pricing.get("available") and (gap_proxy.get("pricing_margin") or {}).get("available"):
+            pricing = gap_proxy["pricing_margin"]
         # 금융환경: 현재 점수에서도 민감도가 있으면 kr 데이터로 산출 (estimated 레이어)
         fin_score, fin_q, fin_detail = _financial_score(industry, kr, False)
         sens = industry.get("sensitivities") or {}
@@ -316,6 +401,15 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
             "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
             proxy=direct_val is None,
         )
+        if not valuation.get("available"):
+            broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", 0.25)
+            if broad_val is not None and broad_val_q > 0:
+                valuation = _factor(
+                    broad_val, min(30.0, broad_val_q * 0.55),
+                    "한국시장 가치환경 대용치",
+                    "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 대체됩니다.",
+                    proxy=True,
+                )
         factors = {
             "earnings_momentum": earnings,
             "demand_cycle": demand,
@@ -935,16 +1029,23 @@ def _feed_stage_factors(stage: dict[str, Any], policy: dict[str, Any], kr: dict[
     has_standard_factors = any(v is not None for v in standard_keys.values())
 
     if has_feed_factors and has_standard_factors:
+        # 직접 관측 팩터는 그대로 우선하고, 비어 있는 축만 품질상한 proxy로
+        # 보강한다.  과거 구현처럼 하나의 직접 팩터가 있다는 이유로 나머지
+        # 5개 축을 quality=0으로 고정하지 않는다.
+        macro_factors, _ = _build_factors(industry, policy, kr, gl, korea_equity, boom, direct, future)
         factors = {}
         for key in FACTOR_ORDER:
             factor_value = standard_keys[key]
-            factors[key] = _factor(
-                factor_value,
-                quality if factor_value is not None else 0.0,
-                "산업실물지표 피드 (직접 팩터)",
-                "원천 산업 피드에서 직접 제공된 팩터 점수",
-                proxy=False,
-            )
+            if factor_value is not None:
+                factors[key] = _factor(
+                    factor_value,
+                    quality,
+                    "산업실물지표 피드 (직접 팩터)",
+                    "원천 산업 피드에서 직접 제공된 팩터 점수",
+                    proxy=False,
+                )
+            else:
+                factors[key] = dict(macro_factors.get(key) or _factor(None, 0.0, "연결대기", "보강자료 없음", True))
         return factors
 
     # 피드에 factor_scores 없음 → 매크로·테마·KRX로 6축 구성
@@ -1057,7 +1158,12 @@ def _feed_stage(
     metric_count = len([m for m in metrics if isinstance(m, dict) and finite(m.get("value")) is not None])
     if metric_count <= 1 and metric_count > 0:
         quality = min(quality, 40.0)
-        single_metric_warning = f"단일 지표({metric_count}개)로 산출 - 과의존 경고. quality 상한 40."
+        score = 50.0 + (score - 50.0) * 0.45
+        single_metric_warning = f"단일 지표({metric_count}개)로 산출 - 과의존 경고. quality 상한 40, 점수는 중립 방향으로 55% 수축."
+    elif metric_count == 2:
+        quality = min(quality, 52.0)
+        score = 50.0 + (score - 50.0) * 0.70
+        single_metric_warning = "2개 지표 기반 - 과의존 방지를 위해 점수를 중립 방향으로 30% 수축."
     else:
         single_metric_warning = None
     # 3. proxy/age penalty (피드에 age 정보 있으면 반영)

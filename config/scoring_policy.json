@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "engine_version": "1.1.1-industry-cycle-local-batch-gated",
+  "engine_version": "1.2.0-industry-data-reinforced",
   "score_bands": [
     {
       "min": 0,
@@ -126,5 +126,16 @@
     ],
     "minimum_current_coverage_pct": 9.0,
     "minimum_leading_coverage_pct": 9.0
+  },
+  "current_gap_proxy": {
+    "enabled": true,
+    "max_quality": 40.0,
+    "demand_direct_weight": 0.45,
+    "demand_korea_weight": 0.25,
+    "demand_global_weight": 0.3,
+    "pricing_cost_weight": 0.75,
+    "pricing_market_weight": 0.25,
+    "bsi_proxy_quality_cap": 32.0,
+    "rule": "공식 산업 고유 현재 팩터가 비어 있을 때만 이미 연결된 KRX·한국시장·글로벌 현재값으로 저품질 보조치 생성. 관측값을 덮어쓰지 않음."
   }
 }

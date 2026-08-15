@@ -1,13 +1,15 @@
 {
   "schema_version": "1.0.0",
   "cache_ttl_hours": 24,
-  "max_external_calls": 48,
+  "max_external_calls": 56,
   "series": {
     "production_shipments": {
       "factor": "production_shipments",
       "max_external_calls": 8,
-      "probe_candidates": 0,
-      "search_terms": [],
+      "probe_candidates": 3,
+      "search_terms": [
+        "시도/산업별 광공업생산지수"
+      ],
       "preferred_tables": [],
       "keywords": [
         "반도체",
@@ -24,16 +26,26 @@
         "플라스틱",
         "전기장비"
       ],
-      "periods": 6,
+      "periods": 24,
       "direct_probe_candidates": 1,
-      "note": "DT_1F02011 라벨이 집계단위(총지수·제조업)라 산업별 매핑 불가. 비활성화.",
-      "active": false
+      "note": "KOSIS 통합검색으로 최신 산업별 광공업 생산/출하 표를 동적 탐색. 고정 구형 table id 사용 안 함.",
+      "active": true,
+      "table_title_hints": [
+        "시도/산업별 광공업생산지수",
+        "산업별 광공업생산지수"
+      ],
+      "item_keywords": [
+        "생산",
+        "출하"
+      ]
     },
     "inventory_cycle": {
       "factor": "inventory_cycle",
       "max_external_calls": 8,
-      "probe_candidates": 0,
-      "search_terms": [],
+      "probe_candidates": 3,
+      "search_terms": [
+        "시도/산업별 광공업생산지수"
+      ],
       "preferred_tables": [],
       "keywords": [
         "반도체",
@@ -48,10 +60,17 @@
         "고무",
         "플라스틱"
       ],
-      "periods": 6,
+      "periods": 24,
       "direct_probe_candidates": 1,
-      "active": false,
-      "note": "DT_1F02011 라벨이 집계단위라 산업별 매핑 불가. 비활성화."
+      "active": true,
+      "note": "동일 공식 산업별 광공업 표에서 재고 계열만 분리해 재고사이클 입력으로 사용.",
+      "table_title_hints": [
+        "시도/산업별 광공업생산지수",
+        "산업별 광공업생산지수"
+      ],
+      "item_keywords": [
+        "재고"
+      ]
     },
     "utilization": {
       "factor": "utilization",
@@ -78,8 +97,10 @@
     "pmi_bsi": {
       "factor": "pmi_bsi",
       "max_external_calls": 8,
-      "probe_candidates": 0,
-      "search_terms": [],
+      "probe_candidates": 2,
+      "search_terms": [
+        "기업경기실사지수 제조업"
+      ],
       "preferred_tables": [],
       "keywords": [
         "제조업",
@@ -87,30 +108,36 @@
         "기업경기"
       ],
       "periods": 24,
-      "direct_probe_candidates": 2,
-      "active": false,
-      "note": "KOSIS BSI 테이블(DT_512Y007/DT_1E2001/DT_1E2002) 모두 error. 한국은행 ECOS API 별도 연결 필요."
+      "direct_probe_candidates": 1,
+      "active": true,
+      "note": "KOSIS 검색에서 공식 BSI 표를 우선 탐색. 조회 실패 시 엔진의 품질상한 proxy가 빈 축만 보강.",
+      "table_title_hints": [
+        "기업경기",
+        "BSI",
+        "기업경기실사지수"
+      ],
+      "item_keywords": [
+        "업황",
+        "전망",
+        "실적",
+        "BSI"
+      ]
     },
     "service_production": {
       "factor": "sales_earnings",
       "max_external_calls": 6,
-      "probe_candidates": 2,
+      "probe_candidates": 3,
       "search_terms": [
-        "서비스업생산지수",
-        "서비스업동향조사"
+        "서비스업생산지수"
       ],
-      "preferred_tables": [
-        "DT_1JH30001",
-        "DT_1JH30000"
-      ],
+      "preferred_tables": [],
       "table_title_hints": [
         "서비스업생산지수",
-        "서비스업동향",
-        "서비스업 생산"
+        "서비스업동향"
       ],
-      "periods": 12,
+      "periods": 24,
       "direct_probe_candidates": 2,
-      "note": "DT_1JH30000/DT_1JH30001 KOSIS error 30. 서비스업 통계는 KOSIS 별도 접근 필요.",
+      "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 서비스업생산 표를 탐색.",
       "covered_industries": [
         "convenience_store",
         "department_store",
@@ -132,26 +159,29 @@
         "transport_logistics",
         "travel"
       ],
-      "active": false
+      "active": true,
+      "item_keywords": [
+        "생산지수",
+        "불변지수",
+        "총지수"
+      ]
     },
     "retail_sales": {
       "factor": "demand_cycle",
       "max_external_calls": 4,
-      "probe_candidates": 2,
+      "probe_candidates": 3,
       "search_terms": [
-        "소매판매지수",
         "소매판매액지수"
       ],
-      "preferred_tables": [
-        "DT_1K9A001"
-      ],
+      "preferred_tables": [],
       "table_title_hints": [
-        "소매판매",
-        "소매판매액"
+        "소매판매액지수",
+        "소매판매지수",
+        "소매판매"
       ],
-      "periods": 12,
+      "periods": 24,
       "direct_probe_candidates": 1,
-      "note": "DT_1K9A001 KOSIS error 30. 소매판매 통계는 KOSIS 별도 접근 필요.",
+      "note": "구형 고정 table id를 제거하고 KOSIS 통합검색으로 최신 소매판매 표를 탐색.",
       "covered_industries": [
         "retail",
         "convenience_store",
@@ -161,7 +191,39 @@
         "clothing",
         "home_appliance"
       ],
-      "active": false
+      "active": true,
+      "item_keywords": [
+        "판매",
+        "불변",
+        "지수"
+      ]
+    },
+    "employment": {
+      "factor": "employment",
+      "max_external_calls": 6,
+      "probe_candidates": 2,
+      "search_terms": [
+        "산업별 종사자 사업체노동력조사"
+      ],
+      "preferred_tables": [],
+      "table_title_hints": [
+        "사업체노동력조사",
+        "종사자",
+        "산업별"
+      ],
+      "keywords": [
+        "제조업",
+        "서비스업"
+      ],
+      "periods": 24,
+      "direct_probe_candidates": 1,
+      "active": true,
+      "item_keywords": [
+        "종사자",
+        "근로자",
+        "취업자"
+      ],
+      "note": "공식 산업별 고용계열을 동적 탐색. 사용 가능한 표가 없으면 임의값을 만들지 않음."
     }
   },
   "industry_keyword_overrides": {

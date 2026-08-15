@@ -11,6 +11,26 @@ from .upstream import SourceResult, UpstreamLoader
 from .util import finite, read_json, roundn, utc_now_iso, write_json
 
 
+def _company_name_map(root: Path) -> dict[str, str]:
+    """Reuse the DART corpCode cache; no extra network call is made here."""
+    cached = read_json(root / "input_cache" / "dart_corpcode_map.json", {}) or {}
+    names = cached.get("names") if isinstance(cached, dict) else {}
+    return {str(k).zfill(6): str(v) for k, v in (names or {}).items() if str(k) and str(v)}
+
+
+def _company_rows(industry: dict[str, Any], names: dict[str, str]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw in industry.get("krx_basket") or []:
+        ticker = str(raw).zfill(6)
+        rows.append({
+            "ticker": ticker,
+            "name": names.get(ticker) or ticker,
+            "market": "KR",
+            "representative": True,
+        })
+    return rows
+
+
 def _freshness_quality(sources: dict[str, SourceResult], upstream_cfg: dict[str, Any]) -> float:
     if not sources:
         return 0.0
@@ -129,6 +149,14 @@ def run_engine(
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
+
+    # 대표기업은 기존 KRX basket을 그대로 노출한다. 기업명은 이미 DART
+    # corpCode ZIP을 받은 날에 저장된 로컬 캐시를 재사용하므로 추가 호출 0회.
+    _names = _company_name_map(root)
+    _cfg_by_key = {str(ind.get("key")): ind for ind in industries}
+    for _row in results:
+        _cfg = _cfg_by_key.get(str(_row.get("industry_key"))) or {}
+        _row["companies"] = _company_rows(_cfg, _names)
 
     # ── OOS 상태 요약을 engine_health에도 반영 ───────────────────────────────
     oos_status = str(prospective_after.get("status", "PENDING"))
@@ -273,7 +301,7 @@ def run_engine(
             "forecast_6_12m": {k: row["forecast_6_12m"].get(k) for k in ("score", "band", "quality_score", "status")},
             "quality": row.get("quality"),
             "score_model": row.get("score_model"),
-            "companies": [{"ticker": t, "representative": True} for t in basket],
+            "companies": row.get("companies") or [{"ticker": str(t).zfill(6), "name": str(t).zfill(6), "market": "KR", "representative": True} for t in basket],
         })
     write_json(output_dir / "industry_dashboard.json", {
         "schema_version": "1.0.0",
@@ -282,7 +310,7 @@ def run_engine(
         "status": overall["status"] if isinstance(overall["status"], str) else overall["status"].get("status", "ok"),
         "industry_count": len(dashboard_rows),
         "search_rule": "industry label, key, alias, parent sector, and industry group",
-        "company_rule": "configured KRX representative basket; full stock-universe linkage remains a downstream integration",
+        "company_rule": "configured KRX representative basket; company names reuse cached DART corpCode metadata when available; no per-company live calls",
         "industries": dashboard_rows,
     })
     # ────────────────────────────────────────────────────────────────────────

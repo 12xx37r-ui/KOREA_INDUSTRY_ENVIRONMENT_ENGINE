@@ -276,11 +276,24 @@ def _label(row: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
-def _series_by_label(rows: list[dict[str, Any]], keywords: list[str]) -> dict[str, list[tuple[str, float]]]:
+def _series_by_label(
+    rows: list[dict[str, Any]],
+    keywords: list[str],
+    item_keywords: list[str] | None = None,
+) -> dict[str, list[tuple[str, float]]]:
+    """Return series matching the industry label and, when configured, the intended item.
+
+    The item filter prevents a broad production/shipments/inventory table from mixing
+    different measures into one time series.  It is deliberately optional because
+    some KOSIS tables expose the measure in a classification field rather than ITM_NM.
+    """
     grouped: dict[str, list[tuple[str, float]]] = {}
+    item_keywords = [str(x) for x in (item_keywords or []) if str(x).strip()]
     for row in rows:
         label = _label(row)
         if not any(keyword in label for keyword in keywords):
+            continue
+        if item_keywords and not any(keyword in label for keyword in item_keywords):
             continue
         value = _number(row.get("DT"))
         period = str(row.get("PRD_DE") or "").strip()
@@ -369,6 +382,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
                         f"{name}: industry={key} skipped (non_manufacturing_scope, KOSIS 광공업 통계 범위 밖)"
                     )
                     continue
+                covered = {str(x) for x in (spec.get("covered_industries") or []) if str(x)}
+                if covered and key not in covered:
+                    continue
                 keywords = list(overrides.get(key) or [])
                 if not keywords:
                     # 오버라이드가 없는 산업은 결합 라벨 전체 문자열로는 KOSIS
@@ -378,7 +394,11 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
                         f"{name}: industry={key} skipped (no keyword override configured)"
                     )
                     continue
-                grouped = _series_by_label(rows, [word for word in keywords if word])
+                grouped = _series_by_label(
+                    rows,
+                    [word for word in keywords if word],
+                    [word for word in (spec.get("item_keywords") or []) if word],
+                )
                 merged = [item for values in grouped.values() for item in values]
                 metric = _metric(merged, str(spec.get("factor") or name), source)
                 if metric:

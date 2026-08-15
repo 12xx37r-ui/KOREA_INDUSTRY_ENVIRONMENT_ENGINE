@@ -118,13 +118,17 @@ def _load_corpcode_map(root: Path, api_key: str, call_count: list[int]) -> dict[
         return {}
 
     corp_map: dict[str, str] = {}
+    corp_names: dict[str, str] = {}
     for item in root_elem.iter("list"):
         stock_code = (item.findtext("stock_code") or "").strip()
         corp_code  = (item.findtext("corp_code")  or "").strip()
+        corp_name  = (item.findtext("corp_name")  or "").strip()
         if stock_code and corp_code:
             corp_map[stock_code] = corp_code
+            if corp_name:
+                corp_names[stock_code] = corp_name
 
-    write_json(cache_path, {"fetched_at": utc_now_iso(), "map": corp_map})
+    write_json(cache_path, {"fetched_at": utc_now_iso(), "map": corp_map, "names": corp_names})
     return corp_map
 
 
