@@ -106,8 +106,19 @@ def _load_corpcode_map(root: Path, api_key: str, call_count: list[int]) -> dict[
 
     if isinstance(cached, dict) and cached.get("map"):
         age = age_hours(cached.get("fetched_at"))
-        if age is not None and age < CORPCODE_TTL_H:
-            return cached["map"]
+        cached_map = cached.get("map") or {}
+        cached_names = cached.get("names") or {}
+        # Legacy compatibility: older caches stored only stock_code→corp_code.
+        # That cache is sufficient for DART financial calls but NOT for dashboard
+        # company-name output. Refresh the single corpCode ZIP when names are absent
+        # or materially incomplete, even if the mapping TTL itself is still valid.
+        name_coverage = (
+            len(cached_names) / max(1, len(cached_map))
+            if isinstance(cached_names, dict) and isinstance(cached_map, dict)
+            else 0.0
+        )
+        if age is not None and age < CORPCODE_TTL_H and name_coverage >= 0.90:
+            return cached_map
 
     # ZIP 다운로드 (1회 API 호출)
     try:
