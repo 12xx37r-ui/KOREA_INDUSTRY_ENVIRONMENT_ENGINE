@@ -126,24 +126,18 @@ jobs:
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
         run: |
-          USE_COMMITTED_RAW=$(PYTHONPATH=src python - <<'PY'
-          import json
-          from pathlib import Path
-          path = Path('input/industry_cycle_raw.json')
-          try:
-              data = json.loads(path.read_text(encoding='utf-8'))
-          except Exception:
-              data = {}
-          print('true' if data.get('status') in {'raw', 'scored'} and data.get('industries') else 'false')
-          PY
-          )
           FORCE_KOSIS="${{ inputs.force_kosis || 'false' }}"
           echo "FORCE_KOSIS=$FORCE_KOSIS"
-          if [ "$USE_COMMITTED_RAW" = "true" ] && [ "$FORCE_KOSIS" != "true" ]; then
-            echo "INDUSTRY_CYCLE_INPUT_MODE=committed-local"
-            echo "KOSIS collector skipped: committed raw industry observations are available"
+          echo "INDUSTRY_CYCLE_INPUT_MODE=kosis-cache-aware-collector"
+          # Collector 자체의 24h TTL/LKG가 중복 호출을 막는다.
+          # committed raw가 있다는 이유만으로 영구 skip하지 않아 실제 신규 데이터가 갱신된다.
+          if [ "$FORCE_KOSIS" = "true" ]; then
+            PYTHONPATH=src python - <<'PY'
+          from pathlib import Path
+          from kiee.industry_kosis_collector import collect
+          collect(Path('.').resolve(), force=True)
+          PY
           else
-            echo "INDUSTRY_CYCLE_INPUT_MODE=kosis-collector"
             PYTHONPATH=src python -m kiee.industry_kosis_collector --root .
           fi
           PYTHONPATH=src python -m kiee.industry_cycle_feed --root .
