@@ -141,3 +141,24 @@ def test_collect_industry_uses_second_firm_when_first_has_revenue_only(monkeypat
     assert metric["score"] is not None
     assert metric["margin_score"] is not None
     assert metric["revenue_n_firms"] == 2
+
+def test_revenue_only_row_is_not_axis_complete_when_earnings_and_margin_missing():
+    # Regression: v3.3 treated any revenue-enabled row as complete and never retried
+    # retail/hotel, leaving earnings_momentum and pricing_margin as permanent gaps.
+    from kiee.dart_earnings_collector import _row_satisfies_missing_axes
+    row = {"current": {"metrics": [{
+        "score": None, "n_firms": 0,
+        "revenue_score": 48.1, "revenue_n_firms": 1,
+        "margin_score": None, "margin_n_firms": 0,
+    }]}}
+    assert _row_satisfies_missing_axes(row, {"demand_cycle"}) is False
+
+
+def test_full_dart_row_can_complete_missing_core_axes():
+    from kiee.dart_earnings_collector import _row_satisfies_missing_axes
+    row = {"current": {"metrics": [{
+        "score": 55.0, "n_firms": 1,
+        "revenue_score": 52.0, "revenue_n_firms": 1,
+        "margin_score": 53.0, "margin_n_firms": 1,
+    }]}}
+    assert _row_satisfies_missing_axes(row, set()) is True
