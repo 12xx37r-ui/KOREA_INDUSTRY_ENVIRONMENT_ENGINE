@@ -37,3 +37,16 @@ def test_dart_direct_replaces_proxy_and_adds_margin_axis():
     assert out["earnings_momentum"]["score"] == 68.0
     assert out["pricing_margin"]["proxy"] is False
     assert out["pricing_margin"]["score"] == 61.0
+
+
+def test_service_production_is_direct_for_earnings_and_demand():
+    stage = {
+        "metrics": [
+            {"factor": "sales_earnings", "score": 66.0, "quality": 85.0, "available": True},
+        ]
+    }
+    factors = _direct_observed_axis_factors(stage)
+    assert factors["earnings_momentum"]["proxy"] is False
+    assert factors["demand_cycle"]["proxy"] is False
+    assert factors["earnings_momentum"]["score"] == 66.0
+    assert factors["demand_cycle"]["score"] == 66.0
