@@ -58,20 +58,45 @@ def _freshness_quality(sources: dict[str, SourceResult], upstream_cfg: dict[str,
     return sum(scores) / len(scores)
 
 
-def _source_status(sources: dict[str, SourceResult]) -> dict[str, Any]:
-    return {
-        name: {
+def _source_status(sources: dict[str, SourceResult], upstream_cfg: dict[str, Any]) -> dict[str, Any]:
+    """Expose cache/content freshness without changing any scoring decision.
+
+    `stale` remains the authoritative loader flag.  The extra fields make it clear
+    when a source is old but still inside its configured max_stale_hours window.
+    """
+    source_cfg = upstream_cfg.get("sources") or {}
+    rows: dict[str, Any] = {}
+    for name, result in sources.items():
+        cfg = source_cfg.get(name) or {}
+        ttl = float(cfg.get("cache_ttl_hours") or 0.0)
+        max_age = float(cfg.get("max_stale_hours") or 0.0)
+        age = result.source_age_hours
+        ratio = (float(age) / max_age) if age is not None and max_age > 0 else None
+        if result.stale or not result.ok:
+            freshness_state = "stale" if result.stale else "unavailable"
+        elif age is None:
+            freshness_state = "unknown"
+        elif ttl > 0 and age <= ttl:
+            freshness_state = "fresh"
+        elif max_age > 0 and age >= max_age * 0.90:
+            freshness_state = "near_stale"
+        else:
+            freshness_state = "aging"
+        rows[name] = {
             "ok": result.ok,
             "mode": result.mode,
             "stale": result.stale,
             "age_hours": roundn(result.age_hours, 2),
             "source_generated_at": result.source_generated_at,
             "source_age_hours": roundn(result.source_age_hours, 2),
+            "cache_ttl_hours": ttl,
+            "stale_after_hours": max_age,
+            "source_age_ratio_to_stale": roundn(ratio, 3),
+            "freshness_state": freshness_state,
             "http_calls": result.http_calls,
             "error": result.error,
         }
-        for name, result in sources.items()
-    }
+    return rows
 
 
 def _append_history(root: Path, as_of: str, results: list[dict[str, Any]]) -> None:
@@ -249,7 +274,7 @@ def run_engine(
         },
         "forecast_horizon": "향후 약 3개월",
         "industries": results,
-        "source_status": _source_status(sources),
+        "source_status": _source_status(sources, upstream_cfg),
         "call_efficiency": {
             "upstream_http_calls_this_run": loader.http_calls,
             "normal_upstream_http_call_target": upstream_cfg.get("normal_upstream_http_calls_per_run", 4),
@@ -314,58 +339,65 @@ def run_engine(
         "industries": dashboard_rows,
     })
     # ────────────────────────────────────────────────────────────────────────
-    # 현재 6축의 출처를 direct / macro_derived / gap_proxy로 분리한다.
-    # financial_conditions는 설계상 거시환경 파생축이므로 산업자료 누락 proxy와
-    # 같은 통계에 넣지 않는다.
+    # 현재 6축 출처를 direct / macro_derived / gap_proxy / structural_pending로 분리한다.
+    # financial_conditions는 설계상 거시환경 파생축이다.
+    # REIT 2개 valuation은 일반기업 PER/PBR 직접값을 억지로 만들지 않고 구조적 대기로
+    # 분리한다. 계산값 자체는 변경하지 않고 health 분류만 정리한다.
     _current_factor_rows = []
     _current_factor_rows_with_axis = []
     _core_direct_industries = 0
     _core_keys = ("earnings_momentum", "demand_cycle", "pricing_margin")
+    _structural_pending_axes = {
+        ("real_estate_reit", "valuation"),
+        ("reit_office_logistics", "valuation"),
+    }
+    _gap_by_factor = {k: [] for k in ("earnings_momentum", "demand_cycle", "pricing_margin", "valuation")}
+    _structural_pending_by_factor = {"valuation": []}
+    _core_gap_industry_keys: list[str] = []
+
     for _row in results:
+        _industry_key = str(_row.get("industry_key") or "")
+        _industry_label = str(_row.get("industry_label") or _row.get("label") or _industry_key)
         _factors = (_row.get("current") or {}).get("factors") or {}
+        _core_direct = True
         for _axis, _factor in _factors.items():
             if isinstance(_factor, dict) and _factor.get("available"):
                 _current_factor_rows.append(_factor)
-                _current_factor_rows_with_axis.append((_axis, _factor))
-        if all(
-            isinstance(_factors.get(_k), dict)
-            and _factors[_k].get("available")
-            and not _factors[_k].get("proxy")
-            for _k in _core_keys
-        ):
+                _current_factor_rows_with_axis.append((_industry_key, _industry_label, _axis, _factor))
+            if _axis in _gap_by_factor and isinstance(_factor, dict) and _factor.get("available") and _factor.get("proxy"):
+                entry = {"industry_key": _industry_key, "industry_label": _industry_label}
+                if (_industry_key, _axis) in _structural_pending_axes:
+                    _structural_pending_by_factor.setdefault(_axis, []).append(entry)
+                else:
+                    _gap_by_factor[_axis].append(entry)
+        for _k in _core_keys:
+            _f = _factors.get(_k) or {}
+            if not (isinstance(_f, dict) and _f.get("available") and not _f.get("proxy")):
+                _core_direct = False
+        if _core_direct:
             _core_direct_industries += 1
+        else:
+            _core_gap_industry_keys.append(_industry_key)
 
-    def _factor_provenance(_axis, _factor):
+    def _factor_provenance(_industry_key: str, _axis: str, _factor: dict[str, Any]) -> str:
         if _factor.get("provenance") == "macro_derived" or _axis == "financial_conditions":
             return "macro_derived"
         if _factor.get("proxy"):
+            if (_industry_key, _axis) in _structural_pending_axes:
+                return "structural_pending"
             return "gap_proxy"
         return "direct"
 
-    _provenance_counts = {"direct": 0, "macro_derived": 0, "gap_proxy": 0}
-    for _axis, _factor in _current_factor_rows_with_axis:
-        _provenance_counts[_factor_provenance(_axis, _factor)] += 1
+    _provenance_counts = {"direct": 0, "macro_derived": 0, "gap_proxy": 0, "structural_pending": 0}
+    for _industry_key, _industry_label, _axis, _factor in _current_factor_rows_with_axis:
+        _provenance_counts[_factor_provenance(_industry_key, _axis, _factor)] += 1
     _proxy_current_factor_count = sum(1 for _f in _current_factor_rows if _f.get("proxy"))
     _direct_current_factor_count = len(_current_factor_rows) - _proxy_current_factor_count
     _gap_proxy_denominator = _provenance_counts["direct"] + _provenance_counts["gap_proxy"]
-    _gap_proxy_by_factor = {}
-    for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "valuation"):
-        _gap_proxy_by_factor[_axis] = [
-            {"industry_key": _row.get("industry_key"), "industry_label": _row.get("industry_label")}
-            for _row in results
-            if (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available")
-                and (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
-        ]
-    _core_gap_keys = sorted({
-        str(_item.get("industry_key"))
-        for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin")
-        for _item in _gap_proxy_by_factor.get(_axis, [])
-        if _item.get("industry_key")
-    })
     write_json(output_dir / "engine_health.json", {
         "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
-        "source_status": _source_status(sources),
+        "source_status": _source_status(sources, upstream_cfg),
         "freshness_quality_score": round(freshness, 1),
         "current_factor_available_count": len(_current_factor_rows),
         "current_factor_direct_count": _direct_current_factor_count,
@@ -375,15 +407,18 @@ def run_engine(
         "current_factor_macro_derived_count": _provenance_counts["macro_derived"],
         "current_factor_gap_proxy_count": _provenance_counts["gap_proxy"],
         "current_factor_gap_proxy_pct_ex_macro": round((_provenance_counts["gap_proxy"] / _gap_proxy_denominator * 100.0), 1) if _gap_proxy_denominator else 0.0,
-        "current_gap_proxy_by_factor": _gap_proxy_by_factor,
-        "core_current_gap_industry_count": len(_core_gap_keys),
-        "core_current_gap_industry_keys": _core_gap_keys,
+        "current_factor_structural_pending_count": _provenance_counts["structural_pending"],
+        "current_gap_proxy_by_factor": _gap_by_factor,
+        "current_structural_pending_by_factor": _structural_pending_by_factor,
+        "structural_pending_note": "REIT valuation 2개는 일반 산업 데이터 gap이 아니라 REIT 전용 valuation 직접소스 대기입니다. 기존 점수 산식은 변경하지 않습니다.",
         "current_direct_by_factor": {
             _axis: sum(1 for _row in results if ((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available") and not (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
             for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "financial_conditions", "market_internals", "valuation")
         },
         "core_current_direct_industry_count": _core_direct_industries,
         "core_current_direct_industry_pct": round((_core_direct_industries / len(results) * 100.0), 1) if results else 0.0,
+        "core_current_gap_industry_count": len(_core_gap_industry_keys),
+        "core_current_gap_industry_keys": _core_gap_industry_keys,
         "direct_krx_available": direct_krx_available,
         "direct_krx_source_mode": direct_market.get("source_mode"),
         "direct_krx_credentials_configured": direct_market.get("krx_credentials_configured") is True,
