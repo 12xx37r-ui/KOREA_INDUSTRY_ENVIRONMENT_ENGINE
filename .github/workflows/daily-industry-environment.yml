@@ -116,15 +116,20 @@ jobs:
               print("customs_nowcast: file not found (OK if key not configured)")
           PY
 
-      - name: Probe KOSIS table labels (keyword mapping aid)
+      - name: Probe KOSIS table labels (manual diagnostics only)
+        if: ${{ inputs.probe_kosis == true }}
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+          KOSIS_REQUEST_TIMEOUT_SECONDS: '6'
+          KOSIS_DATA_TIMEOUT_SECONDS: '8'
         run: |
           PYTHONPATH=src python -m kiee.kosis_label_probe --root . || echo "label probe failed (non-fatal)"
 
       - name: Validate and build industry cycle feed
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+          KOSIS_REQUEST_TIMEOUT_SECONDS: '6'
+          KOSIS_DATA_TIMEOUT_SECONDS: '8'
         run: |
           FORCE_KOSIS="${{ inputs.force_kosis || 'false' }}"
           echo "FORCE_KOSIS=$FORCE_KOSIS"
