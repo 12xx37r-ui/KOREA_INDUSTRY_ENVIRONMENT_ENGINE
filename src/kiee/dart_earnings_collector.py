@@ -45,12 +45,12 @@ MIN_BASKET_CNT    = 1
 # v3.2: 폭넓은 산업 커버리지를 위해 신규 gap 산업은 대표 1개사부터 수집한다.
 # 1개사 관측은 실제 공시이지만 산업 대표성이 낮으므로 quality 산식에서는
 # TARGET_FIRMS_FOR_FULL_QUALITY=2를 유지해 자동 감산한다.
-MAX_FIRMS         = 1
+MAX_FIRMS         = 3
 TARGET_FIRMS_FOR_FULL_QUALITY = 2
 MAX_YEAR_FALLBACK = 0
 MAX_INDUSTRIES    = 50
 API_SLEEP         = 0.05
-COLLECTOR_VERSION = "dart-earnings-v3.2-gap-first-revenue"
+COLLECTOR_VERSION = "dart-earnings-v3.3-gap-multifirm-cache"
 
 # 분기 공시 코드
 _REPRT_CODE = {"1Q": "11013", "HY": "11012", "3Q": "11014", "FY": "11011"}
@@ -139,12 +139,15 @@ def _load_corpcode_map(root: Path, api_key: str, call_count: list[int]) -> dict[
 
 # ── 분기 영업이익 조회 ────────────────────────────────────────────────────────
 
-def _fetch_financials(corp_code: str, year: int, reprt_code: str, api_key: str) -> tuple[float | None, float | None]:
+def _fetch_financials(corp_code: str, year: int, reprt_code: str, api_key: str, cache: dict[tuple[str,int,str], tuple[float | None,float | None]] | None = None) -> tuple[float | None, float | None]:
     """Return (operating_profit, revenue) from one full-account request per fs_div.
 
     ``fnlttSinglAcntAll`` already returns both accounts, so reading revenue here
     adds no DART API call versus the previous operating-profit-only collector.
     """
+    cache_key = (corp_code, year, reprt_code)
+    if cache is not None and cache_key in cache:
+        return cache[cache_key]
     for fs_div in ("CFS", "OFS"):
         try:
             data = _get_json("fnlttSinglAcntAll.json", {
@@ -168,9 +171,13 @@ def _fetch_financials(corp_code: str, year: int, reprt_code: str, api_key: str) 
                 if nm in ("매출액", "수익(매출액)", "영업수익") or aid.endswith("Revenue") or "RevenueFromContractsWithCustomers" in aid:
                     revenue = val
             if op is not None or revenue is not None:
+                if cache is not None:
+                    cache[cache_key] = (op, revenue)
                 return op, revenue
         except Exception:
             pass
+    if cache is not None:
+        cache[cache_key] = (None, None)
     return None, None
 
 
@@ -206,18 +213,31 @@ def _fetch_op_with_fallback(
     api_key: str,
     call_count: list[int],
     max_calls: int,
+    financial_cache: dict[tuple[str,int,str], tuple[float | None,float | None]],
 ) -> tuple[float | None, float | None, float | None, float | None, int]:
     """Return current/previous OP and revenue using the same two account calls."""
     for offset in range(MAX_YEAR_FALLBACK + 1):
         ref_year = base_year - offset
         if call_count[0] + 2 > max_calls:
             return None, None, None, None, ref_year
-        call_count[0] += 1
-        cur_op, cur_rev = _fetch_financials(corp_code, ref_year, reprt_code, api_key)
-        time.sleep(API_SLEEP)
-        call_count[0] += 1
-        prev_op, prev_rev = _fetch_financials(corp_code, ref_year - 1, reprt_code, api_key)
-        time.sleep(API_SLEEP)
+        cur_key = (corp_code, ref_year, reprt_code)
+        prev_key = (corp_code, ref_year - 1, reprt_code)
+        if cur_key not in financial_cache:
+            if call_count[0] + 1 > max_calls:
+                return None, None, None, None, ref_year
+            call_count[0] += 1
+            cur_op, cur_rev = _fetch_financials(corp_code, ref_year, reprt_code, api_key, financial_cache)
+            time.sleep(API_SLEEP)
+        else:
+            cur_op, cur_rev = financial_cache[cur_key]
+        if prev_key not in financial_cache:
+            if call_count[0] + 1 > max_calls:
+                return None, None, None, None, ref_year
+            call_count[0] += 1
+            prev_op, prev_rev = _fetch_financials(corp_code, ref_year - 1, reprt_code, api_key, financial_cache)
+            time.sleep(API_SLEEP)
+        else:
+            prev_op, prev_rev = financial_cache[prev_key]
         op_ok = cur_op is not None and prev_op is not None and prev_op != 0
         rev_ok = cur_rev is not None and prev_rev is not None and prev_rev != 0
         if op_ok or rev_ok:
@@ -234,8 +254,11 @@ def collect_industry(
     current_year: int,
     qcode: str,
     reprt_code: str,
+    financial_cache: dict[tuple[str,int,str], tuple[float | None,float | None]] | None = None,
 ) -> tuple[dict[str, Any] | None, str]:
     """(metric | None, detail_msg) 반환."""
+    if financial_cache is None:
+        financial_cache = {}
     basket = industry.get("krx_basket") or []
     if len(basket) < MIN_BASKET_CNT:
         return None, "basket<min"
@@ -243,7 +266,7 @@ def collect_industry(
     # stock_code → corp_code 변환 (API 호출 없음)
     firms: list[tuple[str, str]] = []
     map_misses: list[str] = []
-    for sc in basket[:MAX_FIRMS * 2]:
+    for sc in basket[:max(MAX_FIRMS * 2, 6)]:
         key6 = str(sc).zfill(6)
         cc = corp_map.get(key6) or corp_map.get(str(sc))
         if cc:
@@ -264,7 +287,7 @@ def collect_industry(
 
     for stock_code, corp_code in firms:
         cur_op, prev_op, cur_rev, prev_rev, actual_year = _fetch_op_with_fallback(
-            corp_code, current_year, reprt_code, api_key, call_count, max_calls
+            corp_code, current_year, reprt_code, api_key, call_count, max_calls, financial_cache
         )
         observed = False
         if cur_op is not None and prev_op is not None and prev_op != 0:
@@ -439,6 +462,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         return _pending("config/industries.json 로드 실패")
 
     call_count = [0]
+    financial_cache: dict[tuple[str,int,str], tuple[float | None,float | None]] = {}
 
     # ── Step 1: corpCode ZIP 1회 다운로드 → 전체 매핑 ──────────────────────────
     corp_map = _load_corpcode_map(root, api_key, call_count)
@@ -480,7 +504,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         try:
             metric, detail = collect_industry(
                 ind, api_key, corp_map, call_count, MAX_CALLS,
-                current_year, qcode, reprt_code,
+                current_year, qcode, reprt_code, financial_cache,
             )
             if metric:
                 results_by_key[key] = {
@@ -506,11 +530,11 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "scored_industry_count": len(results),
         "revenue_enabled_industry_count": revenue_enabled_count,
         "external_calls":       call_count[0],
-        "diagnostics":          diagnostics,
+        "diagnostics":          diagnostics + [f"financial_cache_entries={len(financial_cache)}"],
         "note": (
             "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 "
             "fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. "
-            "KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
+            "KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. 동일 대표기업을 여러 산업이 공유할 때 DART 재무응답을 run 내부 캐시로 재사용하고 gap 산업은 최대 3개 대표기업까지 확인한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
         ),
     }
     if not results:
