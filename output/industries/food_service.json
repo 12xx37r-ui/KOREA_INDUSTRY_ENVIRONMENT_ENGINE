@@ -6,35 +6,38 @@
     "프랜차이즈"
   ],
   "current": {
-    "score": 57.2,
+    "score": 56.7,
     "band": "중립",
     "quality_score": 55.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 47.7,
+    "quality_weighted_coverage_pct": 51.4,
     "factors": {
       "earnings_momentum": {
-        "score": 51.51,
-        "quality": 35.3,
+        "score": 48.79,
+        "quality": 42.78,
         "available": true,
-        "source": "산업 고유 실적·상업화 신호",
+        "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 50.24,
-        "quality": 35.3,
+        "score": 50.7,
+        "quality": 40.91,
         "available": true,
-        "source": "산업 고유 실물·확산 신호",
+        "source": "산업 고유 실물·확산 신호 + DART 매출 YoY",
         "detail": "현재 수요·경기 축은 해당 산업 실물신호와 산업 확산도만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 51.42,
-        "quality": 35.3,
+        "score": 49.02,
+        "quality": 41.215,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 42.11,
@@ -66,34 +69,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 51.51,
-        "quality": 35.3,
+        "score": 48.79,
+        "quality": 42.8,
         "base_weight": 0.1991,
-        "effective_weight": 0.0703,
-        "normalized_weight": 0.1473,
-        "contribution_points": 0.22,
+        "effective_weight": 0.0852,
+        "normalized_weight": 0.1657,
+        "contribution_points": -0.2,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 50.24,
-        "quality": 35.3,
+        "score": 50.7,
+        "quality": 40.9,
         "base_weight": 0.2018,
-        "effective_weight": 0.0712,
-        "normalized_weight": 0.1493,
-        "contribution_points": 0.04,
+        "effective_weight": 0.0826,
+        "normalized_weight": 0.1606,
+        "contribution_points": 0.11,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.42,
-        "quality": 35.3,
+        "score": 49.02,
+        "quality": 41.2,
         "base_weight": 0.1809,
-        "effective_weight": 0.0639,
-        "normalized_weight": 0.1339,
-        "contribution_points": 0.19,
+        "effective_weight": 0.0746,
+        "normalized_weight": 0.1451,
+        "contribution_points": -0.14,
         "available": true
       },
       {
@@ -103,8 +106,8 @@
         "quality": 64.9,
         "base_weight": 0.1398,
         "effective_weight": 0.0907,
-        "normalized_weight": 0.1901,
-        "contribution_points": -1.5,
+        "normalized_weight": 0.1765,
+        "contribution_points": -1.39,
         "available": true
       },
       {
@@ -114,8 +117,8 @@
         "quality": 82.5,
         "base_weight": 0.176,
         "effective_weight": 0.1452,
-        "normalized_weight": 0.3043,
-        "contribution_points": 11.18,
+        "normalized_weight": 0.2825,
+        "contribution_points": 10.37,
         "available": true
       },
       {
@@ -125,15 +128,15 @@
         "quality": 35.0,
         "base_weight": 0.1023,
         "effective_weight": 0.0358,
-        "normalized_weight": 0.0751,
-        "contribution_points": -0.25,
+        "normalized_weight": 0.0697,
+        "contribution_points": -0.23,
         "available": true
       }
     ],
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 57.2,
+    "estimated_score": 56.7,
     "observed_coverage_pct": 0.0,
     "estimated_quality": 55.0,
     "available_factor_count": 6,
@@ -142,7 +145,7 @@
   "forecast_3m": {
     "score": 52.1,
     "band": "중립",
-    "delta_points": -5.1,
+    "delta_points": -4.6,
     "direction": "악화",
     "change_strength": "조금",
     "quality_score": 45.0,
@@ -416,7 +419,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 중립 57.2/100",
+    "headline": "추정 중립 56.7/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -443,7 +446,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:01:36.384438+00:00"
+      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,
@@ -502,13 +505,13 @@
   "companies": [
     {
       "ticker": "339770",
-      "name": "339770",
+      "name": "교촌에프앤비",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "003230",
-      "name": "003230",
+      "name": "삼양식품",
       "market": "KR",
       "representative": true
     }

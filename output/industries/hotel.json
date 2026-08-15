@@ -5,11 +5,11 @@
     "호텔업"
   ],
   "current": {
-    "score": 42.3,
-    "band": "약불리",
-    "quality_score": 36.0,
+    "score": 43.7,
+    "band": "중립",
+    "quality_score": 44.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 46.4,
+    "quality_weighted_coverage_pct": 50.6,
     "factors": {
       "earnings_momentum": {
         "score": 50.02,
@@ -20,12 +20,13 @@
         "proxy": true
       },
       "demand_cycle": {
-        "score": 38.5,
-        "quality": 38.8,
+        "score": 48.12,
+        "quality": 54.0,
         "available": true,
-        "source": "KRX 업종바스켓·한국증시·글로벌 경기 현재 대용치",
-        "detail": "산업 고유 수요지표가 비어 있을 때만 사용하는 저품질 보조치입니다.",
-        "proxy": true
+        "source": "DART 공시 매출액 YoY",
+        "detail": "매출액 전년동기 대비 -5.2% (1개사)",
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
         "score": 43.89,
@@ -69,19 +70,19 @@
         "quality": 35.0,
         "base_weight": 0.2221,
         "effective_weight": 0.0777,
-        "normalized_weight": 0.1674,
+        "normalized_weight": 0.1535,
         "contribution_points": 0.0,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 38.5,
-        "quality": 38.8,
+        "score": 48.12,
+        "quality": 54.0,
         "base_weight": 0.2763,
-        "effective_weight": 0.1072,
-        "normalized_weight": 0.2309,
-        "contribution_points": -2.66,
+        "effective_weight": 0.1492,
+        "normalized_weight": 0.2947,
+        "contribution_points": -0.55,
         "available": true
       },
       {
@@ -91,8 +92,8 @@
         "quality": 38.5,
         "base_weight": 0.1816,
         "effective_weight": 0.0699,
-        "normalized_weight": 0.1506,
-        "contribution_points": -0.92,
+        "normalized_weight": 0.1381,
+        "contribution_points": -0.84,
         "available": true
       },
       {
@@ -102,8 +103,8 @@
         "quality": 64.8,
         "base_weight": 0.0935,
         "effective_weight": 0.0606,
-        "normalized_weight": 0.1306,
-        "contribution_points": -1.07,
+        "normalized_weight": 0.1197,
+        "contribution_points": -0.98,
         "available": true
       },
       {
@@ -113,8 +114,8 @@
         "quality": 91.2,
         "base_weight": 0.1237,
         "effective_weight": 0.1128,
-        "normalized_weight": 0.243,
-        "contribution_points": -6.27,
+        "normalized_weight": 0.2228,
+        "contribution_points": -5.75,
         "available": true
       },
       {
@@ -124,7 +125,7 @@
         "quality": 35.0,
         "base_weight": 0.1027,
         "effective_weight": 0.036,
-        "normalized_weight": 0.0774,
+        "normalized_weight": 0.071,
         "contribution_points": 0.07,
         "available": true
       }
@@ -132,18 +133,18 @@
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 42.3,
+    "estimated_score": 43.7,
     "observed_coverage_pct": 0.0,
-    "estimated_quality": 36.0,
+    "estimated_quality": 44.0,
     "available_factor_count": 6,
     "notes": "지표 6개로 산출한 추정점수입니다."
   },
   "forecast_3m": {
     "score": 46.5,
     "band": "중립",
-    "delta_points": 4.2,
+    "delta_points": 2.8,
     "direction": "개선",
-    "change_strength": "조금",
+    "change_strength": "매우 조금",
     "quality_score": 25.0,
     "data_coverage_pct": 100,
     "quality_weighted_coverage_pct": 58.3,
@@ -393,7 +394,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 약불리 42.3/100",
+    "headline": "추정 중립 43.7/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -420,7 +421,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:01:36.384438+00:00"
+      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,
@@ -479,19 +480,19 @@
   "companies": [
     {
       "ticker": "008770",
-      "name": "008770",
+      "name": "호텔신라",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "035250",
-      "name": "035250",
+      "name": "강원랜드",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "034230",
-      "name": "034230",
+      "name": "파라다이스",
       "market": "KR",
       "representative": true
     }

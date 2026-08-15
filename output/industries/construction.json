@@ -6,37 +6,38 @@
     "construction"
   ],
   "current": {
-    "score": 55.4,
+    "score": 54.3,
     "band": "중립",
     "quality_score": 55.0,
     "data_coverage_pct": 100,
     "quality_weighted_coverage_pct": 55.9,
     "factors": {
       "earnings_momentum": {
-        "score": 59.86,
-        "quality": 51.72,
+        "score": 53.7,
+        "quality": 44.52,
         "available": true,
         "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
         "proxy": false,
-        "dart_earnings_applied": true,
-        "surprise": true
+        "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 51.71,
-        "quality": 38.2,
+        "score": 49.97,
+        "quality": 42.94,
         "available": true,
-        "source": "산업 고유 실물·확산 신호",
+        "source": "산업 고유 실물·확산 신호 + DART 매출 YoY",
         "detail": "현재 수요·경기 축은 해당 산업 실물신호와 산업 확산도만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 51.23,
-        "quality": 38.2,
+        "score": 52.13,
+        "quality": 43.1,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 38.76,
@@ -68,34 +69,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 59.86,
-        "quality": 51.7,
+        "score": 53.7,
+        "quality": 44.5,
         "base_weight": 0.1935,
-        "effective_weight": 0.1001,
-        "normalized_weight": 0.1791,
-        "contribution_points": 1.77,
+        "effective_weight": 0.0862,
+        "normalized_weight": 0.1541,
+        "contribution_points": 0.57,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 51.71,
-        "quality": 38.2,
+        "score": 49.97,
+        "quality": 42.9,
         "base_weight": 0.1784,
-        "effective_weight": 0.0681,
-        "normalized_weight": 0.1219,
-        "contribution_points": 0.21,
+        "effective_weight": 0.0766,
+        "normalized_weight": 0.1369,
+        "contribution_points": -0.0,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.23,
-        "quality": 38.2,
+        "score": 52.13,
+        "quality": 43.1,
         "base_weight": 0.1173,
-        "effective_weight": 0.0448,
-        "normalized_weight": 0.0801,
-        "contribution_points": 0.1,
+        "effective_weight": 0.0505,
+        "normalized_weight": 0.0904,
+        "contribution_points": 0.19,
         "available": true
       },
       {
@@ -105,7 +106,7 @@
         "quality": 64.6,
         "base_weight": 0.2831,
         "effective_weight": 0.1829,
-        "normalized_weight": 0.3271,
+        "normalized_weight": 0.327,
         "contribution_points": -3.68,
         "available": true
       },
@@ -116,7 +117,7 @@
         "quality": 100.0,
         "base_weight": 0.1283,
         "effective_weight": 0.1283,
-        "normalized_weight": 0.2295,
+        "normalized_weight": 0.2294,
         "contribution_points": 8.02,
         "available": true
       },
@@ -127,7 +128,7 @@
         "quality": 35.0,
         "base_weight": 0.0995,
         "effective_weight": 0.0348,
-        "normalized_weight": 0.0623,
+        "normalized_weight": 0.0622,
         "contribution_points": -0.09,
         "available": true
       }
@@ -135,7 +136,7 @@
     "status": "estimated",
     "score_source": "estimated",
     "observed_score": null,
-    "estimated_score": 55.4,
+    "estimated_score": 54.3,
     "observed_coverage_pct": 0.0,
     "estimated_quality": 55.0,
     "available_factor_count": 6,
@@ -144,9 +145,9 @@
   "forecast_3m": {
     "score": 47.8,
     "band": "중립",
-    "delta_points": -7.6,
+    "delta_points": -6.5,
     "direction": "악화",
-    "change_strength": "꽤",
+    "change_strength": "조금",
     "quality_score": 45.0,
     "data_coverage_pct": 100.0,
     "quality_weighted_coverage_pct": 60.4,
@@ -445,7 +446,7 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. 산업실물피드 연결 후 본격 활성화."
   },
   "interpretation": {
-    "headline": "추정 중립 55.4/100",
+    "headline": "추정 중립 54.3/100",
     "beginner": "산업별 생산·출하·재고·주문·가격·마진 실측 피드가 연결되지 않았습니다. 매크로·테마·KRX 데이터로 추정 점수를 산출했습니다. 신뢰도가 낮습니다.",
     "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지."
   },
@@ -472,7 +473,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:01:36.384438+00:00"
+      "generated_at_utc": "2026-08-15T10:31:54.322216+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,
@@ -494,31 +495,31 @@
   "companies": [
     {
       "ticker": "000720",
-      "name": "000720",
+      "name": "현대건설",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "028050",
-      "name": "028050",
+      "name": "삼성E&A",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "047040",
-      "name": "047040",
+      "name": "대우건설",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "006360",
-      "name": "006360",
+      "name": "GS건설",
       "market": "KR",
       "representative": true
     },
     {
       "ticker": "375500",
-      "name": "375500",
+      "name": "DL이앤씨",
       "market": "KR",
       "representative": true
     }
