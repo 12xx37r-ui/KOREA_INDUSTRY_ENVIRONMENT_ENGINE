@@ -50,7 +50,7 @@ TARGET_FIRMS_FOR_FULL_QUALITY = 2
 MAX_YEAR_FALLBACK = 0
 MAX_INDUSTRIES    = 50
 API_SLEEP         = 0.05
-COLLECTOR_VERSION = "dart-earnings-v3.3-gap-multifirm-cache"
+COLLECTOR_VERSION = "dart-earnings-v3.4-axis-gap-retry"
 
 # 분기 공시 코드
 _REPRT_CODE = {"1Q": "11013", "HY": "11012", "3Q": "11014", "FY": "11011"}
@@ -409,9 +409,30 @@ def _previous_rows_same_period(previous: dict[str, Any], qcode: str, year: int) 
         return {}
     return {str(r.get("industry_key") or ""): r for r in (previous.get("industries") or []) if isinstance(r, dict) and r.get("industry_key")}
 
-def _row_has_revenue_signal(row: dict[str, Any]) -> bool:
+def _row_metric(row: dict[str, Any]) -> dict[str, Any]:
     metrics = ((row.get("current") or {}).get("metrics") or []) if isinstance(row, dict) else []
-    return any(isinstance(m, dict) and m.get("revenue_score") is not None for m in metrics)
+    return next((m for m in metrics if isinstance(m, dict)), {})
+
+def _row_has_revenue_signal(row: dict[str, Any]) -> bool:
+    return _row_metric(row).get("revenue_score") is not None
+
+def _row_has_op_signal(row: dict[str, Any]) -> bool:
+    m = _row_metric(row)
+    return m.get("score") is not None and int(m.get("n_firms") or 0) > 0
+
+def _row_has_margin_signal(row: dict[str, Any]) -> bool:
+    m = _row_metric(row)
+    return m.get("margin_score") is not None and int(m.get("margin_n_firms") or 0) > 0
+
+def _row_satisfies_missing_axes(row: dict[str, Any], direct_axes: set[str]) -> bool:
+    """True only when DART already fills every core axis still missing from official cycle data."""
+    if "earnings_momentum" not in direct_axes and not _row_has_op_signal(row):
+        return False
+    if "demand_cycle" not in direct_axes and not _row_has_revenue_signal(row):
+        return False
+    if "pricing_margin" not in direct_axes and not _row_has_margin_signal(row):
+        return False
+    return True
 
 # ── 메인 수집 ─────────────────────────────────────────────────────────────────
 
@@ -439,10 +460,10 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         prev = read_json(output_path, {}) or {}
         if isinstance(prev, dict) and prev.get("status") in {"raw", "scored"}:
             age = age_hours(prev.get("generated_at_utc"))
-            # 동일 collector 버전이면서 충분한 산업을 이미 보유할 때만 전체 cache hit.
-            # 구버전/부분 커버리지는 신규 gap 산업을 추가 수집한다.
-            if (prev.get("collector") == COLLECTOR_VERSION and age is not None and age < CACHE_TTL_H
-                    and int(prev.get("revenue_enabled_industry_count") or 0) >= 90):
+            # v3.4는 revenue만 있다고 완료 처리하지 않는다. earnings/margin gap 재시도를 위해
+            # 같은 버전이어도 24h 동안 최소 1회는 gap-first 루프를 허용한다.
+            if (prev.get("collector") == COLLECTOR_VERSION and age is not None and age < 1.0
+                    and int(prev.get("axis_complete_industry_count") or 0) >= 95):
                 prev["cache_hit"] = True
                 return prev
 
@@ -472,14 +493,14 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     # ── Step 2: gap 산업 우선 수집 + 동일 분기 누적 ───────────────────────────
     previous = read_json(output_path, {}) or {}
     previous_rows = _previous_rows_same_period(previous, qcode, current_year)
-    complete_keys = {key for key, row in previous_rows.items() if _row_has_revenue_signal(row)}
     direct_axes = _cycle_direct_axes(root)
+    complete_keys = {key for key, row in previous_rows.items() if _row_satisfies_missing_axes(row, direct_axes.get(key, set()))}
 
     def priority(ind: dict[str, Any]) -> tuple[int, int]:
         key = str(ind.get("key") or "")
         axes = direct_axes.get(key, set())
         missing_core = sum(1 for axis in ("earnings_momentum", "demand_cycle", "pricing_margin") if axis not in axes)
-        # v3.2 매출 신호가 아직 없는 산업을 먼저. 그다음 공식 cycle core gap이 큰 산업.
+        # 모든 필요한 축을 실제 DART 신호로 채우지 못한 산업을 우선 재시도한다.
         return (1 if key not in complete_keys else 0, missing_core)
 
     candidates = sorted(industries, key=priority, reverse=True)
@@ -519,6 +540,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
 
     results = list(results_by_key.values())
     revenue_enabled_count = sum(1 for row in results if _row_has_revenue_signal(row))
+    axis_complete_count = sum(1 for key, row in results_by_key.items() if _row_satisfies_missing_axes(row, direct_axes.get(key, set())))
     result: dict[str, Any] = {
         "schema_version":       "1.0.0",
         "status":               "raw" if results else "pending",
@@ -529,12 +551,13 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "industries":           results,
         "scored_industry_count": len(results),
         "revenue_enabled_industry_count": revenue_enabled_count,
+        "axis_complete_industry_count": axis_complete_count,
         "external_calls":       call_count[0],
         "diagnostics":          diagnostics + [f"financial_cache_entries={len(financial_cache)}"],
         "note": (
             "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 "
             "fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. "
-            "KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. 동일 대표기업을 여러 산업이 공유할 때 DART 재무응답을 run 내부 캐시로 재사용하고 gap 산업은 최대 3개 대표기업까지 확인한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
+            "KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. 동일 대표기업을 여러 산업이 공유할 때 DART 재무응답을 run 내부 캐시로 재사용하고 gap 산업은 최대 3개 대표기업까지 확인한다. 매출만 확보된 row를 완료로 오인하지 않고 영업이익·마진까지 필요한 축을 재시도한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
         ),
     }
     if not results:
