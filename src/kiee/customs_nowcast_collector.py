@@ -31,8 +31,8 @@ OUTPUT_RAW     = "input/customs_nowcast_raw.json"
 CACHE_TTL_H    = 12
 QUALITY_CAP    = 65.0
 SHRINKAGE      = 0.70
-MAX_CALLS      = 25
-MAX_INDUSTRIES = 10
+MAX_CALLS      = 35
+MAX_INDUSTRIES = 15
 API_TIMEOUT    = 8
 MAX_CONSECUTIVE_ERRORS = 3
 
@@ -101,7 +101,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         result: dict[str, Any] = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "customs-nowcast-v3", "reason": reason,
+            "collector": "customs-nowcast-v3.1-full-mapping", "reason": reason,
             "external_calls": calls,
         }
         if diag:
@@ -241,7 +241,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "schema_version": "1.0.0",
         "status": "raw" if results else "pending",
         "generated_at_utc": utc_now_iso(),
-        "collector": "customs-nowcast-v3",
+        "collector": "customs-nowcast-v3.1-full-mapping",
         "reference_month": ref_label,
         "industries": results,
         "scored_industry_count": len(results),

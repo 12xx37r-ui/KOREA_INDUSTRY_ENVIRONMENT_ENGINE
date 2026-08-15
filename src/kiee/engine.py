@@ -348,6 +348,20 @@ def run_engine(
     _proxy_current_factor_count = sum(1 for _f in _current_factor_rows if _f.get("proxy"))
     _direct_current_factor_count = len(_current_factor_rows) - _proxy_current_factor_count
     _gap_proxy_denominator = _provenance_counts["direct"] + _provenance_counts["gap_proxy"]
+    _gap_proxy_by_factor = {}
+    for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "valuation"):
+        _gap_proxy_by_factor[_axis] = [
+            {"industry_key": _row.get("industry_key"), "industry_label": _row.get("industry_label")}
+            for _row in results
+            if (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available")
+                and (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
+        ]
+    _core_gap_keys = sorted({
+        str(_item.get("industry_key"))
+        for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin")
+        for _item in _gap_proxy_by_factor.get(_axis, [])
+        if _item.get("industry_key")
+    })
     write_json(output_dir / "engine_health.json", {
         "status": "ok" if direct_krx_available else "degraded",
         "generated_at_utc": as_of,
@@ -361,6 +375,9 @@ def run_engine(
         "current_factor_macro_derived_count": _provenance_counts["macro_derived"],
         "current_factor_gap_proxy_count": _provenance_counts["gap_proxy"],
         "current_factor_gap_proxy_pct_ex_macro": round((_provenance_counts["gap_proxy"] / _gap_proxy_denominator * 100.0), 1) if _gap_proxy_denominator else 0.0,
+        "current_gap_proxy_by_factor": _gap_proxy_by_factor,
+        "core_current_gap_industry_count": len(_core_gap_keys),
+        "core_current_gap_industry_keys": _core_gap_keys,
         "current_direct_by_factor": {
             _axis: sum(1 for _row in results if ((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("available") and not (((_row.get("current") or {}).get("factors") or {}).get(_axis, {}).get("proxy")))
             for _axis in ("earnings_momentum", "demand_cycle", "pricing_margin", "financial_conditions", "market_internals", "valuation")

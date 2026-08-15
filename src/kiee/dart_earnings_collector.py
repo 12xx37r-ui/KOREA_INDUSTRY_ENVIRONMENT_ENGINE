@@ -41,11 +41,16 @@ SHRINKAGE        = 0.80
 MAX_CALLS         = 110
 CACHE_TTL_H       = 24
 CORPCODE_TTL_H    = 168
-MIN_BASKET_CNT    = 2
-MAX_FIRMS         = 2      # 산업당 2개사 (속도 우선)
-MAX_YEAR_FALLBACK = 1      # 1년만 폴백 (2→1, 속도 절반)
-MAX_INDUSTRIES    = 25     # 앞에서 25개 산업만 수집 (100개+ 전체 순회 방지)
-API_SLEEP         = 0.08   # 콜 간 대기 0.12→0.08초
+MIN_BASKET_CNT    = 1
+# v3.2: 폭넓은 산업 커버리지를 위해 신규 gap 산업은 대표 1개사부터 수집한다.
+# 1개사 관측은 실제 공시이지만 산업 대표성이 낮으므로 quality 산식에서는
+# TARGET_FIRMS_FOR_FULL_QUALITY=2를 유지해 자동 감산한다.
+MAX_FIRMS         = 1
+TARGET_FIRMS_FOR_FULL_QUALITY = 2
+MAX_YEAR_FALLBACK = 0
+MAX_INDUSTRIES    = 50
+API_SLEEP         = 0.05
+COLLECTOR_VERSION = "dart-earnings-v3.2-gap-first-revenue"
 
 # 분기 공시 코드
 _REPRT_CODE = {"1Q": "11013", "HY": "11012", "3Q": "11014", "FY": "11011"}
@@ -213,7 +218,9 @@ def _fetch_op_with_fallback(
         call_count[0] += 1
         prev_op, prev_rev = _fetch_financials(corp_code, ref_year - 1, reprt_code, api_key)
         time.sleep(API_SLEEP)
-        if cur_op is not None and prev_op is not None and prev_op != 0:
+        op_ok = cur_op is not None and prev_op is not None and prev_op != 0
+        rev_ok = cur_rev is not None and prev_rev is not None and prev_rev != 0
+        if op_ok or rev_ok:
             return cur_op, prev_op, cur_rev, prev_rev, ref_year
     return None, None, None, None, base_year
 
@@ -250,6 +257,7 @@ def collect_industry(
         return None, f"corp_map miss: {map_misses[:3]}"
 
     yoy_list: list[float] = []
+    revenue_yoy_list: list[float] = []
     margin_delta_list: list[float] = []
     used_year = current_year
     api_empty_count = 0
@@ -258,32 +266,44 @@ def collect_industry(
         cur_op, prev_op, cur_rev, prev_rev, actual_year = _fetch_op_with_fallback(
             corp_code, current_year, reprt_code, api_key, call_count, max_calls
         )
+        observed = False
         if cur_op is not None and prev_op is not None and prev_op != 0:
             yoy = (cur_op / abs(prev_op) - 1.0) * 100.0
             yoy_list.append(yoy)
+            observed = True
             if cur_rev not in (None, 0) and prev_rev not in (None, 0):
                 cur_margin = cur_op / abs(cur_rev) * 100.0
                 prev_margin = prev_op / abs(prev_rev) * 100.0
                 margin_delta_list.append(cur_margin - prev_margin)
+        if cur_rev is not None and prev_rev is not None and prev_rev != 0:
+            revenue_yoy_list.append((cur_rev / abs(prev_rev) - 1.0) * 100.0)
+            observed = True
+        if observed:
             used_year = actual_year
         else:
             api_empty_count += 1
 
-    if not yoy_list:
+    if not yoy_list and not revenue_yoy_list:
         detail = f"API empty (map_ok={len(firms)}, misses={map_misses[:2]})"
         if map_misses:
             detail += f", corp_map miss: {map_misses[:2]}"
         return None, detail
 
     n_fetched = len(yoy_list)
-    yoy_list.sort()
-    median_yoy = yoy_list[len(yoy_list) // 2]
-    pct_score  = clamp(50.0 + median_yoy / 100.0 * 50.0, 0.0, 100.0)
-    score      = clamp(50.0 + (pct_score - 50.0) * SHRINKAGE, 0.0, 100.0)
-    # 폴백 연도 사용 시 quality 10% 감산 (데이터 신선도 반영)
+    median_yoy = None
+    pct_score = None
+    score = None
+    if yoy_list:
+        yoy_list.sort()
+        median_yoy = yoy_list[len(yoy_list) // 2]
+        pct_score  = clamp(50.0 + median_yoy / 100.0 * 50.0, 0.0, 100.0)
+        score      = clamp(50.0 + (pct_score - 50.0) * SHRINKAGE, 0.0, 100.0)
+    # 폴백 연도 사용 시 quality 10% 감산. 대표 1개사만 있으면 산업 대표성 때문에
+    # full-quality(2개사) 대비 자동 감산한다.
     freshness  = 1.0 if used_year >= current_year else max(0.7, 1.0 - 0.1 * (current_year - used_year))
-    quality    = clamp(QUALITY_CAP * (0.5 + 0.5 * min(n_fetched / MAX_FIRMS, 1.0)) * freshness, 0.0, QUALITY_CAP)
-    surprise   = _surprise_flag(yoy_list)
+    quality_basis_n = max(n_fetched, len(revenue_yoy_list))
+    quality = clamp(QUALITY_CAP * (0.5 + 0.5 * min(quality_basis_n / TARGET_FIRMS_FOR_FULL_QUALITY, 1.0)) * freshness, 0.0, QUALITY_CAP)
+    surprise   = _surprise_flag(yoy_list) if yoy_list else False
     fallback_note = f" (폴백 {used_year}년 기준)" if used_year < current_year else ""
     median_margin_delta = None
     margin_score = None
@@ -294,23 +314,37 @@ def collect_industry(
         # ±10%p margin change spans the useful 0~100 range, then shrink toward neutral.
         raw_margin_score = clamp(50.0 + median_margin_delta * 5.0, 0.0, 100.0)
         margin_score = clamp(50.0 + (raw_margin_score - 50.0) * 0.75, 0.0, 100.0)
-        margin_quality = clamp(QUALITY_CAP * (0.45 + 0.55 * min(len(margin_delta_list) / MAX_FIRMS, 1.0)) * freshness, 0.0, QUALITY_CAP)
+        margin_quality = clamp(QUALITY_CAP * (0.45 + 0.55 * min(len(margin_delta_list) / TARGET_FIRMS_FOR_FULL_QUALITY, 1.0)) * freshness, 0.0, QUALITY_CAP)
+
+    median_revenue_yoy = None
+    revenue_score = None
+    revenue_quality = 0.0
+    if revenue_yoy_list:
+        revenue_yoy_list.sort()
+        median_revenue_yoy = revenue_yoy_list[len(revenue_yoy_list) // 2]
+        raw_revenue_score = clamp(50.0 + median_revenue_yoy / 100.0 * 50.0, 0.0, 100.0)
+        revenue_score = clamp(50.0 + (raw_revenue_score - 50.0) * 0.72, 0.0, 100.0)
+        revenue_quality = clamp(QUALITY_CAP * (0.5 + 0.5 * min(len(revenue_yoy_list) / TARGET_FIRMS_FOR_FULL_QUALITY, 1.0)) * freshness, 0.0, QUALITY_CAP)
 
     metric = {
         "id":                  f"dart_earnings_{industry['key']}",
         "factor":              "earnings_momentum",
-        "value":               round(median_yoy, 2),
-        "unit":                "영업이익 YoY % (중앙값)",
-        "long_run_percentile": round(pct_score, 3),
-        "score":               round(score, 4),
-        "quality":             round(quality, 1),
-        "source":              f"DART 공시 {qcode} 영업이익 ({n_fetched}개사 중앙값){fallback_note}",
+        "value":               round(median_yoy, 2) if median_yoy is not None else round(median_revenue_yoy, 2),
+        "unit":                "영업이익 YoY % (중앙값)" if median_yoy is not None else "매출액 YoY % (중앙값)",
+        "long_run_percentile": round(pct_score, 3) if pct_score is not None else round(revenue_score, 3),
+        "score":               round(score, 4) if score is not None else None,
+        "quality":             round(quality, 1) if score is not None else 0.0,
+        "source":              f"DART 공시 {qcode} 실제 실적 ({max(n_fetched, len(revenue_yoy_list))}개사){fallback_note}",
         "series_id":           f"dart_op_{industry['key']}",
         "as_of":               f"{used_year}-{qcode}",
         "available":           True,
         "is_dart_earnings":    True,
-        "median_yoy_pct":      round(median_yoy, 2),
+        "median_yoy_pct":      round(median_yoy, 2) if median_yoy is not None else None,
         "n_firms":             n_fetched,
+        "median_revenue_yoy_pct": round(median_revenue_yoy, 2) if median_revenue_yoy is not None else None,
+        "revenue_score":       round(revenue_score, 4) if revenue_score is not None else None,
+        "revenue_quality":     round(revenue_quality, 1),
+        "revenue_n_firms":     len(revenue_yoy_list),
         "api_empty_firms":     api_empty_count,
         "surprise":            surprise,
         "reference_year":      used_year,
@@ -318,11 +352,43 @@ def collect_industry(
         "margin_score":        round(margin_score, 4) if margin_score is not None else None,
         "margin_quality":      round(margin_quality, 1),
         "margin_n_firms":      len(margin_delta_list),
-        "note":                f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll{fallback_note}. 동일 응답의 매출액+영업이익으로 마진 변화도 계산. 품질상한 {QUALITY_CAP}, shrinkage {SHRINKAGE}",
+        "note":                f"DART corpCode ZIP 매핑 → fnlttSinglAcntAll{fallback_note}. 동일 응답에서 매출액 YoY·영업이익 YoY·영업마진 변화를 함께 계산. 대표 1개사 관측은 quality를 자동 감산.",
     }
-    detail = f"score={score:.1f} yoy={median_yoy:.1f}% n={n_fetched} year={used_year} surprise={surprise}"
+    detail = f"op={score if score is not None else 'NA'} revenue={revenue_score if revenue_score is not None else 'NA'} n={max(n_fetched,len(revenue_yoy_list))} year={used_year}"
     return metric, detail
 
+
+# ── gap 우선순위 / 누적 캐시 ─────────────────────────────────────────────────
+
+def _cycle_direct_axes(root: Path) -> dict[str, set[str]]:
+    """KOSIS/공식 cycle feed에서 이미 직접 관측된 core 축을 보수적으로 추정."""
+    data = read_json(root / "input" / "industry_cycle_latest.json", {}) or {}
+    out: dict[str, set[str]] = {}
+    for row in data.get("industries") or []:
+        key = str(row.get("industry_key") or "")
+        axes: set[str] = set()
+        metrics = ((row.get("current") or {}).get("metrics") or [])
+        factors = {str(m.get("factor") or "") for m in metrics if isinstance(m, dict) and m.get("available") is True}
+        if factors & {"production_shipments", "sales_earnings", "employment", "earnings_momentum"}:
+            axes.add("earnings_momentum")
+        if factors & {"production_shipments", "sales_earnings", "utilization", "pmi_bsi", "employment", "demand_cycle"}:
+            axes.add("demand_cycle")
+        if factors & {"price_margin", "pricing_margin"}:
+            axes.add("pricing_margin")
+        if key:
+            out[key] = axes
+    return out
+
+def _previous_rows_same_period(previous: dict[str, Any], qcode: str, year: int) -> dict[str, dict[str, Any]]:
+    if not isinstance(previous, dict):
+        return {}
+    if str(previous.get("quarter") or "") != qcode or int(previous.get("reference_year") or -1) != year:
+        return {}
+    return {str(r.get("industry_key") or ""): r for r in (previous.get("industries") or []) if isinstance(r, dict) and r.get("industry_key")}
+
+def _row_has_revenue_signal(row: dict[str, Any]) -> bool:
+    metrics = ((row.get("current") or {}).get("metrics") or []) if isinstance(row, dict) else []
+    return any(isinstance(m, dict) and m.get("revenue_score") is not None for m in metrics)
 
 # ── 메인 수집 ─────────────────────────────────────────────────────────────────
 
@@ -334,7 +400,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         result: dict[str, Any] = {
             "schema_version": "1.0.0", "status": "pending",
             "generated_at_utc": utc_now_iso(), "industries": [],
-            "collector": "dart-earnings-v3.1-margin", "reason": reason,
+            "collector": COLLECTOR_VERSION, "reason": reason,
             "external_calls": calls,
         }
         if diag:
@@ -350,7 +416,10 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         prev = read_json(output_path, {}) or {}
         if isinstance(prev, dict) and prev.get("status") in {"raw", "scored"}:
             age = age_hours(prev.get("generated_at_utc"))
-            if age is not None and age < CACHE_TTL_H:
+            # 동일 collector 버전이면서 충분한 산업을 이미 보유할 때만 전체 cache hit.
+            # 구버전/부분 커버리지는 신규 gap 산업을 추가 수집한다.
+            if (prev.get("collector") == COLLECTOR_VERSION and age is not None and age < CACHE_TTL_H
+                    and int(prev.get("revenue_enabled_industry_count") or 0) >= 90):
                 prev["cache_hit"] = True
                 return prev
 
@@ -376,49 +445,72 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     if not corp_map:
         return _pending("corpCode.xml 다운로드 실패 — DART_API_KEY 확인 필요", call_count[0])
 
-    # ── Step 2: 산업별 수집 ───────────────────────────────────────────────────
-    results: list[dict[str, Any]] = []
-    diagnostics: list[str] = [
-        f"corp_map_size={len(corp_map)} quarter={qcode} year={current_year} calls_used={call_count[0]}"
-    ]
+    # ── Step 2: gap 산업 우선 수집 + 동일 분기 누적 ───────────────────────────
+    previous = read_json(output_path, {}) or {}
+    previous_rows = _previous_rows_same_period(previous, qcode, current_year)
+    complete_keys = {key for key, row in previous_rows.items() if _row_has_revenue_signal(row)}
+    direct_axes = _cycle_direct_axes(root)
 
-    for ind in industries[:MAX_INDUSTRIES]:
+    def priority(ind: dict[str, Any]) -> tuple[int, int]:
+        key = str(ind.get("key") or "")
+        axes = direct_axes.get(key, set())
+        missing_core = sum(1 for axis in ("earnings_momentum", "demand_cycle", "pricing_margin") if axis not in axes)
+        # v3.2 매출 신호가 아직 없는 산업을 먼저. 그다음 공식 cycle core gap이 큰 산업.
+        return (1 if key not in complete_keys else 0, missing_core)
+
+    candidates = sorted(industries, key=priority, reverse=True)
+    # 같은 분기 기존 row는 보존하되, revenue_score가 없는 구버전 row는 gap-first로 재수집해 교체한다.
+    results_by_key: dict[str, dict[str, Any]] = dict(previous_rows)
+    diagnostics: list[str] = [
+        f"corp_map_size={len(corp_map)} quarter={qcode} year={current_year} calls_used={call_count[0]}",
+        f"previous_same_period={len(previous_rows)} revenue_complete={len(complete_keys)} gap_first=true",
+    ]
+    attempted = 0
+
+    for ind in candidates:
+        key = str(ind.get("key") or "")
+        if not key or key in complete_keys:
+            continue
+        if attempted >= MAX_INDUSTRIES:
+            break
+        attempted += 1
         if call_count[0] >= MAX_CALLS:
             diagnostics.append("call cap reached")
             break
-        key = str(ind.get("key") or "")
-        if not key:
-            continue
         try:
             metric, detail = collect_industry(
                 ind, api_key, corp_map, call_count, MAX_CALLS,
                 current_year, qcode, reprt_code,
             )
             if metric:
-                results.append({
+                results_by_key[key] = {
                     "industry_key": key,
                     "current": {"metrics": [metric], "dart_earnings": True},
-                })
+                }
                 diagnostics.append(f"{key}: {detail}")
             else:
                 diagnostics.append(f"{key}: no data — {detail}")
         except Exception as e:
             diagnostics.append(f"{key}: error {str(e)[:80]}")
 
+    results = list(results_by_key.values())
+    revenue_enabled_count = sum(1 for row in results if _row_has_revenue_signal(row))
     result: dict[str, Any] = {
         "schema_version":       "1.0.0",
         "status":               "raw" if results else "pending",
         "generated_at_utc":     utc_now_iso(),
-        "collector":            "dart-earnings-v3.1-margin",
+        "collector":            COLLECTOR_VERSION,
         "quarter":              qcode,
         "reference_year":       current_year,
         "industries":           results,
         "scored_industry_count": len(results),
+        "revenue_enabled_industry_count": revenue_enabled_count,
         "external_calls":       call_count[0],
         "diagnostics":          diagnostics,
         "note": (
             "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 "
-            "fnlttSinglAcntAll로 분기 영업이익 YoY와 영업이익률 변화를 같은 호출에서 수집. earnings_momentum·pricing_margin 직접관측 보강용."
+            "fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. "
+            "KOSIS 직접관측 gap 산업을 우선하며 같은 분기 기존 결과는 누적 재사용한다. earnings_momentum·demand_cycle·pricing_margin 직접관측 보강용."
         ),
     }
     if not results:

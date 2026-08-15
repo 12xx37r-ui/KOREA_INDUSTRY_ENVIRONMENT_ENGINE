@@ -622,50 +622,76 @@ def _apply_dart_earnings_to_factors(
     factors: dict[str, Any],
     dart_metric: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Apply directly observed DART operating-profit and operating-margin signals.
+    """Apply directly observed DART operating-profit/revenue/margin signals.
 
-    If the pre-existing axis is only a proxy, DART replaces it instead of being
-    blended into a proxy and still counted as proxy.  A genuinely direct axis is
-    blended conservatively.  No additional HTTP request is required for the margin
-    signal: DART's full-account response already contains revenue and operating profit.
+    One full-account DART response already contains revenue and operating profit.
+    Therefore revenue YoY can directly strengthen the public demand_cycle axis
+    without any additional external request.  Proxy axes are replaced by the
+    filing observation; genuinely direct axes are blended conservatively.
     """
     if not dart_metric or not isinstance(dart_metric, dict):
         return factors
-    d_score = finite(dart_metric.get("score"))
-    d_quality = finite(dart_metric.get("quality"), 0.0) or 0.0
-    if d_score is None or d_quality <= 0:
-        return factors
 
     factors = dict(factors)
-    em = factors.get("earnings_momentum") or {}
-    surprise = dart_metric.get("surprise", False)
-    dart_direct = _factor(
-        d_score, d_quality * 0.85,
-        "DART 공시 분기 영업이익 YoY",
-        f"분기 YoY {dart_metric.get('median_yoy_pct',0):.1f}% ({dart_metric.get('n_firms',0)}개사)",
-        proxy=False,
-    )
-    dart_direct["dart_earnings_applied"] = True
-    if surprise:
-        dart_direct["surprise"] = True
 
-    if em.get("available") and em.get("score") is not None and not em.get("proxy"):
-        old_score = float(em["score"])
-        dart_weight = 0.45 if surprise else 0.35
-        blended = old_score * (1 - dart_weight) + d_score * dart_weight
-        merged = dict(em)
-        merged["score"] = roundn(blended, 2)
-        merged["quality"] = clamp(em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100)
-        merged["source"] = em.get("source", "") + " + DART 분기 OP YoY"
-        merged["dart_earnings_applied"] = True
-        merged["proxy"] = False
+    # 1) Operating-profit YoY -> earnings_momentum
+    d_score = finite(dart_metric.get("score"))
+    d_quality = finite(dart_metric.get("quality"), 0.0) or 0.0
+    if d_score is not None and d_quality > 0:
+        em = factors.get("earnings_momentum") or {}
+        surprise = dart_metric.get("surprise", False)
+        dart_direct = _factor(
+            d_score, d_quality * 0.85,
+            "DART 공시 분기 영업이익 YoY",
+            f"분기 YoY {dart_metric.get('median_yoy_pct',0):.1f}% ({dart_metric.get('n_firms',0)}개사)",
+            proxy=False,
+        )
+        dart_direct["dart_earnings_applied"] = True
         if surprise:
-            merged["surprise"] = True
-        factors["earnings_momentum"] = merged
-    else:
-        # A direct filing is preferable to an estimated proxy axis.
-        factors["earnings_momentum"] = dart_direct
+            dart_direct["surprise"] = True
 
+        if em.get("available") and em.get("score") is not None and not em.get("proxy"):
+            old_score = float(em["score"])
+            dart_weight = 0.45 if surprise else 0.35
+            blended = old_score * (1 - dart_weight) + d_score * dart_weight
+            merged = dict(em)
+            merged["score"] = roundn(blended, 2)
+            merged["quality"] = clamp(em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100)
+            merged["source"] = em.get("source", "") + " + DART 분기 OP YoY"
+            merged["dart_earnings_applied"] = True
+            merged["proxy"] = False
+            if surprise:
+                merged["surprise"] = True
+            factors["earnings_momentum"] = merged
+        else:
+            factors["earnings_momentum"] = dart_direct
+
+    # 2) Revenue YoY -> demand_cycle.  This is actual company sales, not a
+    # market-price proxy, and uses the same DART API response as operating profit.
+    revenue_score = finite(dart_metric.get("revenue_score"))
+    revenue_quality = finite(dart_metric.get("revenue_quality"), 0.0) or 0.0
+    revenue_yoy = finite(dart_metric.get("median_revenue_yoy_pct"))
+    if revenue_score is not None and revenue_quality > 0:
+        direct_demand = _factor(
+            revenue_score, revenue_quality,
+            "DART 공시 매출액 YoY",
+            f"매출액 전년동기 대비 {revenue_yoy:+.1f}% ({dart_metric.get('revenue_n_firms',0)}개사)" if revenue_yoy is not None else "공시 매출액 YoY",
+            proxy=False,
+        )
+        direct_demand["dart_revenue_applied"] = True
+        dc = factors.get("demand_cycle") or {}
+        if dc.get("available") and dc.get("score") is not None and not dc.get("proxy"):
+            merged_dc = dict(dc)
+            merged_dc["score"] = roundn(float(dc["score"]) * 0.70 + revenue_score * 0.30, 2)
+            merged_dc["quality"] = clamp((finite(dc.get("quality"), 0.0) or 0.0) * 0.70 + revenue_quality * 0.30, 0, 100)
+            merged_dc["source"] = dc.get("source", "") + " + DART 매출 YoY"
+            merged_dc["proxy"] = False
+            merged_dc["dart_revenue_applied"] = True
+            factors["demand_cycle"] = merged_dc
+        else:
+            factors["demand_cycle"] = direct_demand
+
+    # 3) Operating-margin YoY change -> pricing_margin
     margin_score = finite(dart_metric.get("margin_score"))
     margin_quality = finite(dart_metric.get("margin_quality"), 0.0) or 0.0
     margin_delta = finite(dart_metric.get("median_margin_delta_ppt"))
