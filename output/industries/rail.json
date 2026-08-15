@@ -14,28 +14,31 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 52.17,
-        "quality": 45.7,
+        "score": 53.64,
+        "quality": 56.22,
         "available": true,
-        "source": "산업 고유 실적·상업화 신호",
+        "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
         "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 2.78,
-        "quality": 85.0,
+        "score": 18.38,
+        "quality": 81.1,
         "available": true,
-        "source": "KOSIS·공식 산업수요 직접관측",
+        "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 52.12,
-        "quality": 45.7,
+        "score": 52.32,
+        "quality": 47.975,
         "available": true,
-        "source": "산업 고유 상업화·투자 신호",
+        "source": "산업 고유 상업화·투자 신호 + DART 영업마진 변화",
         "detail": "현재 가격·마진 축은 해당 산업의 상업화와 투자 신호만 반영합니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 23.92,
@@ -67,34 +70,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 52.17,
-        "quality": 45.7,
+        "score": 53.64,
+        "quality": 56.2,
         "base_weight": 0.1596,
-        "effective_weight": 0.0729,
-        "normalized_weight": 0.1196,
-        "contribution_points": 0.26,
+        "effective_weight": 0.0897,
+        "normalized_weight": 0.1434,
+        "contribution_points": 0.52,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 2.78,
-        "quality": 85.0,
+        "score": 18.38,
+        "quality": 81.1,
         "base_weight": 0.0882,
-        "effective_weight": 0.075,
-        "normalized_weight": 0.123,
-        "contribution_points": -5.81,
+        "effective_weight": 0.0716,
+        "normalized_weight": 0.1144,
+        "contribution_points": -3.62,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 52.12,
-        "quality": 45.7,
+        "score": 52.32,
+        "quality": 48.0,
         "base_weight": 0.116,
-        "effective_weight": 0.053,
-        "normalized_weight": 0.087,
-        "contribution_points": 0.18,
+        "effective_weight": 0.0557,
+        "normalized_weight": 0.089,
+        "contribution_points": 0.21,
         "available": true
       },
       {
@@ -104,8 +107,8 @@
         "quality": 64.5,
         "base_weight": 0.3585,
         "effective_weight": 0.2313,
-        "normalized_weight": 0.3792,
-        "contribution_points": -9.89,
+        "normalized_weight": 0.3696,
+        "contribution_points": -9.64,
         "available": true
       },
       {
@@ -115,8 +118,8 @@
         "quality": 82.5,
         "base_weight": 0.1693,
         "effective_weight": 0.1397,
-        "normalized_weight": 0.229,
-        "contribution_points": 3.27,
+        "normalized_weight": 0.2232,
+        "contribution_points": 3.18,
         "available": true
       },
       {
@@ -126,8 +129,8 @@
         "quality": 35.0,
         "base_weight": 0.1083,
         "effective_weight": 0.0379,
-        "normalized_weight": 0.0621,
-        "contribution_points": -0.55,
+        "normalized_weight": 0.0606,
+        "contribution_points": -0.54,
         "available": true
       }
     ],
@@ -806,7 +809,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:42:54.996894+00:00"
+      "generated_at_utc": "2026-08-15T11:08:19.914853+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,

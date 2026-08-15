@@ -15,28 +15,32 @@
     "quality_weighted_coverage_pct": 3.5,
     "factors": {
       "earnings_momentum": {
-        "score": 64.93,
-        "quality": 35.0,
+        "score": 90.0,
+        "quality": 61.2,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 81.9에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "DART 공시 분기 영업이익 YoY",
+        "detail": "분기 YoY 144.4% (2개사)",
+        "proxy": false,
+        "dart_earnings_applied": true,
+        "surprise": true
       },
       "demand_cycle": {
-        "score": 81.94,
-        "quality": 85.0,
+        "score": 78.24,
+        "quality": 81.1,
         "available": true,
-        "source": "KOSIS·공식 산업수요 직접관측",
+        "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
-        "proxy": false
+        "proxy": false,
+        "dart_revenue_applied": true
       },
       "pricing_margin": {
-        "score": 57.94,
-        "quality": 38.5,
+        "score": 87.5,
+        "quality": 72.0,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 81.9에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true
+        "source": "DART 공시 영업이익률 YoY 변화",
+        "detail": "영업이익률 전년동기 대비 +11.05%p (2개사)",
+        "proxy": false,
+        "dart_margin_applied": true
       },
       "financial_conditions": {
         "score": 52.07,
@@ -68,34 +72,34 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 64.93,
-        "quality": 35.0,
+        "score": 90.0,
+        "quality": 61.2,
         "base_weight": 0.2217,
-        "effective_weight": 0.0776,
-        "normalized_weight": 0.1264,
-        "contribution_points": 1.89,
+        "effective_weight": 0.1357,
+        "normalized_weight": 0.1906,
+        "contribution_points": 7.63,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 81.94,
-        "quality": 85.0,
+        "score": 78.24,
+        "quality": 81.1,
         "base_weight": 0.2758,
-        "effective_weight": 0.2344,
-        "normalized_weight": 0.382,
-        "contribution_points": 12.2,
+        "effective_weight": 0.2237,
+        "normalized_weight": 0.3143,
+        "contribution_points": 8.88,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 57.94,
-        "quality": 38.5,
+        "score": 87.5,
+        "quality": 72.0,
         "base_weight": 0.1511,
-        "effective_weight": 0.0582,
-        "normalized_weight": 0.0948,
-        "contribution_points": 0.75,
+        "effective_weight": 0.1088,
+        "normalized_weight": 0.1529,
+        "contribution_points": 5.73,
         "available": true
       },
       {
@@ -105,8 +109,8 @@
         "quality": 64.6,
         "base_weight": 0.1167,
         "effective_weight": 0.0754,
-        "normalized_weight": 0.1229,
-        "contribution_points": 0.25,
+        "normalized_weight": 0.1059,
+        "contribution_points": 0.22,
         "available": true
       },
       {
@@ -116,8 +120,8 @@
         "quality": 100.0,
         "base_weight": 0.1323,
         "effective_weight": 0.1323,
-        "normalized_weight": 0.2155,
-        "contribution_points": -2.61,
+        "normalized_weight": 0.1859,
+        "contribution_points": -2.25,
         "available": true
       },
       {
@@ -127,8 +131,8 @@
         "quality": 35.0,
         "base_weight": 0.1025,
         "effective_weight": 0.0359,
-        "normalized_weight": 0.0585,
-        "contribution_points": -0.4,
+        "normalized_weight": 0.0504,
+        "contribution_points": -0.34,
         "available": true
       }
     ],
@@ -791,7 +795,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-15T10:42:54.996894+00:00"
+      "generated_at_utc": "2026-08-15T11:08:19.914853+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
