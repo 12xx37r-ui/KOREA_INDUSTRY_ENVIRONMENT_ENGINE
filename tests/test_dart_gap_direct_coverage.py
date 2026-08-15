@@ -76,8 +76,13 @@ def test_cycle_direct_axes_and_same_period_cache(tmp_path: Path):
 def test_workflow_runs_kosis_before_dart_gap_collection():
     root = Path(__file__).resolve().parents[1]
     text = (root / ".github" / "workflows" / "daily-industry-environment.yml").read_text(encoding="utf-8")
-    assert text.index("Validate and build industry cycle feed") < text.index("Collect DART earnings / revenue / margin gaps")
-    assert text.index("Collect DART earnings / revenue / margin gaps") < text.index("Run industry engine")
+    cycle_pos = text.find("PYTHONPATH=src python -m kiee.industry_cycle_feed")
+    dart_pos = text.find("PYTHONPATH=src python -m kiee.dart_earnings_collector")
+    engine_pos = text.find("PYTHONPATH=src python -m kiee.cli")
+    assert cycle_pos >= 0, "workflow에 industry_cycle_feed 실행 단계가 없습니다"
+    assert dart_pos >= 0, "workflow에 DART gap collector 실행 단계가 없습니다"
+    assert engine_pos >= 0, "workflow에 industry engine 실행 단계가 없습니다"
+    assert cycle_pos < dart_pos < engine_pos, "workflow 순서는 industry_cycle_feed -> DART gap collector -> engine 이어야 합니다"
 
 
 def test_revenue_only_filing_still_builds_direct_demand_signal(monkeypatch):
