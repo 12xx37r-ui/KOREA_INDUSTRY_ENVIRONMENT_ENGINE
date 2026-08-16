@@ -9,6 +9,7 @@ from .prospective import read_summary, update_registry
 from .scoring import score_industry
 from .upstream import SourceResult, UpstreamLoader
 from .util import finite, read_json, roundn, utc_now_iso, write_json
+from .api_health import add_network_calls, record_cache, record_lkg, record_fallback, record_unavailable, record_state, flush as flush_api_health
 
 
 def _company_name_map(root: Path) -> dict[str, str]:
@@ -163,6 +164,26 @@ def run_engine(
         max_lkg_age_hours=float((policy.get("upstream_max_age_hours") or {}).get("krx_market", 120)),
         valuation_policy=policy,
     )
+    # pykrx/GitHub use their own HTTP stacks, so register their actual call
+    # counts in the common workflow health ledger without changing collectors.
+    add_network_calls("GITHUB", int(loader.http_calls or 0))
+    add_network_calls("KRX", int(direct_market.get("normal_live_calls", 0) or 0))
+    if direct_market.get("available") is True:
+        record_state("KRX", "LIVE")
+    if int(direct_market.get("lkg_reused_industry_count", 0) or 0) > 0:
+        record_lkg("KRX")
+    if direct_market.get("available") is not True:
+        record_unavailable("KRX")
+    if int(loader.http_calls or 0) > 0:
+        record_state("GITHUB", "LIVE")
+    for _src in sources.values():
+        _mode = str(getattr(_src, "mode", "") or "").lower()
+        if "cache-not-modified" in _mode:
+            record_cache("GITHUB")
+        if "fallback" in _mode:
+            record_fallback("GITHUB")
+        if "stale" in _mode or "last-known-good" in _mode:
+            record_lkg("GITHUB")
     freshness = _freshness_quality(sources, upstream_cfg)
     prospective_before = read_summary(root)
     as_of = utc_now_iso()
@@ -438,6 +459,7 @@ def run_engine(
         "direct_krx_actual_periods": direct_market.get("actual_periods") or {},
         "direct_krx_diagnostics": direct_market.get("diagnostics") or [],
         "call_efficiency": overall["call_efficiency"],
+        "api_health_path": "output/api_health.json",
         "prospective_validation": prospective_after,
         "oos_bridge_status": oos_status,
         "oos_bridge_evaluated_cases": oos_cases,
@@ -445,4 +467,12 @@ def run_engine(
         "oos_bridge_note": oos_health_note,
     })
     _append_history(root, as_of, results)
+    api_health = flush_api_health(root)
+    overall["api_health"] = {
+        "path": "output/api_health.json",
+        "totals": api_health.get("totals") or {},
+        "states": ["LIVE", "CACHE", "LKG", "FALLBACK", "UNAVAILABLE"],
+    }
+    # Keep the canonical JSON keys/paths intact; this is additive metadata only.
+    write_json(output_dir / "industry_environment_latest.json", overall)
     return overall

@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from .util import age_hours, clamp, read_json, utc_now_iso, write_json
+from .api_health import request_bytes, record_unavailable, record_state, flush as flush_api_health
 
 CUSTOMS_DISABLED = False
 
@@ -45,9 +46,11 @@ def _request(url: str, api_key: str, other_params: dict[str, Any], timeout: int 
     full_url = f"{url}?serviceKey={encoded_key}&{rest}"
     req = urllib.request.Request(full_url, headers={"User-Agent": "kiee-customs/3.0"})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8", errors="replace"), resp.status
+        body = request_bytes("CUSTOMS", req, timeout=timeout, memo_key=full_url, max_retries=2)
+        return body.decode("utf-8", errors="replace"), 200
     except urllib.error.HTTPError as e:
+        if e.code not in (429,) and not (500 <= e.code <= 599):
+            record_unavailable("CUSTOMS")
         return "", e.code
     except Exception as e:
         return str(e), -1
@@ -103,6 +106,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
             "generated_at_utc": utc_now_iso(), "industries": [],
             "collector": "customs-nowcast-v3.1-full-mapping", "reason": reason,
             "external_calls": calls,
+            "source_state": "UNAVAILABLE",
         }
         if diag:
             result["diagnostics"] = diag
@@ -115,12 +119,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     if not api_key:
         return _pending("CUSTOMS_API_KEY 미설정")
 
-    if not force:
-        prev = read_json(output_path, {}) or {}
-        if isinstance(prev, dict) and prev.get("status") in {"raw", "scored"}:
-            if (age_hours(prev.get("generated_at_utc")) or 999) < CACHE_TTL_H:
-                prev["cache_hit"] = True
-                return prev
+    # Freshness-first: each workflow re-checks the official source. Monthly
+    # publication cadence is handled by requesting the current reference period,
+    # not by blindly trusting an unexpired TTL.
 
     mapping_path = root / "config" / "customs_hs_mapping.json"
     mapping = read_json(mapping_path, {}) or {}
@@ -248,9 +249,11 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "external_calls": call_count[0],
         "diagnostics": diag,
         "missing_data_policy": "do_not_impute_or_neutral_fill",
+        "source_state": "LIVE" if results else "UNAVAILABLE",
     }
     if not results:
         result["reason"] = "수집 데이터 없음 — diagnostics 참조"
+    record_state("CUSTOMS", result.get("source_state") or "UNAVAILABLE")
     write_json(output_path, result)
     return result
 
@@ -262,7 +265,9 @@ def main() -> int:
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
     print(f"CUSTOMS_KEY_CONFIGURED={'true' if os.getenv('CUSTOMS_API_KEY','').strip() else 'false'}")
-    result = collect(Path(args.root).resolve(), force=args.force)
+    resolved_root = Path(args.root).resolve()
+    result = collect(resolved_root, force=args.force)
+    flush_api_health(resolved_root)
     print(json.dumps({
         "status":     result.get("status"),
         "industries": len(result.get("industries", [])),

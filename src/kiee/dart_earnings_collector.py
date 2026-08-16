@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import Any
 
 from .util import age_hours, clamp, read_json, utc_now_iso, write_json
+from .api_health import request_bytes, record_cache, record_unavailable, record_state, flush as flush_api_health
 
 DART_BASE        = "https://opendart.fss.or.kr/api"
 OUTPUT_RAW       = "input/dart_earnings_raw.json"
@@ -64,8 +65,8 @@ def _get_json(endpoint: str, params: dict[str, Any], api_key: str, timeout: int 
     p["type"] = "json"
     url = f"{DART_BASE}/{endpoint}?{urllib.parse.urlencode(p)}"
     req = urllib.request.Request(url, headers={"User-Agent": "kiee-dart-earnings/2.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    body = request_bytes("DART", req, timeout=timeout, memo_key=url, max_retries=2)
+    return json.loads(body.decode("utf-8"))
 
 
 def _get_bytes(endpoint: str, params: dict[str, Any], api_key: str, timeout: int = 60) -> bytes:
@@ -73,8 +74,7 @@ def _get_bytes(endpoint: str, params: dict[str, Any], api_key: str, timeout: int
     p["crtfc_key"] = api_key
     url = f"{DART_BASE}/{endpoint}?{urllib.parse.urlencode(p)}"
     req = urllib.request.Request(url, headers={"User-Agent": "kiee-dart-earnings/2.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    return request_bytes("DART", req, timeout=timeout, memo_key=url, max_retries=2)
 
 
 def _rows(data: Any, key: str = "list") -> list[dict]:
@@ -457,6 +457,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
             "generated_at_utc": utc_now_iso(), "industries": [],
             "collector": COLLECTOR_VERSION, "reason": reason,
             "external_calls": calls,
+            "source_state": "UNAVAILABLE",
         }
         if diag:
             result["diagnostics"] = diag
@@ -466,17 +467,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     if not api_key:
         return _pending("DART_API_KEY 미설정. GitHub Secret에 DART_API_KEY를 추가하세요.")
 
-    # 캐시 유효성 확인
-    if not force:
-        prev = read_json(output_path, {}) or {}
-        if isinstance(prev, dict) and prev.get("status") in {"raw", "scored"}:
-            age = age_hours(prev.get("generated_at_utc"))
-            # v3.4는 revenue만 있다고 완료 처리하지 않는다. earnings/margin gap 재시도를 위해
-            # 같은 버전이어도 24h 동안 최소 1회는 gap-first 루프를 허용한다.
-            if (prev.get("collector") == COLLECTOR_VERSION and age is not None and age < 1.0
-                    and int(prev.get("axis_complete_industry_count") or 0) >= 95):
-                prev["cache_hit"] = True
-                return prev
+    # Freshness-first: do not suppress a workflow-level DART check solely due
+    # to elapsed TTL. The existing financial_cache still removes identical
+    # corp/period calls within this execution.
 
     now          = datetime.now(timezone.utc)
     current_year = now.year
@@ -565,6 +558,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "axis_complete_industry_count": axis_complete_count,
         "external_calls":       call_count[0],
         "diagnostics":          diagnostics + [f"financial_cache_entries={len(financial_cache)}"],
+        "source_state": "LIVE" if results else "UNAVAILABLE",
         "note": (
             "DART corpCode ZIP 1회 다운로드로 전체 corp_code 매핑 후 "
             "fnlttSinglAcntAll 동일 응답에서 매출액 YoY·영업이익 YoY·영업이익률 변화를 수집. "
@@ -573,6 +567,7 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
     }
     if not results:
         result["reason"] = "영업이익 데이터 없음 — 공시 시기 이전이거나 basket corp_code 미매핑 가능"
+    record_state("DART", result.get("source_state") or "UNAVAILABLE")
     write_json(output_path, result)
     return result
 
@@ -585,7 +580,9 @@ def main() -> int:
     args = parser.parse_args()
     configured = bool(os.getenv("DART_API_KEY", "").strip())
     print(f"DART_KEY_CONFIGURED={str(configured).lower()}")
-    result = collect(Path(args.root).resolve(), force=args.force)
+    resolved_root = Path(args.root).resolve()
+    result = collect(resolved_root, force=args.force)
+    flush_api_health(resolved_root)
     summary = {
         "status":     result.get("status"),
         "industries": len(result.get("industries", [])),

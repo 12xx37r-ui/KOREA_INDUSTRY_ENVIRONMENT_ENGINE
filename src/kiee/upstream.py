@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .util import age_hours, read_json, utc_now_iso, write_json
+from .api_health import record_cache, record_fallback, record_lkg
 
 
 @dataclass
@@ -84,13 +85,11 @@ class UpstreamLoader:
         meta = read_json(meta_path, {}) or {}
         cache_age = age_hours(meta.get("fetched_at"))
         ttl = float(source.get("cache_ttl_hours") or 0)
-        if isinstance(cached, dict) and cache_age is not None and cache_age <= ttl:
-            result = self._result_from_payload(name, cached, "cache-fresh", 0, "", stale=False)
-            result.age_hours = cache_age
-            self.memo[name] = result
-            return result
+        # Freshness-first: perform a conditional source check every workflow even
+        # when the local TTL has not expired. A 304 is an intentional CACHE use;
+        # an unchecked TTL hit is not considered sufficiently fresh.
 
-        # Cache is stale — attempt conditional GET first (ETag / Last-Modified).
+        # Attempt conditional GET first (ETag / Last-Modified).
         # A 304 response means content is unchanged: refresh fetched_at and reuse
         # the cached payload without re-downloading the file.
         # _pending_meta is read by _fetch_github to build conditional request headers;
@@ -117,6 +116,7 @@ class UpstreamLoader:
             new_meta["fetched_at"] = utc_now_iso()
             new_meta["mode"] = "conditional-not-modified"
             write_json(meta_path, new_meta)
+            record_cache("GITHUB")
             result = self._result_from_payload(name, cached, "cache-not-modified", calls, "", stale=False)
             result.age_hours = 0.0
             self.memo[name] = result
@@ -147,6 +147,7 @@ class UpstreamLoader:
 
         max_stale = float(source.get("max_stale_hours") or 0)
         if isinstance(cached, dict) and cache_age is not None and cache_age <= max_stale:
+            record_lkg("GITHUB")
             result = self._result_from_payload(name, cached, "cache-stale-fallback", calls, error, stale=True)
             result.age_hours = cache_age
             self.memo[name] = result

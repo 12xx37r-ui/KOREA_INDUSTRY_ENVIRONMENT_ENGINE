@@ -12,6 +12,7 @@ from typing import Any
 
 from .config import load_all
 from .util import age_hours, read_json, utc_now_iso, write_json
+from .api_health import request_bytes, flush as flush_api_health, record_fallback, record_lkg, record_state
 
 # Search is available on the SSO host, while the official parameter-data and
 # metadata examples use the main KOSIS host. Keep search and data endpoints
@@ -69,8 +70,9 @@ def _get_json(url: str, params: dict[str, Any], budget: _CallBudget, timeout: in
     request = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "kiee-industry-cycle/1.0"})
     budget.allow()
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read().decode("utf-8"))
+        logical = str(params.get("tblId") or params.get("searchNm") or query)
+        body = request_bytes("KOSIS", request, timeout=timeout, memo_key=url + "|" + logical, max_retries=2)
+        return json.loads(body.decode("utf-8"))
     except Exception as exc:
         if budget.errors is not None:
             table = params.get("tblId") or params.get("searchNm") or ""
@@ -88,6 +90,7 @@ def _get_data_json(params: dict[str, Any], budget: _CallBudget, allow_fallback: 
             raise
         if budget.events is not None:
             budget.events.append(f"data_host_fallback: {type(first_error).__name__}")
+        record_fallback("KOSIS")
         return _get_json(DATA_FALLBACK_URL, params, budget, timeout=timeout)
 
 
@@ -340,17 +343,9 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         return result
     config = read_json(root / "config" / "industry_kosis_sources.json", {}) or {}
 
-    # Short-circuit: if the output is fresh (within cache_ttl_hours), skip all
-    # KOSIS API calls. This avoids 32+ external requests per engine run when the
-    # data was already collected recently. Pass force=True to override.
-    if not force:
-        previous_check = read_json(output, {}) or {}
-        if isinstance(previous_check, dict) and previous_check.get("status") in {"raw", "scored"}:
-            cache_ttl = float(config.get("cache_ttl_hours", 24))
-            data_age = age_hours(previous_check.get("generated_at_utc"))
-            if data_age is not None and data_age < cache_ttl:
-                previous_check.setdefault("cache_hit", True)
-                return previous_check
+    # Freshness-first policy: every workflow checks KOSIS at the source.
+    # We do NOT skip merely because a TTL remains. Exact duplicate table/series
+    # requests inside this run are deduplicated by api_health.request_bytes().
     universe, _, _ = load_all(root)
     overrides = config.get("industry_keyword_overrides") or {}
     # production_shipments/inventory_cycle/utilization/pmi_bsi 계열은 KOSIS
@@ -446,17 +441,26 @@ def collect(root: Path, force: bool = False) -> dict[str, Any]:
         "collector": "kosis-industry-cycle-v2.2-direct-service", "external_calls": budget.attempts,
         "runtime_budget_seconds": runtime_seconds,
         "diagnostics": diagnostics + (budget.events or []) + (budget.errors or []), "missing_data_policy": "do_not_impute_or_neutral_fill",
+        "source_state": "LIVE" if by_key else "UNAVAILABLE",
     }
     # Preserve the last valid raw observations when a transient KOSIS outage
     # returns no rows. The failed attempt remains visible in diagnostics, but
     # a timeout must not erase the last-known-good input used by the batch feed.
     if not by_key and isinstance(previous, dict) and previous.get("industries") and previous.get("status") in {"raw", "scored"}:
         result = dict(previous)
-        result["generated_at_utc"] = utc_now_iso()
+        # Preserve the LKG's original generation time. Never make an old value
+        # look fresh merely because a refresh attempt failed now.
+        result["last_attempt_at_utc"] = utc_now_iso()
         result["last_attempt_status"] = "pending"
+        result["source_state"] = "LKG"
+        record_lkg("KOSIS")
         result["last_attempt_external_calls"] = budget.attempts
         result["last_attempt_diagnostics"] = diagnostics + (budget.events or []) + (budget.errors or [])
         result["missing_data_policy"] = "do_not_impute_or_neutral_fill"
+    if result.get("source_state") == "LIVE":
+        record_state("KOSIS", "LIVE")
+    elif result.get("source_state") == "UNAVAILABLE":
+        record_state("KOSIS", "UNAVAILABLE")
     write_json(output, result)
     return result
 
@@ -466,7 +470,9 @@ def main() -> int:
     parser.add_argument("--root", default=".")
     args = parser.parse_args()
     print(f"KOSIS_KEY_CONFIGURED={'true' if os.getenv('KOSIS_API_KEY', '').strip() else 'false'}", flush=True)
-    result = collect(Path(args.root).resolve())
+    resolved_root = Path(args.root).resolve()
+    result = collect(resolved_root)
+    flush_api_health(resolved_root)
     print(json.dumps({"status": result.get("status"), "industry_count": len(result.get("industries") or []), "external_calls": result.get("external_calls", 0)}, ensure_ascii=False))
     return 0
 
