@@ -57,6 +57,8 @@ jobs:
           fi
           mkdir -p input_cache/latest
           test -d input_cache/latest
+          # api_health.json is workflow-scoped telemetry, not a cross-run counter.
+          rm -f output/api_health.json
 
       - name: Check KOSIS secret binding
         env:
@@ -113,8 +115,8 @@ jobs:
           FORCE_KOSIS="${{ inputs.force_kosis || 'false' }}"
           echo "FORCE_KOSIS=$FORCE_KOSIS"
           echo "INDUSTRY_CYCLE_INPUT_MODE=kosis-cache-aware-collector"
-          # Collector 자체의 24h TTL/LKG가 중복 호출을 막는다.
-          # committed raw가 있다는 이유만으로 영구 skip하지 않아 실제 신규 데이터가 갱신된다.
+          # Freshness-first: every workflow re-checks KOSIS at the source.
+          # Exact duplicate series/table requests are removed only inside this run.
           if [ "$FORCE_KOSIS" = "true" ]; then
             PYTHONPATH=src python - <<'PY'
           from pathlib import Path
@@ -205,6 +207,9 @@ jobs:
           assert int(ce['krx_bulk_calls_this_run']) <= 20
           bridge=json.loads(Path('output/stock_prediction_bridge.json').read_text(encoding='utf-8'))
           assert len(bridge['by_profile_key']) == data['industry_count']
+          api_health=json.loads(Path('output/api_health.json').read_text(encoding='utf-8'))
+          assert api_health.get('policy', {}).get('priority') == 'freshness_first'
+          print('API_HEALTH_TOTALS=', json.dumps(api_health.get('totals') or {}, ensure_ascii=False))
           health=json.loads(Path('output/engine_health.json').read_text(encoding='utf-8'))
           print('KRX_DIRECT_AVAILABLE=', health.get('direct_krx_available'))
           print('KRX_CREDENTIALS_CONFIGURED=', health.get('direct_krx_credentials_configured'))
