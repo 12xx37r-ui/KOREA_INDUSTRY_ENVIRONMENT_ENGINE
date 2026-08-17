@@ -43,11 +43,11 @@
         "dart_margin_applied": true
       },
       "financial_conditions": {
-        "score": 43.42,
+        "score": 43.43,
         "quality": 86.1,
         "available": true,
         "source": "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
-        "detail": "기준금리 2.75% · 국고채 3년 3.796% · USD/KRW 1,415.0원 · 원화강도 57.9/100 · 원화유동성 확장(+0.101) · AA-회사채3년-국고채3년 스프레드 0.696%p",
+        "detail": "기준금리 2.75% · 국고채 3년 3.796% · USD/KRW 1,417.5원 · 원화강도 57.9/100 · 원화유동성 확장(+0.101) · AA-회사채3년-국고채3년 스프레드 0.696%p",
         "proxy": false,
         "provenance": "macro_derived",
         "input_basis": "observed_macro_inputs"
@@ -61,14 +61,14 @@
         "proxy": false
       },
       "valuation": {
-        "score": 43.7,
-        "quality": 24.8,
+        "score": 43.45,
+        "quality": 35.0,
         "available": true,
-        "source": "산업실물피드 총점 앵커 + 매크로 팩터 추정",
-        "detail": "피드 총점 22.2에 40% 앵커 후 매크로 팩터 추정",
-        "proxy": true,
-        "provenance": "gap_proxy",
-        "input_basis": "broad_market_valuation_proxy"
+        "source": "해당 산업 대표바스켓 PER·PBR",
+        "detail": "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
+        "proxy": false,
+        "provenance": "direct",
+        "input_basis": "krx_sector_basket"
       }
     },
     "contributions": [
@@ -77,10 +77,10 @@
         "label": "산업 실적 모멘텀",
         "score": 70.21,
         "quality": 61.9,
-        "base_weight": 0.2215,
-        "effective_weight": 0.1371,
-        "normalized_weight": 0.1927,
-        "contribution_points": 3.89,
+        "base_weight": 0.2216,
+        "effective_weight": 0.1372,
+        "normalized_weight": 0.1901,
+        "contribution_points": 3.84,
         "available": true
       },
       {
@@ -88,10 +88,10 @@
         "label": "수요·경기",
         "score": 37.37,
         "quality": 81.1,
-        "base_weight": 0.2755,
-        "effective_weight": 0.2234,
-        "normalized_weight": 0.314,
-        "contribution_points": -3.97,
+        "base_weight": 0.2757,
+        "effective_weight": 0.2236,
+        "normalized_weight": 0.3097,
+        "contribution_points": -3.91,
         "available": true
       },
       {
@@ -99,21 +99,21 @@
         "label": "가격·마진",
         "score": 66.08,
         "quality": 61.1,
-        "base_weight": 0.1524,
-        "effective_weight": 0.0931,
-        "normalized_weight": 0.1308,
-        "contribution_points": 2.1,
+        "base_weight": 0.1516,
+        "effective_weight": 0.0926,
+        "normalized_weight": 0.1283,
+        "contribution_points": 2.06,
         "available": true
       },
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "score": 43.42,
+        "score": 43.43,
         "quality": 86.1,
-        "base_weight": 0.1159,
-        "effective_weight": 0.0998,
-        "normalized_weight": 0.1403,
-        "contribution_points": -0.92,
+        "base_weight": 0.1164,
+        "effective_weight": 0.1002,
+        "normalized_weight": 0.1388,
+        "contribution_points": -0.91,
         "available": true
       },
       {
@@ -121,21 +121,21 @@
         "label": "증시 내부환경",
         "score": 25.21,
         "quality": 100.0,
-        "base_weight": 0.1329,
-        "effective_weight": 0.1329,
-        "normalized_weight": 0.1868,
-        "contribution_points": -4.63,
+        "base_weight": 0.1326,
+        "effective_weight": 0.1326,
+        "normalized_weight": 0.1836,
+        "contribution_points": -4.55,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 43.7,
-        "quality": 24.8,
-        "base_weight": 0.1018,
-        "effective_weight": 0.0252,
-        "normalized_weight": 0.0355,
-        "contribution_points": -0.22,
+        "score": 43.45,
+        "quality": 35.0,
+        "base_weight": 0.1022,
+        "effective_weight": 0.0358,
+        "normalized_weight": 0.0495,
+        "contribution_points": -0.32,
         "available": true
       }
     ],
@@ -175,14 +175,14 @@
     "notes": "단일 지표(1개)로 산출 - 과의존 경고. quality 상한 40, 점수는 중립 방향으로 55% 수축."
   },
   "forecast_3m": {
-    "score": 48.5,
+    "score": 48.4,
     "band": "중립",
-    "delta_points": 11.0,
+    "delta_points": 10.9,
     "direction": "개선",
     "change_strength": "꽤",
     "quality_score": 45.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 61.4,
+    "quality_weighted_coverage_pct": 61.3,
     "factors": {
       "earnings_momentum": {
         "score": 54.63,
@@ -201,7 +201,7 @@
         "proxy": false
       },
       "pricing_margin": {
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
         "available": true,
         "source": "산업 마진·상업화 + 글로벌 원가압력",
@@ -209,17 +209,17 @@
         "proxy": false
       },
       "financial_conditions": {
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
         "available": true,
         "source": "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
-        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,416.7원 · 원화강도 69.7/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
+        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,419.2원 · 원화강도 69.4/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
         "proxy": false,
         "provenance": "macro_derived",
         "input_basis": "observed_macro_inputs"
       },
       "market_internals": {
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
         "available": true,
         "source": "KRX 대표바스켓 + 한국증시 직접환경 + 글로벌 주식환경",
@@ -227,14 +227,14 @@
         "proxy": false
       },
       "valuation": {
-        "score": 49.03,
-        "quality": 29.2,
+        "score": 45.54,
+        "quality": 27.3,
         "available": true,
         "source": "KRX 업종 대표바스켓 PER·PBR + 한국시장 상대가치",
-        "detail": "업종 자체 역사표본 1개 · 초기구간 보수적 축소",
-        "proxy": true,
-        "provenance": "gap_proxy",
-        "input_basis": "broad_market_valuation_proxy"
+        "detail": "업종 PER 42.01배 · 업종 PBR 8.06배 · 전체시장 PER 12.24배 · 전체시장 PBR 0.82배 · 업종 자체 역사표본 1개 · 초기구간 보수적 축소",
+        "proxy": false,
+        "provenance": "direct",
+        "input_basis": "krx_sector_basket"
       }
     },
     "contributions": [
@@ -243,9 +243,9 @@
         "label": "산업 실적 모멘텀",
         "score": 54.63,
         "quality": 50.9,
-        "base_weight": 0.169,
-        "effective_weight": 0.086,
-        "normalized_weight": 0.1401,
+        "base_weight": 0.1691,
+        "effective_weight": 0.0861,
+        "normalized_weight": 0.1405,
         "contribution_points": 0.65,
         "available": true
       },
@@ -254,54 +254,54 @@
         "label": "수요·경기",
         "score": 52.9,
         "quality": 52.2,
-        "base_weight": 0.3363,
-        "effective_weight": 0.1756,
-        "normalized_weight": 0.2859,
+        "base_weight": 0.3366,
+        "effective_weight": 0.1757,
+        "normalized_weight": 0.2867,
         "contribution_points": 0.83,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
-        "base_weight": 0.1447,
-        "effective_weight": 0.1075,
-        "normalized_weight": 0.1751,
+        "base_weight": 0.144,
+        "effective_weight": 0.107,
+        "normalized_weight": 0.1746,
         "contribution_points": 0.21,
         "available": true
       },
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
-        "base_weight": 0.1179,
-        "effective_weight": 0.0953,
-        "normalized_weight": 0.1552,
-        "contribution_points": -1.99,
+        "base_weight": 0.1184,
+        "effective_weight": 0.0957,
+        "normalized_weight": 0.1561,
+        "contribution_points": -1.98,
         "available": true
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
-        "base_weight": 0.1803,
-        "effective_weight": 0.1345,
-        "normalized_weight": 0.2191,
-        "contribution_points": -1.31,
+        "base_weight": 0.1798,
+        "effective_weight": 0.1342,
+        "normalized_weight": 0.2189,
+        "contribution_points": -1.32,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 49.03,
-        "quality": 29.2,
-        "base_weight": 0.0518,
-        "effective_weight": 0.0151,
-        "normalized_weight": 0.0246,
-        "contribution_points": -0.02,
+        "score": 45.54,
+        "quality": 27.3,
+        "base_weight": 0.052,
+        "effective_weight": 0.0142,
+        "normalized_weight": 0.0232,
+        "contribution_points": -0.1,
         "available": true
       }
     ],
@@ -310,7 +310,7 @@
     "negative_indicators": [],
     "status": "estimated",
     "score_source": "estimated",
-    "estimated_score": 48.5,
+    "estimated_score": 48.4,
     "estimated_quality": 45.0,
     "available_factor_count": 6,
     "top_positive_reasons": [
@@ -330,39 +330,39 @@
         "factor": "pricing_margin",
         "label": "가격·마진",
         "points": 0.21,
-        "score": 51.22
+        "score": 51.2
       }
     ],
     "top_negative_reasons": [
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "points": -1.99,
-        "score": 37.16
+        "points": -1.98,
+        "score": 37.3
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "points": -1.31,
-        "score": 44.01
+        "points": -1.32,
+        "score": 43.97
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "points": -0.02,
-        "score": 49.03
+        "points": -0.1,
+        "score": 45.54
       }
     ]
   },
   "forecast_3_6m": {
-    "score": 48.5,
+    "score": 48.4,
     "band": "중립",
-    "delta_points": 11.0,
+    "delta_points": 10.9,
     "direction": "개선",
     "change_strength": "꽤",
     "quality_score": 45.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 61.4,
+    "quality_weighted_coverage_pct": 61.3,
     "factors": {
       "earnings_momentum": {
         "score": 54.63,
@@ -381,7 +381,7 @@
         "proxy": false
       },
       "pricing_margin": {
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
         "available": true,
         "source": "산업 마진·상업화 + 글로벌 원가압력",
@@ -389,17 +389,17 @@
         "proxy": false
       },
       "financial_conditions": {
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
         "available": true,
         "source": "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
-        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,416.7원 · 원화강도 69.7/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
+        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,419.2원 · 원화강도 69.4/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
         "proxy": false,
         "provenance": "macro_derived",
         "input_basis": "observed_macro_inputs"
       },
       "market_internals": {
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
         "available": true,
         "source": "KRX 대표바스켓 + 한국증시 직접환경 + 글로벌 주식환경",
@@ -407,14 +407,14 @@
         "proxy": false
       },
       "valuation": {
-        "score": 49.03,
-        "quality": 29.2,
+        "score": 45.54,
+        "quality": 27.3,
         "available": true,
         "source": "KRX 업종 대표바스켓 PER·PBR + 한국시장 상대가치",
-        "detail": "업종 자체 역사표본 1개 · 초기구간 보수적 축소",
-        "proxy": true,
-        "provenance": "gap_proxy",
-        "input_basis": "broad_market_valuation_proxy"
+        "detail": "업종 PER 42.01배 · 업종 PBR 8.06배 · 전체시장 PER 12.24배 · 전체시장 PBR 0.82배 · 업종 자체 역사표본 1개 · 초기구간 보수적 축소",
+        "proxy": false,
+        "provenance": "direct",
+        "input_basis": "krx_sector_basket"
       }
     },
     "contributions": [
@@ -423,9 +423,9 @@
         "label": "산업 실적 모멘텀",
         "score": 54.63,
         "quality": 50.9,
-        "base_weight": 0.169,
-        "effective_weight": 0.086,
-        "normalized_weight": 0.1401,
+        "base_weight": 0.1691,
+        "effective_weight": 0.0861,
+        "normalized_weight": 0.1405,
         "contribution_points": 0.65,
         "available": true
       },
@@ -434,54 +434,54 @@
         "label": "수요·경기",
         "score": 52.9,
         "quality": 52.2,
-        "base_weight": 0.3363,
-        "effective_weight": 0.1756,
-        "normalized_weight": 0.2859,
+        "base_weight": 0.3366,
+        "effective_weight": 0.1757,
+        "normalized_weight": 0.2867,
         "contribution_points": 0.83,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
-        "base_weight": 0.1447,
-        "effective_weight": 0.1075,
-        "normalized_weight": 0.1751,
+        "base_weight": 0.144,
+        "effective_weight": 0.107,
+        "normalized_weight": 0.1746,
         "contribution_points": 0.21,
         "available": true
       },
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
-        "base_weight": 0.1179,
-        "effective_weight": 0.0953,
-        "normalized_weight": 0.1552,
-        "contribution_points": -1.99,
+        "base_weight": 0.1184,
+        "effective_weight": 0.0957,
+        "normalized_weight": 0.1561,
+        "contribution_points": -1.98,
         "available": true
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
-        "base_weight": 0.1803,
-        "effective_weight": 0.1345,
-        "normalized_weight": 0.2191,
-        "contribution_points": -1.31,
+        "base_weight": 0.1798,
+        "effective_weight": 0.1342,
+        "normalized_weight": 0.2189,
+        "contribution_points": -1.32,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 49.03,
-        "quality": 29.2,
-        "base_weight": 0.0518,
-        "effective_weight": 0.0151,
-        "normalized_weight": 0.0246,
-        "contribution_points": -0.02,
+        "score": 45.54,
+        "quality": 27.3,
+        "base_weight": 0.052,
+        "effective_weight": 0.0142,
+        "normalized_weight": 0.0232,
+        "contribution_points": -0.1,
         "available": true
       }
     ],
@@ -490,7 +490,7 @@
     "negative_indicators": [],
     "status": "estimated",
     "score_source": "estimated",
-    "estimated_score": 48.5,
+    "estimated_score": 48.4,
     "estimated_quality": 45.0,
     "available_factor_count": 6,
     "top_positive_reasons": [
@@ -510,39 +510,39 @@
         "factor": "pricing_margin",
         "label": "가격·마진",
         "points": 0.21,
-        "score": 51.22
+        "score": 51.2
       }
     ],
     "top_negative_reasons": [
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "points": -1.99,
-        "score": 37.16
+        "points": -1.98,
+        "score": 37.3
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "points": -1.31,
-        "score": 44.01
+        "points": -1.32,
+        "score": 43.97
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "points": -0.02,
-        "score": 49.03
+        "points": -0.1,
+        "score": 45.54
       }
     ]
   },
   "forecast_6_12m": {
-    "score": 48.5,
+    "score": 48.4,
     "band": "중립",
-    "delta_points": 11.0,
+    "delta_points": 10.9,
     "direction": "개선",
     "change_strength": "꽤",
     "quality_score": 45.0,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 61.4,
+    "quality_weighted_coverage_pct": 61.3,
     "factors": {
       "earnings_momentum": {
         "score": 54.63,
@@ -561,7 +561,7 @@
         "proxy": false
       },
       "pricing_margin": {
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
         "available": true,
         "source": "산업 마진·상업화 + 글로벌 원가압력",
@@ -569,17 +569,17 @@
         "proxy": false
       },
       "financial_conditions": {
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
         "available": true,
         "source": "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
-        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,416.7원 · 원화강도 69.7/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
+        "detail": "기준금리 2.75% · 국고채 3년 3.796% · 3개월 예상 기준금리 2.81% · 3개월 예상 USD/KRW 1,419.2원 · 원화강도 69.4/100 · 원화유동성 확장(+0.147) · AA-회사채3년-국고채3년 스프레드 0.696%p",
         "proxy": false,
         "provenance": "macro_derived",
         "input_basis": "observed_macro_inputs"
       },
       "market_internals": {
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
         "available": true,
         "source": "KRX 대표바스켓 + 한국증시 직접환경 + 글로벌 주식환경",
@@ -587,14 +587,14 @@
         "proxy": false
       },
       "valuation": {
-        "score": 49.03,
-        "quality": 29.2,
+        "score": 45.54,
+        "quality": 27.3,
         "available": true,
         "source": "KRX 업종 대표바스켓 PER·PBR + 한국시장 상대가치",
-        "detail": "업종 자체 역사표본 1개 · 초기구간 보수적 축소",
-        "proxy": true,
-        "provenance": "gap_proxy",
-        "input_basis": "broad_market_valuation_proxy"
+        "detail": "업종 PER 42.01배 · 업종 PBR 8.06배 · 전체시장 PER 12.24배 · 전체시장 PBR 0.82배 · 업종 자체 역사표본 1개 · 초기구간 보수적 축소",
+        "proxy": false,
+        "provenance": "direct",
+        "input_basis": "krx_sector_basket"
       }
     },
     "contributions": [
@@ -603,9 +603,9 @@
         "label": "산업 실적 모멘텀",
         "score": 54.63,
         "quality": 50.9,
-        "base_weight": 0.169,
-        "effective_weight": 0.086,
-        "normalized_weight": 0.1401,
+        "base_weight": 0.1691,
+        "effective_weight": 0.0861,
+        "normalized_weight": 0.1405,
         "contribution_points": 0.65,
         "available": true
       },
@@ -614,54 +614,54 @@
         "label": "수요·경기",
         "score": 52.9,
         "quality": 52.2,
-        "base_weight": 0.3363,
-        "effective_weight": 0.1756,
-        "normalized_weight": 0.2859,
+        "base_weight": 0.3366,
+        "effective_weight": 0.1757,
+        "normalized_weight": 0.2867,
         "contribution_points": 0.83,
         "available": true
       },
       {
         "factor": "pricing_margin",
         "label": "가격·마진",
-        "score": 51.22,
+        "score": 51.2,
         "quality": 74.3,
-        "base_weight": 0.1447,
-        "effective_weight": 0.1075,
-        "normalized_weight": 0.1751,
+        "base_weight": 0.144,
+        "effective_weight": 0.107,
+        "normalized_weight": 0.1746,
         "contribution_points": 0.21,
         "available": true
       },
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "score": 37.16,
+        "score": 37.3,
         "quality": 80.8,
-        "base_weight": 0.1179,
-        "effective_weight": 0.0953,
-        "normalized_weight": 0.1552,
-        "contribution_points": -1.99,
+        "base_weight": 0.1184,
+        "effective_weight": 0.0957,
+        "normalized_weight": 0.1561,
+        "contribution_points": -1.98,
         "available": true
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "score": 44.01,
+        "score": 43.97,
         "quality": 74.6,
-        "base_weight": 0.1803,
-        "effective_weight": 0.1345,
-        "normalized_weight": 0.2191,
-        "contribution_points": -1.31,
+        "base_weight": 0.1798,
+        "effective_weight": 0.1342,
+        "normalized_weight": 0.2189,
+        "contribution_points": -1.32,
         "available": true
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "score": 49.03,
-        "quality": 29.2,
-        "base_weight": 0.0518,
-        "effective_weight": 0.0151,
-        "normalized_weight": 0.0246,
-        "contribution_points": -0.02,
+        "score": 45.54,
+        "quality": 27.3,
+        "base_weight": 0.052,
+        "effective_weight": 0.0142,
+        "normalized_weight": 0.0232,
+        "contribution_points": -0.1,
         "available": true
       }
     ],
@@ -670,7 +670,7 @@
     "negative_indicators": [],
     "status": "estimated",
     "score_source": "estimated",
-    "estimated_score": 48.5,
+    "estimated_score": 48.4,
     "estimated_quality": 45.0,
     "available_factor_count": 6,
     "top_positive_reasons": [
@@ -690,27 +690,27 @@
         "factor": "pricing_margin",
         "label": "가격·마진",
         "points": 0.21,
-        "score": 51.22
+        "score": 51.2
       }
     ],
     "top_negative_reasons": [
       {
         "factor": "financial_conditions",
         "label": "금융환경",
-        "points": -1.99,
-        "score": 37.16
+        "points": -1.98,
+        "score": 37.3
       },
       {
         "factor": "market_internals",
         "label": "증시 내부환경",
-        "points": -1.31,
-        "score": 44.01
+        "points": -1.32,
+        "score": 43.97
       },
       {
         "factor": "valuation",
         "label": "밸류에이션",
-        "points": -0.02,
-        "score": 49.03
+        "points": -0.1,
+        "score": 45.54
       }
     ]
   },
@@ -740,22 +740,22 @@
     "flow_positive_share": 0.1667,
     "market_internal_score": 25.21,
     "market_internal_quality": 100.0,
-    "valuation_score": null,
-    "valuation_quality": 0.0,
-    "valuation_method": "unavailable",
+    "valuation_score": 43.45,
+    "valuation_quality": 35.0,
+    "valuation_method": "provisional_cross_section_shrunk",
     "reit_dividend_yield_fallback": false,
-    "median_dividend_yield_pct": null,
-    "broad_market_median_dividend_yield_pct": null,
+    "median_dividend_yield_pct": 0.33,
+    "broad_market_median_dividend_yield_pct": 2.67,
     "valuation_history_ready": false,
     "valuation_history_samples": 1,
     "valuation_historical_score": null,
-    "valuation_cross_section_score_raw": null,
+    "valuation_cross_section_score_raw": 17.26,
     "valuation_history_median_per": 42.005,
     "valuation_history_median_pbr": 8.065,
-    "median_per": null,
-    "median_pbr": null,
-    "broad_market_median_per": null,
-    "broad_market_median_pbr": null,
+    "median_per": 42.005,
+    "median_pbr": 8.065,
+    "broad_market_median_per": 12.24,
+    "broad_market_median_pbr": 0.82,
     "member_closes": {
       "009150": 1558000.0,
       "353200": 119100.0,
@@ -815,7 +815,7 @@
     "allowed_as_primary": false,
     "bounded_direction_adjustment_points": 0.0,
     "max_abs_adjustment_points": 2.0,
-    "signal_normalized": 0.2753,
+    "signal_normalized": 0.2715,
     "quality_score": 45.0,
     "validation_status": "PENDING",
     "oos_current_limit": 2.0,
@@ -850,10 +850,10 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-17T14:12:56.935249+00:00"
+      "generated_at_utc": "2026-08-17T23:51:09.456050+00:00"
     },
     "direct_sector_market_available": true,
-    "industry_specific_valuation_available": false,
+    "industry_specific_valuation_available": true,
     "industry_historical_valuation_available": false,
     "data_status": "scored",
     "current_metric_coverage": 10.0,

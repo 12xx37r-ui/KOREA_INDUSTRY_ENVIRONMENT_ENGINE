@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at_utc": "2026-08-17T14:12:57.189408+00:00",
+  "generated_at_utc": "2026-08-17T23:51:09.796724+00:00",
   "policy": {
     "priority": "freshness_first",
     "live_market_rule": "when new market data may exist, source API is queried on every workflow",
@@ -16,21 +16,9 @@
     ]
   },
   "providers": {
-    "KRX": {
-      "network_calls": 8,
-      "duplicate_calls_removed": 0,
-      "cache_uses": 0,
-      "retries": 0,
-      "rate_limit_429": 0,
-      "timeouts": 0,
-      "fallback_used": false,
-      "lkg_used": false,
-      "unavailable": 0,
-      "state": "LIVE"
-    },
-    "CUSTOMS": {
-      "network_calls": 31,
-      "duplicate_calls_removed": 0,
+    "KOSIS": {
+      "network_calls": 13,
+      "duplicate_calls_removed": 2,
       "cache_uses": 0,
       "retries": 0,
       "rate_limit_429": 0,
@@ -42,6 +30,18 @@
     },
     "GITHUB": {
       "network_calls": 5,
+      "duplicate_calls_removed": 0,
+      "cache_uses": 0,
+      "retries": 0,
+      "rate_limit_429": 0,
+      "timeouts": 0,
+      "fallback_used": false,
+      "lkg_used": false,
+      "unavailable": 0,
+      "state": "LIVE"
+    },
+    "KRX": {
+      "network_calls": 10,
       "duplicate_calls_removed": 0,
       "cache_uses": 0,
       "retries": 0,
@@ -64,9 +64,9 @@
       "unavailable": 0,
       "state": "LIVE"
     },
-    "KOSIS": {
-      "network_calls": 13,
-      "duplicate_calls_removed": 2,
+    "CUSTOMS": {
+      "network_calls": 31,
+      "duplicate_calls_removed": 0,
       "cache_uses": 0,
       "retries": 0,
       "rate_limit_429": 0,
@@ -78,7 +78,7 @@
     }
   },
   "totals": {
-    "network_calls": 58,
+    "network_calls": 60,
     "duplicate_calls_removed": 2,
     "cache_uses": 0,
     "retries": 0,
