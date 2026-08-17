@@ -3,11 +3,13 @@ from __future__ import annotations
 import base64
 import json
 import os
+import random
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from email.utils import parsedate_to_datetime
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -157,6 +159,62 @@ class UpstreamLoader:
         self.memo[name] = result
         return result
 
+    @staticmethod
+    def _retry_after_seconds(headers: Any) -> float | None:
+        if not headers:
+            return None
+        value = headers.get("Retry-After")
+        if not value:
+            return None
+        try:
+            return max(0.0, float(value))
+        except (TypeError, ValueError):
+            try:
+                dt = parsedate_to_datetime(str(value))
+                return max(0.0, dt.timestamp() - time.time())
+            except Exception:
+                return None
+
+    def _read_with_retry(
+        self,
+        request: urllib.request.Request,
+        *,
+        max_retries: int = 2,
+    ) -> tuple[bytes, Any, int, bool]:
+        """Read one GitHub request with bounded 429/5xx/timeout retry.
+
+        Returns (body, headers, actual_http_calls, not_modified).  This keeps
+        freshness/ETag semantics unchanged while preventing retry storms.
+        """
+        last_exc: Exception | None = None
+        calls = 0
+        for attempt in range(max_retries + 1):
+            calls += 1
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    return response.read(), response.headers, calls, False
+            except urllib.error.HTTPError as exc:
+                last_exc = exc
+                if exc.code == 304:
+                    return b"", exc.headers, calls, True
+                if exc.code == 429 and attempt < max_retries:
+                    retry_after = self._retry_after_seconds(exc.headers)
+                    delay = retry_after if retry_after is not None else min(8.0, 0.75 * (2 ** attempt) + random.uniform(0.05, 0.35))
+                    time.sleep(delay)
+                    continue
+                if 500 <= int(exc.code) <= 599 and attempt < max_retries:
+                    time.sleep(min(5.0, 0.5 * (2 ** attempt) + random.uniform(0.05, 0.30)))
+                    continue
+                raise
+            except (TimeoutError, urllib.error.URLError) as exc:
+                last_exc = exc
+                if attempt >= max_retries:
+                    raise
+                time.sleep(min(4.0, 0.4 * (2 ** attempt) + random.uniform(0.05, 0.25)))
+        if last_exc:
+            raise last_exc
+        raise RuntimeError("GitHub request failed without exception")
+
     def _fetch_github(self, source: dict[str, Any]) -> tuple[dict[str, Any] | None, int, bool]:
         """Fetch from GitHub. Returns (payload, calls, not_modified).
 
@@ -191,15 +249,12 @@ class UpstreamLoader:
             if meta.get("etag"):
                 headers["If-None-Match"] = str(meta["etag"])
             request = urllib.request.Request(api, headers=headers)
-            calls += 1
-            try:
-                with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                    self._last_etag = response.headers.get("ETag", "")
-                    body = json.loads(response.read().decode("utf-8"))
-            except urllib.error.HTTPError as exc:
-                if exc.code == 304:
-                    return None, calls, True
-                raise
+            raw_body, response_headers, used_calls, not_modified = self._read_with_retry(request)
+            calls += used_calls
+            if not_modified:
+                return None, calls, True
+            self._last_etag = response_headers.get("ETag", "")
+            body = json.loads(raw_body.decode("utf-8"))
             content = body.get("content") if isinstance(body, dict) else None
             if not content:
                 raise RuntimeError("GitHub Contents API content missing")
@@ -219,16 +274,13 @@ class UpstreamLoader:
         elif meta.get("last_modified"):
             raw_headers["If-Modified-Since"] = str(meta["last_modified"])
         request = urllib.request.Request(raw, headers=raw_headers)
-        calls += 1
-        try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                self._last_etag = response.headers.get("ETag", "")
-                self._last_last_modified = response.headers.get("Last-Modified", "")
-                payload = json.loads(response.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            if exc.code == 304:
-                return None, calls, True
-            raise
+        raw_body, response_headers, used_calls, not_modified = self._read_with_retry(request)
+        calls += used_calls
+        if not_modified:
+            return None, calls, True
+        self._last_etag = response_headers.get("ETag", "")
+        self._last_last_modified = response_headers.get("Last-Modified", "")
+        payload = json.loads(raw_body.decode("utf-8"))
         if not isinstance(payload, dict):
             raise RuntimeError("upstream JSON root is not object")
         return payload, calls, False
