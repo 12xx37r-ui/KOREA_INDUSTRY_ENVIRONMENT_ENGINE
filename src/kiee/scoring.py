@@ -376,14 +376,20 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
             demand = gap_proxy["demand_cycle"]
         if not pricing.get("available") and (gap_proxy.get("pricing_margin") or {}).get("available"):
             pricing = gap_proxy["pricing_margin"]
-        # 금융환경: 현재 점수에서도 민감도가 있으면 kr 데이터로 산출 (estimated 레이어)
+        # 금융환경은 산업 고유 실물자료의 누락을 메우는 proxy가 아니다.
+        # korea-rate-fx-engine의 금리·원화·유동성과 korea_equity_environment의
+        # 신용스프레드를 해당 산업 민감도로 변환하는 정식 model-derived 축이다.
         fin_score, fin_q, fin_detail = _financial_score(industry, kr, False)
         sens = industry.get("sensitivities") or {}
         has_fin_sens = any(abs(float(sens.get(k, 0))) > 0.05 for k in ("rate_relief", "krw_weakness", "liquidity", "credit_health"))
         if has_fin_sens:
-            financial = _factor(fin_score, fin_q * 0.75, "한국 금리·원화·유동성·신용 (현재 민감도 추정)", str(fin_detail), proxy=True)
-            # 이 축은 산업 고유 원자료의 누락 대용치가 아니라 설계상 거시환경을
-            # 산업 민감도로 변환한 값이다. health에서는 gap proxy와 분리한다.
+            financial = _factor(
+                fin_score,
+                fin_q * 0.75,
+                "한국 금리·환율 엔진 + 한국증시 신용환경 → 업종 민감도",
+                str(fin_detail),
+                proxy=False,
+            )
             financial["provenance"] = "macro_derived"
         else:
             financial = _factor(None, 0.0, "산업 고유 금융환경 지표 연결 대기", "금리·환율 민감도가 낮아 제외")
@@ -400,19 +406,21 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
         direct_val_q = finite(direct.get("valuation_quality"), 0.0) or 0.0
         valuation = _combine_factor(
             [(direct_val, 1.0, direct_val_q)],
-            "해당 산업 대표바스켓 PER·PBR",
-            "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
+            "해당 산업 KRX 대표바스켓 PER·PBR",
+            "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션 직접값만 사용합니다.",
             proxy=direct_val is None,
         )
+        valuation["provenance"] = "direct" if direct_val is not None else "gap_proxy"
         if not valuation.get("available"):
             broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", 0.25)
             if broad_val is not None and broad_val_q > 0:
                 valuation = _factor(
                     broad_val, min(30.0, broad_val_q * 0.55),
-                    "한국시장 가치환경 대용치",
-                    "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 대체됩니다.",
+                    "한국시장 가치환경 보조치",
+                    "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 교체됩니다.",
                     proxy=True,
                 )
+                valuation["provenance"] = "gap_proxy"
         factors = {
             "earnings_momentum": earnings,
             "demand_cycle": demand,
@@ -461,7 +469,14 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     )
 
     fin_score, fin_q, fin_detail = _financial_score(industry, kr, future)
-    financial = _factor(fin_score, fin_q, "한국 금리·원화·유동성·신용", str(fin_detail), False)
+    financial = _factor(
+        fin_score,
+        fin_q,
+        "한국 금리·환율 엔진 + 한국증시 신용환경 → 업종 민감도",
+        str(fin_detail),
+        proxy=False,
+    )
+    financial["provenance"] = "macro_derived"
 
     direct_score = finite(direct.get("market_internal_score"))
     direct_q = finite(direct.get("market_internal_quality"), 0.0) or 0.0
@@ -492,14 +507,17 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     broad_weight = 0.10 if history_ready else 0.35
     valuation = _combine_factor(
         [(direct_val, direct_weight if direct_val is not None else 0.0, direct_val_q * (0.75 if future else 1.0)), (broad_val, broad_weight if direct_val is not None else 1.0, broad_val_q * (0.65 if future else 1.0))],
-        "산업 자체 PER·PBR 역사 + KRX 대표바스켓 + 한국시장 가치환경",
+        "KRX 업종 대표바스켓 PER·PBR + 업종 역사 + 한국시장 가치환경",
         (
             f"동일 산업 주간 PER/PBR 역사표본 {history_samples}개를 우선 사용합니다."
             if history_ready else
-            f"산업 자체 역사표본이 아직 {history_samples}개라 초기구간입니다."
+            f"KRX 업종 PER/PBR 직접값을 사용하며 자체 역사표본은 {history_samples}개인 초기구간이라 한국시장 가치환경으로 보정합니다."
         ),
-        proxy=not history_ready,
+        # 역사표본 부족은 '직접 데이터 부재'가 아니다. KRX 업종 PER/PBR가
+        # 존재하면 보정된 직접자료로 취급하고, direct_val 자체가 없을 때만 proxy다.
+        proxy=direct_val is None,
     )
+    valuation["provenance"] = "direct" if direct_val is not None else "gap_proxy"
 
     factors = {
         "earnings_momentum": earnings,
