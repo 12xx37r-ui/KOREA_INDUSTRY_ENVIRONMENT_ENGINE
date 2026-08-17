@@ -36,7 +36,21 @@ def _rows(frame: Any) -> dict[str, dict[str, float | None]]:
     if _frame_empty(frame) or not hasattr(frame, "iterrows"):
         return out
     for idx, row in frame.iterrows():
-        code = _ticker(idx)
+        # pykrx normally returns the ticker as the DataFrame index. Some
+        # wrappers/versions expose it as a normal column instead.
+        code = ""
+        if hasattr(row, "get"):
+            for ticker_key in ("티커", "종목코드", "단축코드", "ISU_SRT_CD"):
+                raw_code = row.get(ticker_key)
+                if raw_code not in (None, ""):
+                    candidate = _ticker(raw_code)
+                    raw_digits = "".join(ch for ch in str(raw_code) if ch.isdigit())
+                    if candidate and len(raw_digits) >= 6:
+                        code = candidate
+                        break
+        if not code:
+            raw_index_digits = "".join(ch for ch in str(idx) if ch.isdigit())
+            code = _ticker(idx) if len(raw_index_digits) >= 6 else ""
         if not code:
             continue
         out[code] = {
@@ -425,17 +439,30 @@ def _fetch_fundamental(
         try:
             frame = fn(trading_date, market=market)
             rows = _rows(frame)
-            valid = rows and any(
-                finite(row.get("per")) is not None or finite(row.get("pbr")) is not None
+            usable_count = sum(
+                1
                 for row in rows.values()
+                if (
+                    (finite(row.get("per")) is not None and float(row.get("per")) > 0)
+                    or (finite(row.get("pbr")) is not None and float(row.get("pbr")) > 0)
+                    or (finite(row.get("div")) is not None and float(row.get("div")) > 0)
+                )
             )
+            valid = bool(rows) and usable_count > 0
             if valid:
                 if trading_date != end:
                     diagnostics.append(f"fundamental:{market}:backtracked:{end}->{trading_date}")
                 return rows, attempts, trading_date
-            diagnostics.append(
-                f"fundamental:{market}:{trading_date}:empty_or_columns:{list(getattr(frame, 'columns', []))}"
-            )
+            if rows:
+                diagnostics.append(
+                    f"fundamental:{market}:{trading_date}:zero_or_unusable_multiples:"
+                    f"rows={len(rows)}:columns={list(getattr(frame, 'columns', []))}"
+                )
+            else:
+                diagnostics.append(
+                    f"fundamental:{market}:{trading_date}:empty_or_columns:"
+                    f"{list(getattr(frame, 'columns', []))}"
+                )
         except Exception as exc:
             diagnostics.append(f"fundamental:{market}:{trading_date}:{type(exc).__name__}:{str(exc)[:140]}")
     return {}, attempts, end

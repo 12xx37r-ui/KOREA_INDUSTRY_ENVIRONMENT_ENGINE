@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 
 from kiee.krx_market import _fetch_fundamental, _rows
@@ -25,7 +23,9 @@ class ZeroThenValidFundamental:
 def test_all_zero_fundamental_table_is_not_treated_as_live_success():
     fake = ZeroThenValidFundamental()
     diagnostics = []
-    rows, attempts, actual_day = _fetch_fundamental(fake, "20260817", "KOSPI", diagnostics)
+    rows, attempts, actual_day = _fetch_fundamental(
+        fake, "20260817", "KOSPI", diagnostics
+    )
 
     assert attempts == 2
     assert fake.calls == 2
