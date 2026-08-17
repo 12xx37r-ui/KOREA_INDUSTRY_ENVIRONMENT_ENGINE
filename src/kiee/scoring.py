@@ -193,12 +193,15 @@ def _extract_korea(korea_rate: dict[str, Any], korea_equity: dict[str, Any]) -> 
     strength_quality = finite(strength3.get("independent_oos_quality_score"), strength3.get("model_quality_score")) or 60.0
     gov3y = finite(nested(korea_equity, "current_inputs", "credit", "gov_3y_pct"))
     credit = finite(nested(korea_equity, "components", "credit_spread", "score_normalized"), 0.0) or 0.0
+    credit_spread = finite(nested(korea_equity, "components", "credit_spread", "spread_pct_point"))
+    if credit_spread is None:
+        credit_spread = finite(nested(korea_equity, "current_inputs", "credit", "spread_pct_point"))
     return {
         "rate_current": rate_current, "rate_3m": rate_3m, "rate_quality_3m": clamp(rate_quality, 0, 100),
         "fx_current": fx_current, "fx_3m": fx_3m, "fx_quality_3m": clamp(fx_quality, 0, 100),
         "liquidity_current": clamp(liq_current, -1, 1), "liquidity_3m": clamp(liq_3m, -1, 1), "liquidity_quality_3m": clamp(liq_quality, 0, 100),
         "strength_current": clamp(strength_current, 0, 100), "strength_3m": clamp(strength_3m, 0, 100), "strength_quality_3m": clamp(strength_quality, 0, 100),
-        "gov3y": gov3y, "credit_health": clamp(credit, -1, 1),
+        "gov3y": gov3y, "credit_health": clamp(credit, -1, 1), "credit_spread_pct_point": credit_spread,
         "equity_score": clamp(finite(korea_equity.get("score"), 50.0) or 50.0, 0, 100),
     }
 
@@ -242,6 +245,43 @@ def _financial_score(industry: dict[str, Any], kr: dict[str, Any], future: bool)
         "rate_impulse": roundn(rate_impulse, 4), "krw_weakness": roundn(krw_weakness, 4),
         "liquidity": roundn(liquidity, 4), "credit_health": roundn(credit, 4),
     }
+
+
+def _financial_detail_text(kr: dict[str, Any], detail: dict[str, Any], future: bool) -> str:
+    """Render macro inputs as investor-readable evidence instead of Python dict text."""
+    parts: list[str] = []
+    rate_now = finite(kr.get("rate_current"))
+    gov3y = finite(kr.get("gov3y"))
+    rate_3m = finite(kr.get("rate_3m"))
+    if rate_now is not None:
+        parts.append(f"기준금리 {rate_now:.2f}%")
+    if gov3y is not None:
+        parts.append(f"국고채 3년 {gov3y:.3f}%")
+    if future and rate_3m is not None:
+        parts.append(f"3개월 예상 기준금리 {rate_3m:.2f}%")
+
+    fx = finite(kr.get("fx_3m") if future else kr.get("fx_current"))
+    if fx is not None:
+        parts.append(("3개월 예상 USD/KRW " if future else "USD/KRW ") + f"{fx:,.1f}원")
+
+    strength = finite(kr.get("strength_3m") if future else kr.get("strength_current"))
+    if strength is not None:
+        parts.append(f"원화강도 {strength:.1f}/100")
+
+    liquidity = finite(kr.get("liquidity_3m") if future else kr.get("liquidity_current"))
+    if liquidity is not None:
+        liq_label = "확장" if liquidity > 0.05 else ("수축" if liquidity < -0.05 else "중립")
+        parts.append(f"원화유동성 {liq_label}({liquidity:+.3f})")
+
+    credit_spread = finite(kr.get("credit_spread_pct_point"))
+    credit = finite(detail.get("credit_health"))
+    if credit_spread is not None:
+        parts.append(f"AA-회사채3년-국고채3년 스프레드 {credit_spread:.3f}%p")
+    elif credit is not None:
+        credit_label = "우호" if credit > 0.25 else ("부담" if credit < -0.25 else "중립")
+        parts.append(f"신용환경 {credit_label}")
+
+    return " · ".join(parts) if parts else "한국 금리·원화·유동성·신용환경 실측 입력을 업종 민감도로 반영"
 
 
 def _factor(value: float | None, quality: float, source: str, detail: str = "", proxy: bool = False) -> dict[str, Any]:
@@ -376,21 +416,22 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
             demand = gap_proxy["demand_cycle"]
         if not pricing.get("available") and (gap_proxy.get("pricing_margin") or {}).get("available"):
             pricing = gap_proxy["pricing_margin"]
-        # 금융환경은 산업 고유 실물자료의 누락을 메우는 proxy가 아니다.
-        # korea-rate-fx-engine의 금리·원화·유동성과 korea_equity_environment의
-        # 신용스프레드를 해당 산업 민감도로 변환하는 정식 model-derived 축이다.
+        # 금융환경: 현재 점수에서도 민감도가 있으면 kr 데이터로 산출 (estimated 레이어)
         fin_score, fin_q, fin_detail = _financial_score(industry, kr, False)
         sens = industry.get("sensitivities") or {}
         has_fin_sens = any(abs(float(sens.get(k, 0))) > 0.05 for k in ("rate_relief", "krw_weakness", "liquidity", "credit_health"))
         if has_fin_sens:
             financial = _factor(
                 fin_score,
-                fin_q * 0.75,
-                "한국 금리·환율 엔진 + 한국증시 신용환경 → 업종 민감도",
-                str(fin_detail),
+                fin_q,
+                "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
+                _financial_detail_text(kr, fin_detail, False),
                 proxy=False,
             )
+            # 원자료는 한국 금리/환율/유동성/신용 엔진의 실제 관측값이며,
+            # 이 팩터 점수만 업종별 민감도를 적용해 변환한다. 누락값 대체(proxy)가 아니다.
             financial["provenance"] = "macro_derived"
+            financial["input_basis"] = "observed_macro_inputs"
         else:
             financial = _factor(None, 0.0, "산업 고유 금융환경 지표 연결 대기", "금리·환율 민감도가 낮아 제외")
 
@@ -406,21 +447,19 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
         direct_val_q = finite(direct.get("valuation_quality"), 0.0) or 0.0
         valuation = _combine_factor(
             [(direct_val, 1.0, direct_val_q)],
-            "해당 산업 KRX 대표바스켓 PER·PBR",
-            "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션 직접값만 사용합니다.",
+            "해당 산업 대표바스켓 PER·PBR",
+            "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
             proxy=direct_val is None,
         )
-        valuation["provenance"] = "direct" if direct_val is not None else "gap_proxy"
         if not valuation.get("available"):
             broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", 0.25)
             if broad_val is not None and broad_val_q > 0:
                 valuation = _factor(
                     broad_val, min(30.0, broad_val_q * 0.55),
-                    "한국시장 가치환경 보조치",
-                    "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 교체됩니다.",
+                    "한국시장 가치환경 대용치",
+                    "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 대체됩니다.",
                     proxy=True,
                 )
-                valuation["provenance"] = "gap_proxy"
         factors = {
             "earnings_momentum": earnings,
             "demand_cycle": demand,
@@ -472,11 +511,12 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     financial = _factor(
         fin_score,
         fin_q,
-        "한국 금리·환율 엔진 + 한국증시 신용환경 → 업종 민감도",
-        str(fin_detail),
+        "한국 금리·환율·유동성·신용 실측값 → 업종 민감도",
+        _financial_detail_text(kr, fin_detail, future),
         proxy=False,
     )
     financial["provenance"] = "macro_derived"
+    financial["input_basis"] = "observed_macro_inputs"
 
     direct_score = finite(direct.get("market_internal_score"))
     direct_q = finite(direct.get("market_internal_quality"), 0.0) or 0.0
@@ -505,19 +545,28 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", shrink)
     direct_weight = 0.90 if history_ready else 0.65
     broad_weight = 0.10 if history_ready else 0.35
+    valuation_detail_parts = []
+    if finite(direct.get("median_per")) is not None:
+        valuation_detail_parts.append(f"업종 PER {float(direct['median_per']):.2f}배")
+    if finite(direct.get("median_pbr")) is not None:
+        valuation_detail_parts.append(f"업종 PBR {float(direct['median_pbr']):.2f}배")
+    if finite(direct.get("broad_market_median_per")) is not None:
+        valuation_detail_parts.append(f"전체시장 PER {float(direct['broad_market_median_per']):.2f}배")
+    if finite(direct.get("broad_market_median_pbr")) is not None:
+        valuation_detail_parts.append(f"전체시장 PBR {float(direct['broad_market_median_pbr']):.2f}배")
+    valuation_detail_parts.append(
+        f"업종 자체 역사표본 {history_samples}개" + (" · 역사분포 반영" if history_ready else " · 초기구간 보수적 축소")
+    )
     valuation = _combine_factor(
         [(direct_val, direct_weight if direct_val is not None else 0.0, direct_val_q * (0.75 if future else 1.0)), (broad_val, broad_weight if direct_val is not None else 1.0, broad_val_q * (0.65 if future else 1.0))],
-        "KRX 업종 대표바스켓 PER·PBR + 업종 역사 + 한국시장 가치환경",
-        (
-            f"동일 산업 주간 PER/PBR 역사표본 {history_samples}개를 우선 사용합니다."
-            if history_ready else
-            f"KRX 업종 PER/PBR 직접값을 사용하며 자체 역사표본은 {history_samples}개인 초기구간이라 한국시장 가치환경으로 보정합니다."
-        ),
-        # 역사표본 부족은 '직접 데이터 부재'가 아니다. KRX 업종 PER/PBR가
-        # 존재하면 보정된 직접자료로 취급하고, direct_val 자체가 없을 때만 proxy다.
+        "KRX 업종 대표바스켓 PER·PBR + 한국시장 상대가치",
+        " · ".join(valuation_detail_parts),
+        # 역사표본 부족은 품질/수축 문제이지 KRX 현재 PER·PBR이 대체자료라는 뜻이 아니다.
         proxy=direct_val is None,
     )
-    valuation["provenance"] = "direct" if direct_val is not None else "gap_proxy"
+    if direct_val is not None:
+        valuation["provenance"] = "direct"
+        valuation["input_basis"] = "krx_sector_basket"
 
     factors = {
         "earnings_momentum": earnings,
