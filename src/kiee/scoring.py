@@ -451,6 +451,9 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
             "현재 산업점수에는 해당 산업 대표바스켓의 상대 밸류에이션만 사용합니다.",
             proxy=direct_val is None,
         )
+        if direct_val is not None:
+            valuation["provenance"] = "direct"
+            valuation["input_basis"] = "krx_sector_basket"
         if not valuation.get("available"):
             broad_val, broad_val_q = _broad_normalized_component(korea_equity, "valuation", 0.25)
             if broad_val is not None and broad_val_q > 0:
@@ -460,6 +463,8 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
                     "산업 자체 PER/PBR가 비어 있을 때만 사용하는 저품질 보조치입니다. KRX 산업값이 들어오면 즉시 대체됩니다.",
                     proxy=True,
                 )
+                valuation["provenance"] = "gap_proxy"
+                valuation["input_basis"] = "broad_market_valuation_proxy"
         factors = {
             "earnings_momentum": earnings,
             "demand_cycle": demand,
@@ -567,6 +572,9 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
     if direct_val is not None:
         valuation["provenance"] = "direct"
         valuation["input_basis"] = "krx_sector_basket"
+    else:
+        valuation["provenance"] = "gap_proxy"
+        valuation["input_basis"] = "broad_market_valuation_proxy"
 
     factors = {
         "earnings_momentum": earnings,
