@@ -1,12 +1,12 @@
 {
   "schema_version": "3.0.0",
   "engine_version": "korea-equity-environment-v3.0-semiconductor-pbr-band",
-  "generated_at_utc": "2026-08-17T09:02:20.820335+00:00",
+  "generated_at_utc": "2026-08-17T13:03:00.130720+00:00",
   "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
-  "score": 70,
+  "score": 66,
   "score_valid": true,
-  "bias": "우호",
-  "final_score": 62.7799,
+  "bias": "약우호",
+  "final_score": 58.7458,
   "final_score_valid": true,
   "final_bias": "약우호",
   "circuit_breaker": false,
@@ -18,10 +18,10 @@
   "components": {
     "flow": {
       "available": true,
-      "score_normalized": 0.505928,
-      "combined_net_bps_of_turnover": 27.862,
-      "foreign_net_bps_of_turnover": 2.672,
-      "institution_net_bps_of_turnover": 25.19,
+      "score_normalized": 0.296832,
+      "combined_net_bps_of_turnover": 15.302,
+      "foreign_net_bps_of_turnover": 8.234,
+      "institution_net_bps_of_turnover": 7.068,
       "markets": [
         "kospi",
         "kosdaq"
@@ -30,12 +30,12 @@
     },
     "breadth": {
       "available": true,
-      "score_normalized": 0.494033,
-      "advances": 2014,
-      "declines": 648,
-      "unchanged": 103,
-      "advance_share": 0.728391,
-      "advance_decline_balance": 0.494033,
+      "score_normalized": 0.283803,
+      "advances": 1727,
+      "declines": 942,
+      "unchanged": 97,
+      "advance_share": 0.624367,
+      "advance_decline_balance": 0.283803,
       "markets": [
         "kospi",
         "kosdaq"
@@ -176,7 +176,7 @@
     "pbr": 3.34,
     "pbr_samples": 2,
     "band": "과열",
-    "adjusted_score": 60,
+    "adjusted_score": 56,
     "adjustment": -10.0,
     "signal_override": "과열_경고 (PBR 고평가)",
     "thresholds": {
@@ -188,10 +188,10 @@
     "interpretation": "KOSPI PBR 3.340x → 과열: 과열_경고 (PBR 고평가)"
   },
   "pbr_signal_override": "과열_경고 (PBR 고평가)",
-  "score_after_pbr": 60,
+  "score_after_pbr": 56,
   "volatility_regime": {
     "model_version": "volatility-regime-v1.0",
-    "generated_at_utc": "2026-08-17T09:02:20.818549+00:00",
+    "generated_at_utc": "2026-08-17T13:03:00.128918+00:00",
     "regime": "normal",
     "circuit_breaker": false,
     "circuit_breaker_reasons": [],
@@ -203,38 +203,38 @@
     "shock_multiplier": {
       "available": true,
       "penalty": 0.0,
-      "z_score": -0.0929,
-      "abs_z": 0.0929,
+      "z_score": -0.0824,
+      "abs_z": 0.0824,
       "regime_label": "정상",
       "formula": "penalty = z^2 * 3.0 (|z|>2 구간), (|z|-1)*5.0 (1<|z|<=2), 0 (정상)"
     },
     "emp": {
       "available": true,
-      "emp_score": -1.8533,
+      "emp_score": -1.8305,
       "components_count": 2,
       "evidence": {
-        "fx_change_pct": -4.2665,
+        "fx_change_pct": -4.2211,
         "reserve_change_pct": null,
         "rate_differential_pct": -1.4
       },
       "interpretation": "양수=원화절하 압력 증가, 음수=원화절상 압력"
     },
     "emp_adjustment": {
-      "adjusted_score": 62.7799,
-      "original_score": 60,
-      "emp_score": -1.8533,
-      "adjustment": 2.7799,
+      "adjusted_score": 58.7458,
+      "original_score": 56,
+      "emp_score": -1.8305,
+      "adjustment": 2.7458,
       "emp_applied": true
     },
-    "macro_env_score_original": 60,
-    "macro_env_score_after_emp": 62.7799,
-    "final_score": 62.7799,
+    "macro_env_score_original": 56,
+    "macro_env_score_after_emp": 58.7458,
+    "final_score": 58.7458,
     "final_score_valid": true,
     "regime_evidence": {
-      "fx_3d_change_pct": -0.3763,
-      "fx_std_5d": 2.4817,
-      "fx_std_10d": 4.0499,
-      "fx_z_score": 0.0929,
+      "fx_3d_change_pct": -0.329,
+      "fx_std_5d": 2.3039,
+      "fx_std_10d": 3.9938,
+      "fx_z_score": 0.0824,
       "vkospi_latest": null,
       "cds_proxy": 0.225
     }
