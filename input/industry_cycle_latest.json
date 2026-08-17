@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "status": "scored",
-  "generated_at_utc": "2026-08-15T10:01:24.344074+00:00",
+  "generated_at_utc": "2026-08-17T10:04:02.351941+00:00",
   "collector": "local-industry-cycle-batch-v1",
   "industries": [
     {
@@ -2747,14 +2747,29 @@
             "as_of": "2026-06-01",
             "score": 59.7222,
             "available": true
+          },
+          {
+            "id": "customs_nowcast_3004909900",
+            "factor": "production_shipments",
+            "score": 59.4999,
+            "quality": 65.0,
+            "source": "관세청 HS=3004909900 202607",
+            "as_of": "2026-07-01",
+            "available": true,
+            "is_nowcast": true,
+            "exp_yoy_score": 72.001,
+            "imp_yoy_score": 38.282,
+            "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
           }
         ],
+        "nowcast_merged": true,
         "factor_scores": {
+          "production_shipments": 59.4999,
           "utilization": 59.7222
         },
-        "data_coverage_pct": 10.0,
-        "quality_score": 85.0,
-        "score": 59.72,
+        "data_coverage_pct": 30.0,
+        "quality_score": 71.67,
+        "score": 59.57,
         "status": "scored",
         "reason": ""
       },
@@ -2789,7 +2804,7 @@
       },
       "specialized_metrics": [],
       "source_provenance": {},
-      "nowcast_applied": false
+      "nowcast_applied": true
     },
     {
       "industry_key": "diagnostics",
@@ -2982,8 +2997,8 @@
     }
   ],
   "scored_industry_count": 47,
-  "raw_input_generated_at_utc": "2026-08-15T10:01:24.344074+00:00",
+  "raw_input_generated_at_utc": "2026-08-17T10:04:02.351941+00:00",
   "missing_data_policy": "do_not_impute_or_neutral_fill",
-  "nowcast_merged_count": 1,
+  "nowcast_merged_count": 2,
   "nowcast_source": "관세청 수출입 속보"
 }

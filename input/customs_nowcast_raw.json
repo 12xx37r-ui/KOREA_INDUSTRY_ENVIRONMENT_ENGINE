@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
   "status": "raw",
-  "generated_at_utc": "2026-08-15T08:41:48.492649+00:00",
-  "collector": "customs-nowcast-v3",
+  "generated_at_utc": "2026-08-17T10:03:41.015797+00:00",
+  "collector": "customs-nowcast-v3.1-full-mapping",
   "reference_month": "202607",
   "industries": [
     {
@@ -26,10 +26,32 @@
         "nowcast": true
       },
       "as_of": "202607"
+    },
+    {
+      "industry_key": "pharma",
+      "current": {
+        "metrics": [
+          {
+            "id": "customs_nowcast_3004909900",
+            "factor": "production_shipments",
+            "score": 59.4999,
+            "quality": 65.0,
+            "source": "관세청 HS=3004909900 202607",
+            "as_of": "2026-07-01",
+            "available": true,
+            "is_nowcast": true,
+            "exp_yoy_score": 72.001,
+            "imp_yoy_score": 38.282,
+            "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
+          }
+        ],
+        "nowcast": true
+      },
+      "as_of": "202607"
     }
   ],
-  "scored_industry_count": 1,
-  "external_calls": 23,
+  "scored_industry_count": 2,
+  "external_calls": 33,
   "diagnostics": [
     "ref=202607",
     "probe getItemtradeList ['strtYymm', 'endYymm']: OK code=200 snippet='<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><header><result'",
@@ -43,7 +65,13 @@
     "steel_materials: no positive values",
     "chemicals: no positive values",
     "petrochemicals: no positive values",
-    "refining_energy: no positive values"
+    "refining_energy: no positive values",
+    "defense_aerospace: no positive values",
+    "electronic_components: no positive values",
+    "home_appliance: no positive values",
+    "pharma: score=59.4999 exp=72.001 imp=38.282",
+    "cosmetics: no positive values"
   ],
-  "missing_data_policy": "do_not_impute_or_neutral_fill"
+  "missing_data_policy": "do_not_impute_or_neutral_fill",
+  "source_state": "LIVE"
 }
