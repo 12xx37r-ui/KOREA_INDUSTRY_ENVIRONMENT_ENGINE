@@ -7,12 +7,12 @@
     "반도체 장비"
   ],
   "current": {
-    "score": 64.4,
+    "score": 64.3,
     "band": "약우호",
     "cycle_phase": null,
-    "quality_score": 35.0,
-    "data_coverage_pct": 10.0,
-    "quality_weighted_coverage_pct": 3.5,
+    "quality_score": 74.5,
+    "data_coverage_pct": 100.0,
+    "quality_weighted_coverage_pct": 74.5,
     "factors": {
       "earnings_momentum": {
         "score": 90.0,
@@ -172,12 +172,17 @@
     "observed_coverage_pct": 10.0,
     "estimated_score": null,
     "estimated_quality": null,
-    "notes": "단일 지표(1개)로 산출 - 과의존 경고. quality 상한 40, 점수는 중립 방향으로 55% 수축."
+    "notes": "관측 산업피드 coverage 10.0%는 원자료 anchor 범위입니다. 최종 현재점수는 DART·KOSIS·KRX·실측 금융환경을 포함한 6개 6축의 품질가중 집계로 산출하며, 6축 coverage 100.0% / 품질가중 coverage 74.5%를 사용합니다.",
+    "legacy_observed_anchor_score": 64.4,
+    "legacy_observed_anchor_quality": 35.0,
+    "score_basis": "six_axis_quality_weighted_aggregate",
+    "six_axis_available_factor_count": 6,
+    "six_axis_raw_score": 64.3
   },
   "forecast_3m": {
     "score": 48.8,
     "band": "중립",
-    "delta_points": -15.6,
+    "delta_points": -15.5,
     "direction": "악화",
     "change_strength": "많이",
     "quality_score": 33.0,
@@ -352,12 +357,14 @@
         "points": -0.11,
         "score": 45.37
       }
-    ]
+    ],
+    "horizon_basis": "3m_model",
+    "horizon_specific_inputs": true
   },
   "forecast_3_6m": {
     "score": 48.8,
     "band": "중립",
-    "delta_points": -15.6,
+    "delta_points": -15.5,
     "direction": "악화",
     "change_strength": "많이",
     "quality_score": 33.0,
@@ -532,12 +539,15 @@
         "points": -0.11,
         "score": 45.37
       }
-    ]
+    ],
+    "horizon_basis": "3m_model_extrapolation_no_horizon_specific_inputs",
+    "horizon_specific_inputs": false,
+    "horizon_note": "현재 입력계약에는 이 구간 전용 독립 선행변수가 없어 3개월 추정모형을 연장 표시합니다. 별도 장기전망으로 오해하지 않도록 구분합니다."
   },
   "forecast_6_12m": {
     "score": 48.8,
     "band": "중립",
-    "delta_points": -15.6,
+    "delta_points": -15.5,
     "direction": "악화",
     "change_strength": "많이",
     "quality_score": 33.0,
@@ -712,7 +722,10 @@
         "points": -0.11,
         "score": 45.37
       }
-    ]
+    ],
+    "horizon_basis": "3m_model_extrapolation_no_horizon_specific_inputs",
+    "horizon_specific_inputs": false,
+    "horizon_note": "현재 입력계약에는 이 구간 전용 독립 선행변수가 없어 3개월 추정모형을 연장 표시합니다. 별도 장기전망으로 오해하지 않도록 구분합니다."
   },
   "direct_market": {
     "label": "반도체장비",
@@ -787,7 +800,7 @@
   },
   "interpretation": {
     "headline": "현재 약우호 64/100",
-    "beginner": "산업 실물지표 피드의 총점과 품질·커버리지를 사용했습니다. 향후 전망은 산업 선행지표에 산업별 민감도에 맞춘 글로벌·한국 경기 변수를 추가합니다.",
+    "beginner": "현재점수는 산업 실물 관측치만 단독 사용하지 않고, 실제로 화면에 표시되는 산업실적·수요·가격/마진·금융환경·KRX 내부환경·밸류에이션 6축을 자료품질로 가중해 합산합니다. 관측 산업피드 점수는 별도 anchor로 보존합니다.",
     "warning": "산업환경 점수는 기업 자체의 주가나 재무가치 점수가 아닙니다."
   },
   "quality": {
@@ -813,7 +826,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-17T23:51:09.456050+00:00"
+      "generated_at_utc": "2026-08-18T00:06:20.956073+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
@@ -823,7 +836,10 @@
     "leading_metric_coverage": 100.0,
     "oos_bridge_status": "PENDING",
     "oos_evaluated_cases": 0,
-    "oos_bridge_max_points": 2.0
+    "oos_bridge_max_points": 2.0,
+    "observed_metric_coverage_pct": 10.0,
+    "current_six_axis_coverage_pct": 100.0,
+    "current_six_axis_quality_weighted_coverage_pct": 74.5
   },
   "score_model": {
     "current": "industry_observed_metrics_only",
