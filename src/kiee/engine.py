@@ -220,9 +220,17 @@ def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[
             quality["current_six_axis_coverage_pct"] = round(six_axis_coverage, 1)
             quality["current_six_axis_quality_weighted_coverage_pct"] = round(qcoverage, 1)
 
-        model = row.get("model")
-        if isinstance(model, dict):
-            model["current"] = "industry_six_axis_with_observed_anchor"
+        score_model = row.get("score_model")
+        if isinstance(score_model, dict):
+            score_model["current"] = "industry_six_axis_quality_weighted_with_observed_anchor"
+            score_model["future"] = "horizon_specific_3m_6m_12m_multi_source_models"
+            score_model["current_excludes_macro"] = False
+            score_model["future_uses_industry_sensitivities"] = True
+            score_model["horizon_specific_models"] = {
+                "3m": "existing_3m_leading_model",
+                "3_6m": "independent_6m_multi_source_model",
+                "6_12m": "independent_12m_multi_source_model",
+            }
 
         interpretation = row.get("interpretation")
         if isinstance(interpretation, dict):
@@ -259,6 +267,21 @@ def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[
             row["forecast_6_12m"] = _build_independent_horizon_block(
                 row, industry, policy, korea_rate, korea_equity, global_bundle, 12, final_score
             )
+
+        quality = row.get("quality")
+        if isinstance(quality, dict):
+            q3 = finite((row.get("forecast_3m") or {}).get("quality_score"))
+            q6 = finite((row.get("forecast_3_6m") or {}).get("quality_score"))
+            q12 = finite((row.get("forecast_6_12m") or {}).get("quality_score"))
+            quality["forecast_upstream_quality_by_horizon"] = {
+                "3m": round(float(q3), 1) if q3 is not None else None,
+                "3_6m": round(float(q6), 1) if q6 is not None else None,
+                "6_12m": round(float(q12), 1) if q12 is not None else None,
+            }
+            quality["forecast_upstream_quality_score"] = (
+                round(float(q3), 1) if q3 is not None else 0.0
+            )
+            quality["forecast_upstream_quality_score_basis"] = "3m_backward_compatibility"
     return results
 
 def _company_name_map(root: Path) -> dict[str, str]:
@@ -533,12 +556,17 @@ def run_engine(
         },
         "score_definition": "산업실물지표가 연결된 경우 현재 0~100은 생산·출하·매출·재고·가동률·고용·가격·마진·PMI/BSI를 산출하고, 전망은 신규주문·재고사이클·CAPEX·글로벌·한국 경기·실적전망·상대강도를 산업 민감도에 따라 별도 계산합니다. 50 중립.",
         "score_model": {
-            "current": "industry_observed_metrics_only",
-            "future": "industry_leading_metrics_plus_sensitive_macro",
-            "current_excludes_macro": True,
+            "current": "industry_six_axis_quality_weighted_with_observed_anchor",
+            "future": "horizon_specific_3m_6m_12m_multi_source_models",
+            "current_excludes_macro": False,
             "future_uses_industry_sensitivities": True,
             "data_gated": True,
             "horizons": ["current", "3m", "3_6m", "6_12m"],
+            "horizon_specific_models": {
+                "3m": "existing_3m_leading_model",
+                "3_6m": "independent_6m_multi_source_model",
+                "6_12m": "independent_12m_multi_source_model",
+            },
             "forecast_macro_sources": ["global_bundle", "korea_rate_fx", "korea_equity", "fed_futures"],
         },
         "rankings": {
