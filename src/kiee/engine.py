@@ -8,12 +8,148 @@ from .krx_market import collect_sector_market
 from .prospective import read_summary, update_registry
 from .scoring import score_industry, _aggregate_score, _score_band, _delta_strength
 from .upstream import SourceResult, UpstreamLoader
-from .util import finite, read_json, roundn, utc_now_iso, write_json
+from .util import clamp, finite, find_month_row, nested, read_json, roundn, utc_now_iso, write_json
 from .api_health import add_network_calls, record_cache, record_lkg, record_fallback, record_unavailable, record_state, flush as flush_api_health
 
 
 
-def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[dict[str, Any]], policy: dict[str, Any]) -> list[dict[str, Any]]:
+def _quality_from_gate(gate: Any, default: float = 55.0) -> float:
+    if not isinstance(gate, dict):
+        return default
+    if gate.get("passed") is True:
+        return 88.0
+    if gate.get("performance_candidate") is True or gate.get("candidate") is True:
+        return 72.0
+    return default
+
+
+def _horizon_forecast_value(card: dict[str, Any], months: int, fallback: float | None = None) -> tuple[float | None, float]:
+    row = (card.get("forecasts") or {}).get(f"{months}m") if isinstance(card, dict) else None
+    if not isinstance(row, dict):
+        return fallback, 35.0 if fallback is not None else 0.0
+    value = finite(row.get("forecast"), fallback)
+    q = _quality_from_gate(row.get("quality_gate") or {}, 55.0)
+    return value, q
+
+
+def _korea_horizon_inputs(korea_rate: dict[str, Any], korea_equity: dict[str, Any], months: int) -> dict[str, Any]:
+    current_rate = finite(nested(korea_rate, "rate", "current_rate_pct"))
+    rate = finite(nested(korea_rate, "rate", "calendar_horizon_estimates", f"{months}m"), current_rate)
+    rate_q = finite(nested(korea_rate, "rate", "quality_gate", "forecast_quality_score"), 70.0) or 70.0
+    fx_current = finite(nested(korea_rate, "fx", "current_usdkrw"))
+    fx_row = find_month_row(nested(korea_rate, "fx", "forecast_path", default=[]), months)
+    fx = finite(fx_row.get("point_forecast"), fx_current)
+    fx_q = finite(fx_row.get("model_quality_score"), 60.0) or 60.0
+    liq_current = finite(nested(korea_rate, "krw_liquidity", "current", "liquidity_score"), 0.0) or 0.0
+    liq_row = find_month_row(nested(korea_rate, "krw_liquidity", "forecast_path", default=[]), months)
+    liq = finite(liq_row.get("liquidity_score"), liq_current) or liq_current
+    liq_q = finite(liq_row.get("forecast_quality_score"), 70.0) or 70.0
+    strength_current = finite(nested(korea_rate, "krw_strength", "current", "strength_score"), 50.0) or 50.0
+    strength_row = find_month_row(nested(korea_rate, "krw_strength", "forecast_path", default=[]), months)
+    strength = finite(strength_row.get("strength_score"), strength_current) or strength_current
+    strength_q = finite(strength_row.get("independent_oos_quality_score"), strength_row.get("model_quality_score")) or 60.0
+    credit = finite(nested(korea_equity, "components", "credit_spread", "score_normalized"), 0.0) or 0.0
+    gov3y = finite(nested(korea_equity, "current_inputs", "credit", "gov_3y_pct"))
+    return {
+        "rate_current": current_rate, "rate": rate, "rate_q": clamp(rate_q,0,100),
+        "fx_current": fx_current, "fx": fx, "fx_q": clamp(fx_q,0,100),
+        "liquidity": clamp(liq,-1,1), "liquidity_q": clamp(liq_q,0,100),
+        "strength": clamp(strength,0,100), "strength_q": clamp(strength_q,0,100),
+        "credit": clamp(credit,-1,1), "gov3y": gov3y,
+    }
+
+
+def _financial_horizon_factor(industry: dict[str, Any], ki: dict[str, Any]) -> dict[str, Any]:
+    sens = industry.get("sensitivities") or {}
+    rate_level_parts=[]
+    if ki.get("rate_current") is not None:
+        rate_level_parts.append(clamp((3.25-float(ki["rate_current"]))/1.5,-1,1))
+    if ki.get("gov3y") is not None:
+        rate_level_parts.append(clamp((3.75-float(ki["gov3y"]))/1.5,-1,1))
+    rate_level=sum(rate_level_parts)/len(rate_level_parts) if rate_level_parts else 0.0
+    rate_change=0.0
+    if ki.get("rate_current") is not None and ki.get("rate") is not None:
+        rate_change=clamp((float(ki["rate_current"])-float(ki["rate"]))/0.75,-1,1)
+    rate_impulse=0.35*rate_level+0.65*rate_change
+    weakness=clamp((50.0-float(ki.get("strength",50.0)))/50.0,-1,1)
+    pieces=[
+        (rate_impulse, float(sens.get("rate_relief",0.0)), ki.get("rate_q",60.0)),
+        (weakness, float(sens.get("krw_weakness",0.0)), ki.get("strength_q",60.0)),
+        (float(ki.get("liquidity",0.0)), float(sens.get("liquidity",0.0)), ki.get("liquidity_q",60.0)),
+        (float(ki.get("credit",0.0)), float(sens.get("credit_health",0.0)), 60.0),
+    ]
+    den=sum(abs(w) for _,w,_ in pieces if abs(w)>0)
+    if den<=0:
+        return {"score":50.0,"quality":35.0,"available":True,"proxy":False,"provenance":"macro_derived"}
+    impulse=sum(v*w for v,w,_ in pieces)/den
+    q=sum(abs(w)*q for _,w,q in pieces)/den
+    return {"score":round(clamp(50+50*impulse,0,100),2),"quality":round(clamp(q,0,100),1),"available":True,"proxy":False,"provenance":"macro_derived","input_basis":"horizon_specific_observed_forecasts"}
+
+
+def _build_independent_horizon_block(row: dict[str, Any], industry: dict[str, Any], policy: dict[str, Any], korea_rate: dict[str, Any], korea_equity: dict[str, Any], global_bundle: dict[str, Any], months: int, current_score: float) -> dict[str, Any]:
+    base = row.get("forecast_3m") or {}
+    base_factors = base.get("factors") or {}
+    cards = global_bundle.get("cards") or {}
+    c9 = cards.get("9") or cards.get(9) or {}
+    c10 = cards.get("10") or cards.get(10) or {}
+    consumer, consumer_q = _horizon_forecast_value(c9, months, finite(c9.get("current"),50.0))
+    cost, cost_q = _horizon_forecast_value(c10, months, finite(c10.get("current"),50.0))
+    sens = industry.get("sensitivities") or {}
+    consumer_sens=clamp(abs(float(sens.get("consumer_cycle",0.0))),0,1)
+    cost_sens=float(sens.get("cost_relief",0.0))
+    demand_macro=clamp(50+(float(consumer or 50)-50)*max(0.35,consumer_sens),0,100)
+    pricing_macro=clamp(50-(float(cost or 50)-50)*cost_sens,0,100)
+    ki=_korea_horizon_inputs(korea_rate,korea_equity,months)
+    financial=_financial_horizon_factor(industry,ki)
+
+    def bf(name, default=50.0):
+        f=base_factors.get(name) or {}
+        return finite(f.get("score"),default) or default, finite(f.get("quality"),40.0) or 40.0
+    e3,eq=bf("earnings_momentum"); d3,dq=bf("demand_cycle"); p3,pq=bf("pricing_margin"); m3,mq=bf("market_internals"); v3,vq=bf("valuation")
+    # Horizon-specific macro paths move the medium/long blocks independently; 3m
+    # factor values remain industry anchors rather than being copied wholesale.
+    macro_weight = 0.45 if months==6 else 0.62
+    factors={}
+    factors["earnings_momentum"]={"score":round(clamp(e3*(1-macro_weight*0.45)+demand_macro*(macro_weight*0.45),0,100),2),"quality":round(min(eq,consumer_q)*0.9,1),"available":True,"proxy":False,"source":f"산업 3개월 실적선행 앵커 + 글로벌 수요 {months}개월 경로"}
+    factors["demand_cycle"]={"score":round(clamp(d3*(1-macro_weight)+demand_macro*macro_weight,0,100),2),"quality":round(min(dq,consumer_q),1),"available":True,"proxy":False,"source":f"산업 수요선행 + 글로벌 고용·소비 {months}개월 독립예측"}
+    factors["pricing_margin"]={"score":round(clamp(p3*(1-macro_weight)+pricing_macro*macro_weight,0,100),2),"quality":round(min(pq,cost_q),1),"available":True,"proxy":False,"source":f"산업 마진선행 + 글로벌 원가압력 {months}개월 독립예측"}
+    factors["financial_conditions"]={**financial,"source":f"한국 금리·환율·유동성·원화강도 {months}개월 경로 → 업종 민감도"}
+    # Market internals lose persistence with horizon; combine them with horizon demand/financial conditions.
+    market_keep=0.40 if months==6 else 0.20
+    structural=(demand_macro+float(financial["score"]))/2
+    factors["market_internals"]={"score":round(clamp(m3*market_keep+structural*(1-market_keep),0,100),2),"quality":round(min(mq*market_keep+min(consumer_q,float(financial["quality"]))*(1-market_keep),80.0),1),"available":True,"proxy":True,"source":f"KRX 단기 내부환경 감쇠 + {months}개월 수요·금융 구조환경"}
+    # Valuation is a slow-moving direct anchor; keep score but decay freshness/quality by horizon.
+    factors["valuation"]={"score":round(v3,2),"quality":round(vq*(0.88 if months==6 else 0.72),1),"available":True,"proxy":bool((base_factors.get("valuation") or {}).get("proxy")),"provenance":(base_factors.get("valuation") or {}).get("provenance","direct"),"source":f"현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 ({months}개월)"}
+
+    base_w=industry.get("weights_3m") or {}
+    mult={6:{"earnings_momentum":1.00,"demand_cycle":1.08,"pricing_margin":1.10,"financial_conditions":1.35,"market_internals":0.55,"valuation":1.45},12:{"earnings_momentum":0.85,"demand_cycle":1.00,"pricing_margin":1.20,"financial_conditions":1.55,"market_internals":0.30,"valuation":1.75}}[months]
+    raww={k:max(0.0,float(base_w.get(k,0.0))*mult[k]) for k in mult}; total=sum(raww.values()) or 1.0
+    weights={k:v/total for k,v in raww.items()}
+    agg=_aggregate_score(factors,weights)
+    score=float(agg.get("score") or 50.0)
+    delta=round(score-current_score,1)
+    qcov=float(agg.get("quality_weighted_coverage_pct") or 0.0)
+    return {
+        "score":round(score,1),"band":_score_band(score,policy),"delta_points":delta,
+        "direction":"개선" if delta>1 else ("악화" if delta<-1 else "유지"),
+        "change_strength":_delta_strength(delta,policy),"quality_score":round(min(qcov,80.0 if months==6 else 72.0),1),
+        "data_coverage_pct":round(float(agg.get("base_data_coverage_pct") or 0.0),1),
+        "quality_weighted_coverage_pct":round(qcov,1),"factors":factors,"contributions":agg.get("contributions") or [],
+        "metrics":[],"positive_indicators":[],"negative_indicators":[],"status":"estimated","score_source":"independent_horizon_model",
+        "estimated_score":round(score,1),"estimated_quality":round(min(qcov,80.0 if months==6 else 72.0),1),
+        "available_factor_count":sum(1 for f in factors.values() if f.get("available")),
+        "horizon_basis":f"independent_{months}m_multi_source_model","horizon_specific_inputs":True,
+        "horizon_inputs":{
+            "global_consumer_forecast":roundn(consumer,2),"global_consumer_quality":roundn(consumer_q,1),
+            "global_cost_pressure_forecast":roundn(cost,2),"global_cost_quality":roundn(cost_q,1),
+            "korea_policy_rate_forecast_pct":roundn(ki.get("rate"),3),"usdkrw_forecast":roundn(ki.get("fx"),2),
+            "krw_liquidity_forecast":roundn(ki.get("liquidity"),4),"krw_strength_forecast":roundn(ki.get("strength"),2),
+        },
+        "model_note":"기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다.",
+    }
+
+
+def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[dict[str, Any]], policy: dict[str, Any], korea_rate: dict[str, Any] | None = None, korea_equity: dict[str, Any] | None = None, global_bundle: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """Make the published current headline consistent with its six displayed axes.
 
     The cycle feed may have only one observed KOSIS metric while DART, KRX and
@@ -113,13 +249,16 @@ def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[
             if block_name == "forecast_3m":
                 block["horizon_basis"] = "3m_model"
                 block["horizon_specific_inputs"] = True
-            elif block.get("score_source") == "estimated":
-                block["horizon_basis"] = "3m_model_extrapolation_no_horizon_specific_inputs"
-                block["horizon_specific_inputs"] = False
-                block["horizon_note"] = (
-                    "현재 입력계약에는 이 구간 전용 독립 선행변수가 없어 3개월 추정모형을 "
-                    "연장 표시합니다. 별도 장기전망으로 오해하지 않도록 구분합니다."
-                )
+
+        # Replace extrapolated medium/long horizons with true horizon-specific
+        # models using existing 6m/12m upstream forecasts. No new network calls.
+        if korea_rate is not None and korea_equity is not None and global_bundle is not None:
+            row["forecast_3_6m"] = _build_independent_horizon_block(
+                row, industry, policy, korea_rate, korea_equity, global_bundle, 6, final_score
+            )
+            row["forecast_6_12m"] = _build_independent_horizon_block(
+                row, industry, policy, korea_rate, korea_equity, global_bundle, 12, final_score
+            )
     return results
 
 def _company_name_map(root: Path) -> dict[str, str]:
@@ -301,14 +440,14 @@ def run_engine(
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
-    results = _reconcile_six_axis_outputs(results, industries, policy)
+    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle)
 
     prospective_after = update_registry(root, results, direct_market, policy, as_of)
     results = [
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
-    results = _reconcile_six_axis_outputs(results, industries, policy)
+    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle)
 
     # 대표기업은 기존 KRX basket을 그대로 노출한다. 기업명은 이미 DART
     # corpCode ZIP을 받은 날에 저장된 로컬 캐시를 재사용하므로 추가 호출 0회.
