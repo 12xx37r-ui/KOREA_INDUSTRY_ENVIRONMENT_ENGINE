@@ -6,11 +6,121 @@ from typing import Any
 from .config import load_all
 from .krx_market import collect_sector_market
 from .prospective import read_summary, update_registry
-from .scoring import score_industry
+from .scoring import score_industry, _aggregate_score, _score_band, _delta_strength
 from .upstream import SourceResult, UpstreamLoader
 from .util import finite, read_json, roundn, utc_now_iso, write_json
 from .api_health import add_network_calls, record_cache, record_lkg, record_fallback, record_unavailable, record_state, flush as flush_api_health
 
+
+
+def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[dict[str, Any]], policy: dict[str, Any]) -> list[dict[str, Any]]:
+    """Make the published current headline consistent with its six displayed axes.
+
+    The cycle feed may have only one observed KOSIS metric while DART, KRX and
+    observed macro inputs already populate the remaining public axes.  In that
+    case the old headline kept the single-metric feed score/coverage even though
+    the factor table and contribution table were based on a much broader six-axis
+    information set.  Reconcile only when at least two usable axes exist and the
+    six-axis coverage is genuinely broader than the observed-feed coverage.
+
+    Backward compatibility is preserved: ``score_source`` remains unchanged and
+    the original observed anchor score/coverage stay in ``observed_*`` fields.
+    No new external call is made here; this is pure local post-processing of the
+    already-scored result.
+    """
+    by_key = {str(ind.get("key")): ind for ind in industries}
+    for row in results:
+        current = row.get("current")
+        if not isinstance(current, dict) or current.get("status") != "scored":
+            continue
+        factors = current.get("factors")
+        if not isinstance(factors, dict):
+            continue
+        industry = by_key.get(str(row.get("industry_key"))) or {}
+        weights = industry.get("weights_current") or {}
+        if not weights:
+            continue
+        usable_axes = sum(
+            1
+            for key, factor in factors.items()
+            if isinstance(factor, dict)
+            and finite(factor.get("score")) is not None
+            and (finite(factor.get("quality"), 0.0) or 0.0) > 0
+            and float(weights.get(key, 0.0) or 0.0) > 0
+        )
+        if usable_axes < 2:
+            continue
+
+        agg = _aggregate_score(factors, weights)
+        six_axis_coverage = float(agg.get("base_data_coverage_pct") or 0.0)
+        qcoverage = float(agg.get("quality_weighted_coverage_pct") or 0.0)
+        observed_coverage = finite(current.get("observed_coverage_pct"), current.get("data_coverage_pct")) or 0.0
+        if six_axis_coverage <= observed_coverage + 0.5:
+            continue
+
+        legacy_score = finite(current.get("score"))
+        legacy_quality = finite(current.get("quality_score"))
+        final_score = float(agg.get("score") or 50.0)
+        current["legacy_observed_anchor_score"] = roundn(legacy_score, 1)
+        current["legacy_observed_anchor_quality"] = roundn(legacy_quality, 1)
+        current["score"] = round(final_score, 1)
+        current["band"] = _score_band(final_score, policy)
+        current["data_coverage_pct"] = round(six_axis_coverage, 1)
+        current["quality_weighted_coverage_pct"] = round(qcoverage, 1)
+        current["quality_score"] = round(min(95.0, qcoverage), 1)
+        current["score_basis"] = "six_axis_quality_weighted_aggregate"
+        current["six_axis_available_factor_count"] = usable_axes
+        current["six_axis_raw_score"] = round(float(agg.get("raw_score") or final_score), 1)
+        current["notes"] = (
+            f"관측 산업피드 coverage {observed_coverage:.1f}%는 원자료 anchor 범위입니다. "
+            f"최종 현재점수는 DART·KOSIS·KRX·실측 금융환경을 포함한 {usable_axes}개 6축의 "
+            f"품질가중 집계로 산출하며, 6축 coverage {six_axis_coverage:.1f}% / "
+            f"품질가중 coverage {qcoverage:.1f}%를 사용합니다."
+        )
+
+        quality = row.get("quality")
+        if isinstance(quality, dict):
+            quality["observed_metric_coverage_pct"] = round(observed_coverage, 1)
+            quality["current_six_axis_coverage_pct"] = round(six_axis_coverage, 1)
+            quality["current_six_axis_quality_weighted_coverage_pct"] = round(qcoverage, 1)
+
+        model = row.get("model")
+        if isinstance(model, dict):
+            model["current"] = "industry_six_axis_with_observed_anchor"
+
+        interpretation = row.get("interpretation")
+        if isinstance(interpretation, dict):
+            interpretation["headline"] = f"현재 {current.get('band', '중립')} {final_score:.0f}/100"
+            interpretation["beginner"] = (
+                "현재점수는 산업 실물 관측치만 단독 사용하지 않고, 실제로 화면에 표시되는 "
+                "산업실적·수요·가격/마진·금융환경·KRX 내부환경·밸류에이션 6축을 "
+                "자료품질로 가중해 합산합니다. 관측 산업피드 점수는 별도 anchor로 보존합니다."
+            )
+
+        # Current score changed, so all published forecast deltas must be reconciled
+        # against the same current baseline.  Forecast scores themselves are untouched.
+        for block_name in ("forecast_3m", "forecast_3_6m", "forecast_6_12m"):
+            block = row.get(block_name)
+            if not isinstance(block, dict):
+                continue
+            future_score = finite(block.get("score"))
+            if future_score is None:
+                continue
+            delta = round(float(future_score) - final_score, 1)
+            block["delta_points"] = delta
+            block["direction"] = "개선" if delta > 1 else ("악화" if delta < -1 else "유지")
+            block["change_strength"] = _delta_strength(delta, policy)
+            if block_name == "forecast_3m":
+                block["horizon_basis"] = "3m_model"
+                block["horizon_specific_inputs"] = True
+            elif block.get("score_source") == "estimated":
+                block["horizon_basis"] = "3m_model_extrapolation_no_horizon_specific_inputs"
+                block["horizon_specific_inputs"] = False
+                block["horizon_note"] = (
+                    "현재 입력계약에는 이 구간 전용 독립 선행변수가 없어 3개월 추정모형을 "
+                    "연장 표시합니다. 별도 장기전망으로 오해하지 않도록 구분합니다."
+                )
+    return results
 
 def _company_name_map(root: Path) -> dict[str, str]:
     """Reuse the DART corpCode cache; no extra network call is made here."""
@@ -191,12 +301,14 @@ def run_engine(
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
+    results = _reconcile_six_axis_outputs(results, industries, policy)
 
     prospective_after = update_registry(root, results, direct_market, policy, as_of)
     results = [
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
+    results = _reconcile_six_axis_outputs(results, industries, policy)
 
     # 대표기업은 기존 KRX basket을 그대로 노출한다. 기업명은 이미 DART
     # corpCode ZIP을 받은 날에 저장된 로컬 캐시를 재사용하므로 추가 호출 0회.
