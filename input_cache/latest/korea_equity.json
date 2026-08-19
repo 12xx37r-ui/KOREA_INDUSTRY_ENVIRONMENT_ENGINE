@@ -1,12 +1,12 @@
 {
   "schema_version": "3.0.0",
   "engine_version": "korea-equity-environment-v3.0-semiconductor-pbr-band",
-  "generated_at_utc": "2026-08-18T05:29:22.258024+00:00",
+  "generated_at_utc": "2026-08-19T09:07:02.181675+00:00",
   "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
-  "score": 65,
+  "score": 63,
   "score_valid": true,
   "bias": "약우호",
-  "final_score": 57.0446,
+  "final_score": 56.1643,
   "final_score_valid": true,
   "final_bias": "중립",
   "circuit_breaker": false,
@@ -18,10 +18,10 @@
   "components": {
     "flow": {
       "available": true,
-      "score_normalized": 0.296832,
-      "combined_net_bps_of_turnover": 15.302,
-      "foreign_net_bps_of_turnover": 8.234,
-      "institution_net_bps_of_turnover": 7.068,
+      "score_normalized": 0.760482,
+      "combined_net_bps_of_turnover": 49.868,
+      "foreign_net_bps_of_turnover": 33.243,
+      "institution_net_bps_of_turnover": 16.625,
       "markets": [
         "kospi",
         "kosdaq"
@@ -30,12 +30,12 @@
     },
     "breadth": {
       "available": true,
-      "score_normalized": 0.283803,
-      "advances": 1727,
-      "declines": 942,
-      "unchanged": 97,
-      "advance_share": 0.624367,
-      "advance_decline_balance": 0.283803,
+      "score_normalized": 0.339118,
+      "advances": 1801,
+      "declines": 863,
+      "unchanged": 102,
+      "advance_share": 0.651121,
+      "advance_decline_balance": 0.339118,
       "markets": [
         "kospi",
         "kosdaq"
@@ -44,22 +44,22 @@
     },
     "valuation": {
       "available": true,
-      "score_normalized": -0.055469,
+      "score_normalized": 0.00625,
       "evidence": [
         {
           "index": "kospi200",
-          "per": 18.63,
-          "pbr": 2.29,
-          "per_percentile": 0.614062,
-          "pbr_percentile": 0.828125,
+          "per": 18.35,
+          "pbr": 2.26,
+          "per_percentile": 0.601562,
+          "pbr_percentile": 0.815625,
           "history_samples": 320
         },
         {
           "index": "kosdaq150",
-          "per": 64.45,
-          "pbr": 4.39,
-          "per_percentile": 0.089063,
-          "pbr_percentile": 0.579688,
+          "per": 62.1,
+          "pbr": 4.23,
+          "per_percentile": 0.064062,
+          "pbr_percentile": 0.50625,
           "history_samples": 320
         }
       ],
@@ -67,47 +67,47 @@
     },
     "earnings_revision": {
       "available": true,
-      "score_normalized": 0.999988,
-      "current_growth_proxy_pct": 120.314,
+      "score_normalized": 0.999994,
+      "current_growth_proxy_pct": 126.41,
       "baseline_growth_proxy_pct": null,
       "revision_pct_point": null,
-      "history_samples": 1,
+      "history_samples": 2,
       "mode": "forward_growth_level_bootstrap",
       "detail": "초기 이력 5회 전: 공개 forward 성장 대용치의 현재 수준을 사용. 5회 누적 후 최근 이력 대비 revision 변화로 자동 전환."
     },
     "credit_spread": {
       "available": true,
-      "score_normalized": -0.871875,
-      "spread_pct_point": 0.696,
-      "percentile": 0.935937,
+      "score_normalized": -0.909375,
+      "spread_pct_point": 0.699,
+      "percentile": 0.954688,
       "history_samples": 320,
       "history_source": "same_run_ecos_history",
       "detail": "AA- 회사채3년-국고채3년의 동일날짜 스프레드 과거분포 백분위. 좁을수록 우호."
     },
     "semiconductor": {
       "available": true,
-      "score_normalized": 0.500938,
+      "score_normalized": 0.002617,
       "weights_used": 1.0,
       "evidence": {
         "sox": {
-          "latest": 12621.004883,
-          "mom_20d_pct": 7.4691,
-          "mom_60d_pct": 6.8373
+          "latest": 11992.459961,
+          "mom_20d_pct": -2.9435,
+          "mom_60d_pct": 0.2372
         },
         "nvda": {
-          "latest": 225.009995,
-          "mom_20d_pct": 10.6897,
-          "mom_60d_pct": 0.6891
+          "latest": 219.740005,
+          "mom_20d_pct": 6.0061,
+          "mom_60d_pct": 0.1048
         },
         "tsm": {
-          "latest": 430.970001,
-          "mom_20d_pct": 7.1265,
-          "mom_60d_pct": 7.3079
+          "latest": 413.410004,
+          "mom_20d_pct": -2.6377,
+          "mom_60d_pct": 1.5375
         },
         "twii": {
-          "latest": 45308.238281,
-          "mom_20d_pct": 2.4311,
-          "mom_60d_pct": 7.1928
+          "latest": 44719.351562,
+          "mom_20d_pct": -0.2374,
+          "mom_60d_pct": 2.463
         }
       },
       "detail": "SOX 35% + NVDA 25% + TSM 25% + TWII 15% 가중 20d/60d 모멘텀 tanh 정규화"
@@ -123,28 +123,28 @@
   },
   "semiconductor_cycle": {
     "available": true,
-    "score_normalized": 0.500938,
+    "score_normalized": 0.002617,
     "weights_used": 1.0,
     "evidence": {
       "sox": {
-        "latest": 12621.004883,
-        "mom_20d_pct": 7.4691,
-        "mom_60d_pct": 6.8373
+        "latest": 11992.459961,
+        "mom_20d_pct": -2.9435,
+        "mom_60d_pct": 0.2372
       },
       "nvda": {
-        "latest": 225.009995,
-        "mom_20d_pct": 10.6897,
-        "mom_60d_pct": 0.6891
+        "latest": 219.740005,
+        "mom_20d_pct": 6.0061,
+        "mom_60d_pct": 0.1048
       },
       "tsm": {
-        "latest": 430.970001,
-        "mom_20d_pct": 7.1265,
-        "mom_60d_pct": 7.3079
+        "latest": 413.410004,
+        "mom_20d_pct": -2.6377,
+        "mom_60d_pct": 1.5375
       },
       "twii": {
-        "latest": 45308.238281,
-        "mom_20d_pct": 2.4311,
-        "mom_60d_pct": 7.1928
+        "latest": 44719.351562,
+        "mom_20d_pct": -0.2374,
+        "mom_60d_pct": 2.463
       }
     },
     "detail": "SOX 35% + NVDA 25% + TSM 25% + TWII 15% 가중 20d/60d 모멘텀 tanh 정규화"
@@ -155,10 +155,10 @@
   },
   "pbr_valuation_band": {
     "available": true,
-    "pbr": 3.34,
+    "pbr": 3.245,
     "pbr_samples": 2,
     "band": "과열",
-    "adjusted_score": 55,
+    "adjusted_score": 53,
     "adjustment": -10.0,
     "signal_override": "과열_경고 (PBR 고평가)",
     "thresholds": {
@@ -167,13 +167,13 @@
       "fair": 1.3,
       "high": 1.6
     },
-    "interpretation": "KOSPI PBR 3.340x → 과열: 과열_경고 (PBR 고평가)"
+    "interpretation": "KOSPI PBR 3.245x → 과열: 과열_경고 (PBR 고평가)"
   },
   "pbr_signal_override": "과열_경고 (PBR 고평가)",
-  "score_after_pbr": 55,
+  "score_after_pbr": 53,
   "volatility_regime": {
     "model_version": "volatility-regime-v1.0",
-    "generated_at_utc": "2026-08-18T05:29:22.256514+00:00",
+    "generated_at_utc": "2026-08-19T09:07:02.179858+00:00",
     "regime": "normal",
     "circuit_breaker": false,
     "circuit_breaker_reasons": [],
@@ -185,58 +185,58 @@
     "shock_multiplier": {
       "available": true,
       "penalty": 0.0,
-      "z_score": -0.0439,
-      "abs_z": 0.0439,
+      "z_score": -0.2304,
+      "abs_z": 0.2304,
       "regime_label": "정상",
       "formula": "penalty = z^2 * 3.0 (|z|>2 구간), (|z|-1)*5.0 (1<|z|<=2), 0 (정상)"
     },
     "emp": {
       "available": true,
-      "emp_score": -1.3631,
+      "emp_score": -2.1095,
       "components_count": 2,
       "evidence": {
-        "fx_change_pct": -3.2942,
+        "fx_change_pct": -4.795,
         "reserve_change_pct": null,
-        "rate_differential_pct": -1.42
+        "rate_differential_pct": -1.44
       },
       "interpretation": "양수=원화절하 압력 증가, 음수=원화절상 압력"
     },
     "emp_adjustment": {
-      "adjusted_score": 57.0446,
-      "original_score": 55,
-      "emp_score": -1.3631,
-      "adjustment": 2.0446,
+      "adjusted_score": 56.1643,
+      "original_score": 53,
+      "emp_score": -2.1095,
+      "adjustment": 3.1643,
       "emp_applied": true
     },
-    "macro_env_score_original": 55,
-    "macro_env_score_after_emp": 57.0446,
-    "final_score": 57.0446,
+    "macro_env_score_original": 53,
+    "macro_env_score_after_emp": 56.1643,
+    "final_score": 56.1643,
     "final_score_valid": true,
     "regime_evidence": {
-      "fx_3d_change_pct": -0.1431,
-      "fx_std_5d": 2.3919,
-      "fx_std_10d": 3.2583,
-      "fx_z_score": 0.0439,
+      "fx_3d_change_pct": -1.4943,
+      "fx_std_5d": 7.8616,
+      "fx_std_10d": 6.4848,
+      "fx_z_score": 0.2304,
       "vkospi_latest": null,
-      "cds_proxy": 0.167
+      "cds_proxy": 0.157
     }
   },
   "current_inputs": {
     "kospi200": {
-      "per": 18.63,
-      "forward_per": 6.2393,
-      "eps_growth_pct": 197.999,
-      "growth_adjusted_per": 0.0315,
-      "pbr": 2.29,
-      "dividend_yield": 0.83,
+      "per": 18.35,
+      "forward_per": 5.6299,
+      "eps_growth_pct": 204.4799,
+      "growth_adjusted_per": 0.0275,
+      "pbr": 2.26,
+      "dividend_yield": 0.84,
       "available": true,
       "coverage": 1.0,
       "forward_data_available": true,
       "forward_data_is_official": false,
       "forward_proxy_sample_size": 23,
-      "forward_proxy_market_cap_coverage": 0.755,
-      "forward_proxy_growth_market_cap_coverage": 0.7473,
-      "as_of": "2026-08-14",
+      "forward_proxy_market_cap_coverage": 0.7565,
+      "forward_proxy_growth_market_cap_coverage": 0.749,
+      "as_of": "2026-08-18",
       "source": "KRX 지수 투자지표 (pykrx 세션) + KRX 지수 구성종목 + NAVER 공개 컨센서스",
       "source_url": "https://data.krx.co.kr/",
       "source_method": "pykrx_authenticated+constituent_market_cap_weighted_consensus",
@@ -249,12 +249,12 @@
         "207940",
         "032830",
         "028260",
-        "012450",
         "105560",
+        "012450",
         "000270",
         "329180",
-        "034020",
         "055550",
+        "034020",
         "012330",
         "068270",
         "034730",
@@ -263,30 +263,30 @@
         "035420",
         "066570",
         "010120",
-        "042660"
+        "267260"
       ],
       "stale": false,
       "diagnostics": [
-        "20260818:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
-        "20260818:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
-        "20260817:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']"
+        "20260819:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "20260819:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "20260818:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']"
       ]
     },
     "kosdaq150": {
-      "per": 64.45,
-      "forward_per": 26.5983,
-      "eps_growth_pct": 42.6293,
-      "growth_adjusted_per": 0.6239,
-      "pbr": 4.39,
-      "dividend_yield": 0.36,
+      "per": 62.1,
+      "forward_per": 25.0449,
+      "eps_growth_pct": 48.3409,
+      "growth_adjusted_per": 0.5181,
+      "pbr": 4.23,
+      "dividend_yield": 0.38,
       "available": true,
       "coverage": 1.0,
       "forward_data_available": true,
       "forward_data_is_official": false,
       "forward_proxy_sample_size": 19,
-      "forward_proxy_market_cap_coverage": 0.2726,
-      "forward_proxy_growth_market_cap_coverage": 0.2579,
-      "as_of": "2026-08-14",
+      "forward_proxy_market_cap_coverage": 0.2777,
+      "forward_proxy_growth_market_cap_coverage": 0.2621,
+      "as_of": "2026-08-18",
       "source": "KRX 지수 투자지표 (pykrx 세션) + KRX 지수 구성종목 + NAVER 공개 컨센서스",
       "source_url": "https://data.krx.co.kr/",
       "source_method": "pykrx_authenticated+constituent_market_cap_weighted_consensus",
@@ -294,38 +294,38 @@
         "196170",
         "240810",
         "058470",
-        "214450",
         "222800",
+        "214450",
         "319660",
         "095340",
         "403870",
         "145020",
         "131290",
-        "095610",
         "257720",
+        "095610",
+        "067310",
         "064760",
         "357780",
-        "214150",
-        "067310",
         "031980",
+        "214150",
         "237690",
         "098460"
       ],
       "stale": false,
       "diagnostics": [
+        "20260819:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
+        "20260819:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "20260818:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
-        "20260818:pykrx_fields_empty:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
-        "20260817:pykrx_columns:['종가', '등락률', 'PER', 'PBR', '배당수익률']",
         "adaptive_forward_expansion:queried=40,base=24,max=40"
       ]
     },
     "credit": {
       "available": true,
-      "corp_aa_minus_3y_pct": 4.492,
-      "corp_as_of": "20260814",
-      "gov_3y_pct": 3.796,
-      "gov_as_of": "20260814",
-      "spread_pct_point": 0.696,
+      "corp_aa_minus_3y_pct": 4.497,
+      "corp_as_of": "20260819",
+      "gov_3y_pct": 3.798,
+      "gov_as_of": "20260819",
+      "spread_pct_point": 0.699,
       "spread_history": [
         {
           "date": "20250206",
@@ -2570,9 +2570,21 @@
           "corp_aa_minus_3y_pct": 4.492,
           "gov_3y_pct": 3.796,
           "spread_pct_point": 0.696
+        },
+        {
+          "date": "20260818",
+          "corp_aa_minus_3y_pct": 4.542,
+          "gov_3y_pct": 3.847,
+          "spread_pct_point": 0.695
+        },
+        {
+          "date": "20260819",
+          "corp_aa_minus_3y_pct": 4.497,
+          "gov_3y_pct": 3.798,
+          "spread_pct_point": 0.699
         }
       ],
-      "history_samples": 374,
+      "history_samples": 376,
       "stale": false,
       "source": "한국은행 ECOS 시장금리(일별)",
       "source_url": "https://ecos.bok.or.kr/",

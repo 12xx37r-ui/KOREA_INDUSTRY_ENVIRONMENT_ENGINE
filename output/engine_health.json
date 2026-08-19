@@ -1,17 +1,17 @@
 {
   "status": "ok",
-  "generated_at_utc": "2026-08-18T09:18:30.503275+00:00",
+  "generated_at_utc": "2026-08-19T09:24:03.746186+00:00",
   "source_status": {
     "korea_rate_fx": {
       "ok": true,
       "mode": "raw-public",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18T14:27:02.941746+09:00",
-      "source_age_hours": 3.85,
+      "source_generated_at": "2026-08-19T18:04:19.925032+09:00",
+      "source_age_hours": 0.32,
       "cache_ttl_hours": 6.0,
       "stale_after_hours": 72.0,
-      "source_age_ratio_to_stale": 0.054,
+      "source_age_ratio_to_stale": 0.005,
       "freshness_state": "fresh",
       "http_calls": 1,
       "error": ""
@@ -21,12 +21,12 @@
       "mode": "raw-public",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18T05:29:22.258024+00:00",
-      "source_age_hours": 3.81,
+      "source_generated_at": "2026-08-19T09:07:02.181675+00:00",
+      "source_age_hours": 0.28,
       "cache_ttl_hours": 3.0,
       "stale_after_hours": 120.0,
-      "source_age_ratio_to_stale": 0.032,
-      "freshness_state": "aging",
+      "source_age_ratio_to_stale": 0.002,
+      "freshness_state": "fresh",
       "http_calls": 1,
       "error": ""
     },
@@ -35,11 +35,11 @@
       "mode": "raw-public",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18T08:11:59.310904+00:00",
-      "source_age_hours": 1.1,
+      "source_generated_at": "2026-08-19T09:03:23.000517+00:00",
+      "source_age_hours": 0.34,
       "cache_ttl_hours": 6.0,
       "stale_after_hours": 72.0,
-      "source_age_ratio_to_stale": 0.015,
+      "source_age_ratio_to_stale": 0.005,
       "freshness_state": "fresh",
       "http_calls": 1,
       "error": ""
@@ -49,12 +49,12 @@
       "mode": "raw-public",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18T03:04:18.856129+00:00",
-      "source_age_hours": 6.23,
+      "source_generated_at": "2026-08-19T09:04:35.202037+00:00",
+      "source_age_hours": 0.32,
       "cache_ttl_hours": 6.0,
       "stale_after_hours": 72.0,
-      "source_age_ratio_to_stale": 0.087,
-      "freshness_state": "aging",
+      "source_age_ratio_to_stale": 0.004,
+      "freshness_state": "fresh",
       "http_calls": 1,
       "error": ""
     },
@@ -63,8 +63,8 @@
       "mode": "raw-public",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18",
-      "source_age_hours": 9.3,
+      "source_generated_at": "2026-08-19",
+      "source_age_hours": 9.4,
       "cache_ttl_hours": 24.0,
       "stale_after_hours": 336.0,
       "source_age_ratio_to_stale": 0.028,
@@ -77,8 +77,8 @@
       "mode": "local",
       "stale": false,
       "age_hours": null,
-      "source_generated_at": "2026-08-18T09:18:04.565077+00:00",
-      "source_age_hours": 0.0,
+      "source_generated_at": "2026-08-19T09:20:32.012670+00:00",
+      "source_age_hours": 0.05,
       "cache_ttl_hours": 24.0,
       "stale_after_hours": 240.0,
       "source_age_ratio_to_stale": 0.0,
@@ -87,7 +87,7 @@
       "error": ""
     }
   },
-  "freshness_quality_score": 99.9,
+  "freshness_quality_score": 100.0,
   "current_factor_available_count": 606,
   "current_factor_direct_count": 604,
   "current_factor_proxy_count": 2,
@@ -149,26 +149,21 @@
   "valuation_history_canonical_path": "output/validation/industry_valuation_history.json",
   "direct_krx_actual_periods": {
     "KOSPI": {
-      "start": "20260713",
-      "end": "20260817",
-      "fundamental_date": "20260814"
+      "start": "20260714",
+      "end": "20260818",
+      "fundamental_date": "20260818"
     },
     "KOSDAQ": {
-      "start": "20260713",
-      "end": "20260817",
-      "fundamental_date": "20260814"
+      "start": "20260714",
+      "end": "20260818",
+      "fundamental_date": "20260818"
     }
   },
-  "direct_krx_diagnostics": [
-    "fundamental:KOSPI:20260817:zero_or_unusable_multiples:rows=890:columns=['BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS']",
-    "fundamental:KOSPI:backtracked:20260817->20260814",
-    "fundamental:KOSDAQ:20260817:zero_or_unusable_multiples:rows=1750:columns=['BPS', 'PER', 'PBR', 'EPS', 'DIV', 'DPS']",
-    "fundamental:KOSDAQ:backtracked:20260817->20260814"
-  ],
+  "direct_krx_diagnostics": [],
   "call_efficiency": {
     "upstream_http_calls_this_run": 5,
     "normal_upstream_http_call_target": 6,
-    "krx_bulk_calls_this_run": 10,
+    "krx_bulk_calls_this_run": 8,
     "krx_normal_target_calls": 8,
     "per_company_live_calls": 0,
     "duplicate_upstream_reads_in_same_run": 0,
@@ -194,7 +189,7 @@
       "same_forecast_month_deduplicated": true
     },
     "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-    "generated_at_utc": "2026-08-18T09:18:30.577708+00:00"
+    "generated_at_utc": "2026-08-19T09:24:03.813655+00:00"
   },
   "oos_bridge_status": "PENDING",
   "oos_bridge_evaluated_cases": 0,
