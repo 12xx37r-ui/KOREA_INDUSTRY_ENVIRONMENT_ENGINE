@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at_utc": "2026-08-19T09:24:04.030374+00:00",
+  "generated_at_utc": "2026-08-20T09:25:13.547114+00:00",
   "policy": {
     "priority": "freshness_first",
     "live_market_rule": "when new market data may exist, source API is queried on every workflow",
@@ -16,6 +16,18 @@
     ]
   },
   "providers": {
+    "KOSIS": {
+      "network_calls": 13,
+      "duplicate_calls_removed": 2,
+      "cache_uses": 0,
+      "retries": 0,
+      "rate_limit_429": 0,
+      "timeouts": 0,
+      "fallback_used": false,
+      "lkg_used": false,
+      "unavailable": 0,
+      "state": "LIVE"
+    },
     "CUSTOMS": {
       "network_calls": 31,
       "duplicate_calls_removed": 0,
@@ -55,18 +67,6 @@
     "DART": {
       "network_calls": 1,
       "duplicate_calls_removed": 0,
-      "cache_uses": 0,
-      "retries": 0,
-      "rate_limit_429": 0,
-      "timeouts": 0,
-      "fallback_used": false,
-      "lkg_used": false,
-      "unavailable": 0,
-      "state": "LIVE"
-    },
-    "KOSIS": {
-      "network_calls": 13,
-      "duplicate_calls_removed": 2,
       "cache_uses": 0,
       "retries": 0,
       "rate_limit_429": 0,
