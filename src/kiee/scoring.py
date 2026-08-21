@@ -1753,6 +1753,7 @@ def score_industry(
             nowcast_metric=nowcast_metric if allow_estimated else None,
             regime=_regime if allow_estimated else None,
             dart_metric=dart_metric if allow_estimated else None,
+            freshness_quality=freshness_quality,
         )
 
     return _scored_industry_result_from_feed(
