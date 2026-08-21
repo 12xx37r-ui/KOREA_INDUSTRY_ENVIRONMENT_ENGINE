@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at_utc": "2026-08-21T07:02:28.230657+00:00",
+  "generated_at_utc": "2026-08-21T07:12:16.886975+00:00",
   "policy": {
     "priority": "freshness_first",
     "live_market_rule": "when new market data may exist, source API is queried on every workflow",
@@ -16,6 +16,18 @@
     ]
   },
   "providers": {
+    "KOSIS": {
+      "network_calls": 13,
+      "duplicate_calls_removed": 2,
+      "cache_uses": 0,
+      "retries": 0,
+      "rate_limit_429": 0,
+      "timeouts": 0,
+      "fallback_used": false,
+      "lkg_used": false,
+      "unavailable": 0,
+      "state": "LIVE"
+    },
     "DART": {
       "network_calls": 1,
       "duplicate_calls_removed": 0,
@@ -27,30 +39,6 @@
       "lkg_used": false,
       "unavailable": 0,
       "state": "LIVE"
-    },
-    "KRX": {
-      "network_calls": 0,
-      "duplicate_calls_removed": 0,
-      "cache_uses": 0,
-      "retries": 0,
-      "rate_limit_429": 0,
-      "timeouts": 0,
-      "fallback_used": false,
-      "lkg_used": false,
-      "unavailable": 0,
-      "state": "LIVE"
-    },
-    "CUSTOMS": {
-      "network_calls": 9,
-      "duplicate_calls_removed": 0,
-      "cache_uses": 0,
-      "retries": 6,
-      "rate_limit_429": 0,
-      "timeouts": 9,
-      "fallback_used": false,
-      "lkg_used": false,
-      "unavailable": 0,
-      "state": "UNAVAILABLE"
     },
     "GITHUB": {
       "network_calls": 5,
@@ -64,27 +52,39 @@
       "unavailable": 0,
       "state": "CACHE"
     },
-    "KOSIS": {
-      "network_calls": 15,
+    "KRX": {
+      "network_calls": 8,
       "duplicate_calls_removed": 0,
       "cache_uses": 0,
-      "retries": 10,
+      "retries": 0,
       "rate_limit_429": 0,
-      "timeouts": 15,
+      "timeouts": 0,
       "fallback_used": false,
-      "lkg_used": true,
+      "lkg_used": false,
       "unavailable": 0,
-      "state": "LKG"
+      "state": "LIVE"
+    },
+    "CUSTOMS": {
+      "network_calls": 39,
+      "duplicate_calls_removed": 0,
+      "cache_uses": 0,
+      "retries": 8,
+      "rate_limit_429": 0,
+      "timeouts": 0,
+      "fallback_used": false,
+      "lkg_used": false,
+      "unavailable": 0,
+      "state": "LIVE"
     }
   },
   "totals": {
-    "network_calls": 30,
-    "duplicate_calls_removed": 0,
+    "network_calls": 66,
+    "duplicate_calls_removed": 2,
     "cache_uses": 10,
-    "retries": 16,
+    "retries": 8,
     "rate_limit_429": 0,
-    "timeouts": 24,
+    "timeouts": 0,
     "fallback_used": false,
-    "lkg_used": true
+    "lkg_used": false
   }
 }

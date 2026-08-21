@@ -423,7 +423,17 @@
         "available": true,
         "proxy": false,
         "provenance": "direct",
-        "source": "현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 (6개월)"
+        "source": "현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 (6개월)",
+        "score_v2_shadow": 49.43,
+        "quality_v2_shadow": 21.6,
+        "forecast_role_v2": "historical_fair_value_mean_reversion_anchor",
+        "horizon_guard_v2": {
+          "horizon": "3_6m",
+          "mean_reversion_to_neutral": 0.15,
+          "history_maturity_proxy": 0.0,
+          "policy": "provisional_history_uses_modest_neutral_pull; mature_history_allows_stronger_reversion"
+        },
+        "production_score_unchanged": true
       }
     },
     "contributions": [
@@ -514,7 +524,18 @@
       "krw_liquidity_forecast": 0.1271,
       "krw_strength_forecast": 72.37
     },
-    "model_note": "기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다."
+    "model_note": "기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다.",
+    "forecast_confidence_v2_pct": 37.0,
+    "confidence_status": "PRE_OOS_CAPPED",
+    "horizon_decay": 0.74,
+    "oos_evaluated_cases": 0,
+    "score_v2_shadow": 46.6,
+    "v2_status": "SHADOW_PRE_OOS",
+    "v2_legacy_anchor_score": 46.4,
+    "v2_factor_aggregate_score": 47.1,
+    "v2_factor_blend_weight": 0.283,
+    "v2_quality_weighted_coverage_pct": 52.1,
+    "v2_promotion_rule": "keep legacy score until prospective OOS challenger comparison proves superiority"
   },
   "forecast_6_12m": {
     "score": 45.5,
@@ -569,7 +590,17 @@
         "available": true,
         "proxy": false,
         "provenance": "direct",
-        "source": "현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 (12개월)"
+        "source": "현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 (12개월)",
+        "score_v2_shadow": 49.5,
+        "quality_v2_shadow": 15.8,
+        "forecast_role_v2": "historical_fair_value_mean_reversion_anchor",
+        "horizon_guard_v2": {
+          "horizon": "6_12m",
+          "mean_reversion_to_neutral": 0.25,
+          "history_maturity_proxy": 0.0,
+          "policy": "provisional_history_uses_modest_neutral_pull; mature_history_allows_stronger_reversion"
+        },
+        "production_score_unchanged": true
       }
     },
     "contributions": [
@@ -660,7 +691,18 @@
       "krw_liquidity_forecast": 0.1123,
       "krw_strength_forecast": 75.05
     },
-    "model_note": "기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다."
+    "model_note": "기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다.",
+    "forecast_confidence_v2_pct": 29.7,
+    "confidence_status": "PRE_OOS_CAPPED",
+    "horizon_decay": 0.6,
+    "oos_evaluated_cases": 0,
+    "score_v2_shadow": 45.8,
+    "v2_status": "SHADOW_PRE_OOS",
+    "v2_legacy_anchor_score": 45.5,
+    "v2_factor_aggregate_score": 46.3,
+    "v2_factor_blend_weight": 0.326,
+    "v2_quality_weighted_coverage_pct": 49.7,
+    "v2_promotion_rule": "keep legacy score until prospective OOS challenger comparison proves superiority"
   },
   "direct_market": {
     "label": "식품",
@@ -799,7 +841,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-21T07:02:27.862441+00:00"
+      "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
