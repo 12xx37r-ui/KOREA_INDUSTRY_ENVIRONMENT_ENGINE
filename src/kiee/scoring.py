@@ -1439,6 +1439,33 @@ def _feed_stage(
     return result
 
 
+
+def _forecast_confidence_v2(stage: dict[str, Any], horizon: str, prospective_summary: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
+    """Additive confidence metadata only; existing score/quality contracts stay unchanged."""
+    q=clamp(finite(stage.get("quality_score"),0.0) or 0.0,0,100)
+    cov=clamp(finite(stage.get("data_coverage_pct"),0.0) or 0.0,0,100)
+    decay={"3m":0.88,"3_6m":0.74,"6_12m":0.60}.get(horizon,1.0)
+    status=str((prospective_summary or {}).get("status","PENDING"))
+    cases=int((prospective_summary or {}).get("evaluated_cases",0) or 0)
+    min_cases=max(1,int(policy.get("prospective_min_cases",24)))
+    maturity=min(1.0,cases/min_cases)
+    validation_multiplier=1.0 if status=="PASSED" and cases>=min_cases else 0.72+0.18*maturity
+    confidence=clamp((0.65*q+0.35*cov)*decay*validation_multiplier,0,100)
+    return {"forecast_confidence_v2_pct":round(confidence,1),"confidence_status":"OOS_VALIDATED" if status=="PASSED" and cases>=min_cases else "PRE_OOS_CAPPED","horizon_decay":decay,"oos_evaluated_cases":cases}
+
+
+def _apply_long_horizon_valuation_guard(stage: dict[str, Any], horizon: str) -> None:
+    """Long-horizon valuation factor becomes a mean-reversion anchor, without changing public stage score."""
+    if horizon not in {"3_6m","6_12m"}: return
+    val=(stage.get("factors") or {}).get("valuation")
+    if not isinstance(val,dict) or finite(val.get("score")) is None: return
+    strength=0.30 if horizon=="3_6m" else 0.50
+    old=float(val["score"]); val["score"]=roundn(old+(50.0-old)*strength,2)
+    if finite(val.get("quality")) is not None:
+        val["quality"]=roundn(float(val["quality"])*(0.82 if horizon=="3_6m" else 0.68),1)
+    val["forecast_role"]="historical_fair_value_mean_reversion_anchor"
+    val["horizon_guard"]={"horizon":horizon,"mean_reversion_to_neutral":strength}
+
 def _scored_industry_result_from_feed(
     industry: dict[str, Any],
     cycle_row: dict[str, Any],
@@ -1482,6 +1509,10 @@ def _scored_industry_result_from_feed(
         forecasts.get("6_12m"), policy, "6_12m", current_score,
         industry=industry, kr=kr, gl=gl, korea_equity=korea_equity, boom=boom, direct=direct,
     )
+    _apply_long_horizon_valuation_guard(forecast_3_6m, "3_6m")
+    _apply_long_horizon_valuation_guard(forecast_6_12m, "6_12m")
+    for _stage, _hz in ((forecast_3m,"3m"),(forecast_3_6m,"3_6m"),(forecast_6_12m,"6_12m")):
+        _stage.update(_forecast_confidence_v2(_stage, _hz, prospective_summary, policy))
     future_score = finite(forecast_3m.get("score"))
 
     # OOS 상태 기반 bridge 한도
