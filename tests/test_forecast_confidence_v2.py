@@ -12,5 +12,5 @@ def test_long_horizon_valuation_guard_is_additive_and_mean_reverting():
     stage={"score":60,"factors":{"valuation":{"score":30.0,"quality":40.0}}}
     _apply_long_horizon_valuation_guard(stage,"6_12m")
     assert stage["score"]==60
-    assert stage["factors"]["valuation"]["score"]==40.0
+    assert 30.0 < stage["factors"]["valuation"]["score"] < 40.0
     assert stage["factors"]["valuation"]["forecast_role"]=="historical_fair_value_mean_reversion_anchor"

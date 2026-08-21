@@ -978,6 +978,7 @@ def _pending_industry_result(
     nowcast_metric: dict[str, Any] | None = None,
     regime: dict[str, Any] | None = None,
     dart_metric: dict[str, Any] | None = None,
+    freshness_quality: float | None = None,
 ) -> dict[str, Any]:
     """
     observed 피드 없을 때: estimated 레이어로 fallback 시도.
@@ -1455,16 +1456,80 @@ def _forecast_confidence_v2(stage: dict[str, Any], horizon: str, prospective_sum
 
 
 def _apply_long_horizon_valuation_guard(stage: dict[str, Any], horizon: str) -> None:
-    """Long-horizon valuation factor becomes a mean-reversion anchor, without changing public stage score."""
-    if horizon not in {"3_6m","6_12m"}: return
-    val=(stage.get("factors") or {}).get("valuation")
-    if not isinstance(val,dict) or finite(val.get("score")) is None: return
-    strength=0.30 if horizon=="3_6m" else 0.50
-    old=float(val["score"]); val["score"]=roundn(old+(50.0-old)*strength,2)
+    """Make valuation a horizon-aware fair-value anchor without rewriting legacy stage.score.
+
+    When valuation history is still provisional (low quality), mean reversion must be
+    modest because 50 is only a neutral fallback, not an observed industry fair value.
+    As valuation quality matures, a stronger long-horizon pull is allowed.
+    """
+    if horizon not in {"3_6m", "6_12m"}:
+        return
+    val = (stage.get("factors") or {}).get("valuation")
+    if not isinstance(val, dict) or finite(val.get("score")) is None:
+        return
+    q = clamp(finite(val.get("quality"), 0.0) or 0.0, 0.0, 100.0)
+    mature = clamp((q - 35.0) / 45.0, 0.0, 1.0)
+    base_strength = 0.15 if horizon == "3_6m" else 0.25
+    mature_bonus = (0.20 if horizon == "3_6m" else 0.30) * mature
+    strength = clamp(base_strength + mature_bonus, 0.0, 0.60)
+    old = float(val["score"])
+    val["score"] = roundn(old + (50.0 - old) * strength, 2)
     if finite(val.get("quality")) is not None:
-        val["quality"]=roundn(float(val["quality"])*(0.82 if horizon=="3_6m" else 0.68),1)
-    val["forecast_role"]="historical_fair_value_mean_reversion_anchor"
-    val["horizon_guard"]={"horizon":horizon,"mean_reversion_to_neutral":strength}
+        val["quality"] = roundn(q * (0.90 if horizon == "3_6m" else 0.80), 1)
+    val["forecast_role"] = "historical_fair_value_mean_reversion_anchor"
+    val["horizon_guard"] = {
+        "horizon": horizon,
+        "mean_reversion_to_neutral": roundn(strength, 3),
+        "history_maturity_proxy": roundn(mature, 3),
+        "policy": "provisional_history_uses_modest_neutral_pull; mature_history_allows_stronger_reversion",
+    }
+
+
+def _forecast_challenger_v2(stage: dict[str, Any], horizon: str, industry: dict[str, Any]) -> dict[str, Any]:
+    """Add a shadow challenger that improves horizon separation without breaking consumers.
+
+    The published ``score`` remains the legacy production contract.  V2 blends that
+    score with the quality-weighted six-axis factor aggregate.  Because the factors
+    already use horizon-specific macro/demand/cost inputs, this makes 6m/12m forecasts
+    genuinely react to their own inputs instead of merely inheriting the upstream total.
+    Promotion is deliberately blocked until prospective OOS comparison proves superiority.
+    """
+    legacy = finite(stage.get("score"))
+    factors = stage.get("factors") or {}
+    if legacy is None or not isinstance(factors, dict):
+        return {"score_v2_shadow": None, "v2_status": "INSUFFICIENT_DATA"}
+
+    weights = dict(industry.get("weights_3m") or {})
+    # Horizon-specific structural tilt: market internals matter less far out;
+    # earnings/demand/financial conditions and valuation matter more.
+    tilt = {
+        "3m": {},
+        "3_6m": {"market_internals": 0.75, "earnings_momentum": 1.08, "demand_cycle": 1.10, "financial_conditions": 1.08, "valuation": 1.05},
+        "6_12m": {"market_internals": 0.40, "earnings_momentum": 1.15, "demand_cycle": 1.15, "pricing_margin": 1.08, "financial_conditions": 1.18, "valuation": 1.12},
+    }.get(horizon, {})
+    for key, mult in tilt.items():
+        if key in weights:
+            weights[key] = max(0.0, float(weights[key]) * float(mult))
+
+    agg = _aggregate_score(factors, weights)
+    factor_score = finite(agg.get("score"))
+    if factor_score is None:
+        return {"score_v2_shadow": roundn(legacy, 1), "v2_status": "LEGACY_ONLY"}
+
+    qwc = clamp(finite(agg.get("quality_weighted_coverage_pct"), 0.0) or 0.0, 0.0, 100.0)
+    base_blend = {"3m": 0.28, "3_6m": 0.38, "6_12m": 0.46}.get(horizon, 0.30)
+    evidence_multiplier = clamp(qwc / 70.0, 0.55, 1.0)
+    factor_blend = base_blend * evidence_multiplier
+    score_v2 = clamp(legacy * (1.0 - factor_blend) + float(factor_score) * factor_blend, 0.0, 100.0)
+    return {
+        "score_v2_shadow": roundn(score_v2, 1),
+        "v2_status": "SHADOW_PRE_OOS",
+        "v2_legacy_anchor_score": roundn(legacy, 1),
+        "v2_factor_aggregate_score": roundn(float(factor_score), 1),
+        "v2_factor_blend_weight": roundn(factor_blend, 3),
+        "v2_quality_weighted_coverage_pct": roundn(qwc, 1),
+        "v2_promotion_rule": "keep legacy score until prospective OOS challenger comparison proves superiority",
+    }
 
 def _scored_industry_result_from_feed(
     industry: dict[str, Any],
@@ -1478,6 +1543,7 @@ def _scored_industry_result_from_feed(
     korea_equity: dict[str, Any] | None = None,
     regime: dict[str, Any] | None = None,
     dart_metric: dict[str, Any] | None = None,
+    freshness_quality: float | None = None,
 ) -> dict[str, Any]:
     boom = boom or {}
     kr = kr or {}
@@ -1511,8 +1577,9 @@ def _scored_industry_result_from_feed(
     )
     _apply_long_horizon_valuation_guard(forecast_3_6m, "3_6m")
     _apply_long_horizon_valuation_guard(forecast_6_12m, "6_12m")
-    for _stage, _hz in ((forecast_3m,"3m"),(forecast_3_6m,"3_6m"),(forecast_6_12m,"6_12m")):
+    for _stage, _hz in ((forecast_3m, "3m"), (forecast_3_6m, "3_6m"), (forecast_6_12m, "6_12m")):
         _stage.update(_forecast_confidence_v2(_stage, _hz, prospective_summary, policy))
+        _stage.update(_forecast_challenger_v2(_stage, _hz, industry))
     future_score = finite(forecast_3m.get("score"))
 
     # OOS 상태 기반 bridge 한도
@@ -1577,7 +1644,7 @@ def _scored_industry_result_from_feed(
         "quality": {
             "sector_specificity_score": 100.0 if current_score is not None else 0.0,
             "forecast_upstream_quality_score": float(forecast_3m.get("quality_score") or 0.0),
-            "source_freshness_score": 100.0 if cycle_row.get("generated_at_utc") else 0.0,
+            "source_freshness_score": round(clamp(finite(freshness_quality, 0.0) or 0.0, 0.0, 100.0), 1),
             "prospective_validation": prospective_summary,
             "direct_sector_market_available": finite(direct.get("market_internal_score")) is not None,
             "industry_specific_valuation_available": finite(direct.get("valuation_score")) is not None,
@@ -1672,5 +1739,5 @@ def score_industry(
     return _scored_industry_result_from_feed(
         industry, cycle_row, direct, policy, prospective_summary,
         boom=boom, kr=kr, gl=gl, korea_equity=korea_equity,
-        regime=_regime, dart_metric=dart_metric,
+        regime=_regime, dart_metric=dart_metric, freshness_quality=freshness_quality,
     )

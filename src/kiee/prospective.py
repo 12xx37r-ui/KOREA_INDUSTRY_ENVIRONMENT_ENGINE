@@ -5,7 +5,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from .util import finite, parse_iso, read_json, roundn, utc_now_iso, write_json
+from .util import clamp, finite, parse_iso, read_json, roundn, utc_now_iso, write_json
 
 
 def _date_key(value: str) -> str:
@@ -63,6 +63,11 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
             "as_of": as_of,
             "current_score": row.get("current", {}).get("score"),
             "forecast_3m_score": row.get("forecast_3m", {}).get("score"),
+            "forecast_3m_v2_shadow_score": row.get("forecast_3m", {}).get("score_v2_shadow"),
+            "forecast_3_6m_score": row.get("forecast_3_6m", {}).get("score"),
+            "forecast_3_6m_v2_shadow_score": row.get("forecast_3_6m", {}).get("score_v2_shadow"),
+            "forecast_6_12m_score": row.get("forecast_6_12m", {}).get("score"),
+            "forecast_6_12m_v2_shadow_score": row.get("forecast_6_12m", {}).get("score_v2_shadow"),
             "signal_normalized": row.get("stock_prediction_bridge", {}).get("signal_normalized"),
             "quality_score": row.get("forecast_3m", {}).get("quality_score"),
             "member_closes": closes,
@@ -94,6 +99,12 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
         entry["predicted_sign"] = predicted_sign
         entry["actual_sign"] = actual_sign
         entry["direction_hit"] = (predicted_sign == actual_sign) if predicted_sign != 0 and actual_sign != 0 else None
+        challenger = finite(entry.get("forecast_3m_v2_shadow_score"))
+        if challenger is not None:
+            challenger_sign = 1 if challenger >= 53 else (-1 if challenger <= 47 else 0)
+            entry["challenger_v2_predicted_sign"] = challenger_sign
+            entry["challenger_v2_direction_hit"] = (challenger_sign == actual_sign) if challenger_sign != 0 and actual_sign != 0 else None
+            entry["challenger_v2_abs_error_to_return_direction"] = roundn(abs((challenger - 50.0) - clamp(actual_return, -50.0, 50.0)), 3)
         evaluated_rows.append(entry)
 
     direction_rows = [e for e in evaluated_rows if e.get("direction_hit") is not None]
@@ -101,6 +112,12 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
     positive_returns = [float(e["actual_3m_equal_weight_return_pct"]) for e in evaluated_rows if int(e.get("predicted_sign") or 0) > 0]
     negative_returns = [float(e["actual_3m_equal_weight_return_pct"]) for e in evaluated_rows if int(e.get("predicted_sign") or 0) < 0]
     spread = (mean(positive_returns) - mean(negative_returns)) if positive_returns and negative_returns else None
+
+    challenger_direction_rows = [e for e in evaluated_rows if e.get("challenger_v2_direction_hit") is not None]
+    challenger_accuracy = mean(1.0 if e.get("challenger_v2_direction_hit") else 0.0 for e in challenger_direction_rows) if challenger_direction_rows else None
+    challenger_positive_returns = [float(e["actual_3m_equal_weight_return_pct"]) for e in evaluated_rows if int(e.get("challenger_v2_predicted_sign") or 0) > 0]
+    challenger_negative_returns = [float(e["actual_3m_equal_weight_return_pct"]) for e in evaluated_rows if int(e.get("challenger_v2_predicted_sign") or 0) < 0]
+    challenger_spread = (mean(challenger_positive_returns) - mean(challenger_negative_returns)) if challenger_positive_returns and challenger_negative_returns else None
     min_cases = int(policy.get("prospective_min_cases", 24))
     accuracy_min = float(policy.get("prospective_direction_accuracy_min", 0.55))
     spread_min = float(policy.get("prospective_mean_return_spread_min_pct", 2.0))
@@ -117,8 +134,18 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
         quality = min(65.0, 35.0 + len(evaluated_rows) * 1.2 + (direction_accuracy or 0.0) * 20.0)
     else:
         quality = 30.0
+    challenger_has_sample = len(challenger_direction_rows) >= max(12, min_cases // 2)
+    challenger_superior = (
+        len(evaluated_rows) >= min_cases
+        and challenger_has_sample
+        and challenger_accuracy is not None
+        and direction_accuracy is not None
+        and challenger_accuracy >= direction_accuracy + 0.02
+        and challenger_spread is not None
+        and (spread is None or challenger_spread >= spread)
+    )
     summary = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "status": status,
         "quality_score": round(quality, 1),
         "registered_forecasts": len(entries),
@@ -128,6 +155,19 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
         "positive_signal_mean_return_pct": roundn(mean(positive_returns), 3) if positive_returns else None,
         "negative_signal_mean_return_pct": roundn(mean(negative_returns), 3) if negative_returns else None,
         "return_spread_pct_point": roundn(spread, 3),
+        "challenger_v2": {
+            "status": "PROMOTION_CANDIDATE" if challenger_superior else ("EVALUATING" if challenger_direction_rows else "PENDING"),
+            "evaluated_cases": len([e for e in evaluated_rows if finite(e.get("forecast_3m_v2_shadow_score")) is not None]),
+            "directional_cases": len(challenger_direction_rows),
+            "direction_accuracy": roundn(challenger_accuracy, 4),
+            "positive_signal_mean_return_pct": roundn(mean(challenger_positive_returns), 3) if challenger_positive_returns else None,
+            "negative_signal_mean_return_pct": roundn(mean(challenger_negative_returns), 3) if challenger_negative_returns else None,
+            "return_spread_pct_point": roundn(challenger_spread, 3),
+            "legacy_direction_accuracy": roundn(direction_accuracy, 4),
+            "legacy_return_spread_pct_point": roundn(spread, 3),
+            "promotion_rule": "minimum 24 evaluated cases; challenger direction accuracy >= legacy +2%p and return spread >= legacy",
+            "production_score_unchanged": True,
+        },
         "requirements": {
             "min_evaluated_cases": min_cases,
             "direction_accuracy_min": accuracy_min,
@@ -138,7 +178,7 @@ def update_registry(root: Path, results: list[dict[str, Any]], direct_market: di
         "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
         "generated_at_utc": utc_now_iso(),
     }
-    write_json(registry_path, {"schema_version": "1.0.0", "entries": entries[-1200:]})
+    write_json(registry_path, {"schema_version": "1.1.0", "entries": entries[-1200:]})
     write_json(report_path, summary)
     return summary
 
