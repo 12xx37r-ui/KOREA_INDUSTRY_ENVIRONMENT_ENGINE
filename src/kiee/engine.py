@@ -6,7 +6,10 @@ from typing import Any
 from .config import load_all
 from .krx_market import collect_sector_market
 from .prospective import read_summary, update_registry
-from .scoring import score_industry, _aggregate_score, _score_band, _delta_strength
+from .scoring import (
+    score_industry, _aggregate_score, _score_band, _delta_strength,
+    _forecast_confidence_v2, _forecast_challenger_v2, _apply_long_horizon_valuation_guard,
+)
 from .upstream import SourceResult, UpstreamLoader
 from .util import clamp, finite, find_month_row, nested, read_json, roundn, utc_now_iso, write_json
 from .api_health import add_network_calls, record_cache, record_lkg, record_fallback, record_unavailable, record_state, flush as flush_api_health
@@ -149,7 +152,15 @@ def _build_independent_horizon_block(row: dict[str, Any], industry: dict[str, An
     }
 
 
-def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[dict[str, Any]], policy: dict[str, Any], korea_rate: dict[str, Any] | None = None, korea_equity: dict[str, Any] | None = None, global_bundle: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def _reconcile_six_axis_outputs(
+    results: list[dict[str, Any]],
+    industries: list[dict[str, Any]],
+    policy: dict[str, Any],
+    korea_rate: dict[str, Any] | None = None,
+    korea_equity: dict[str, Any] | None = None,
+    global_bundle: dict[str, Any] | None = None,
+    prospective_summary: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     """Make the published current headline consistent with its six displayed axes.
 
     The cycle feed may have only one observed KOSIS metric while DART, KRX and
@@ -164,6 +175,7 @@ def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[
     No new external call is made here; this is pure local post-processing of the
     already-scored result.
     """
+    prospective_summary = prospective_summary or {}
     by_key = {str(ind.get("key")): ind for ind in industries}
     for row in results:
         current = row.get("current")
@@ -267,6 +279,28 @@ def _reconcile_six_axis_outputs(results: list[dict[str, Any]], industries: list[
             row["forecast_6_12m"] = _build_independent_horizon_block(
                 row, industry, policy, korea_rate, korea_equity, global_bundle, 12, final_score
             )
+
+            # The independent 6m/12m blocks replace the stages created in scoring.py.
+            # Re-apply additive V2 metadata *after* replacement so it is not silently
+            # dropped from published JSON. Production score remains unchanged.
+            for block_name, horizon in (("forecast_3_6m", "3_6m"), ("forecast_6_12m", "6_12m")):
+                block = row.get(block_name)
+                if not isinstance(block, dict):
+                    continue
+                valuation = (block.get("factors") or {}).get("valuation")
+                if isinstance(valuation, dict) and finite(valuation.get("score")) is not None:
+                    # Keep the legacy factor score intact for downstream compatibility,
+                    # but expose the horizon-aware mean-reversion candidate explicitly.
+                    valuation_shadow = {"factors": {"valuation": dict(valuation)}}
+                    _apply_long_horizon_valuation_guard(valuation_shadow, horizon)
+                    guarded = valuation_shadow["factors"]["valuation"]
+                    valuation["score_v2_shadow"] = guarded.get("score")
+                    valuation["quality_v2_shadow"] = guarded.get("quality")
+                    valuation["forecast_role_v2"] = guarded.get("forecast_role")
+                    valuation["horizon_guard_v2"] = guarded.get("horizon_guard")
+                    valuation["production_score_unchanged"] = True
+                block.update(_forecast_confidence_v2(block, horizon, prospective_summary, policy))
+                block.update(_forecast_challenger_v2(block, horizon, industry))
 
         quality = row.get("quality")
         if isinstance(quality, dict):
@@ -463,14 +497,14 @@ def run_engine(
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_before, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
-    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle)
+    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle, prospective_before)
 
     prospective_after = update_registry(root, results, direct_market, policy, as_of)
     results = [
         score_industry(industry, policy, korea_rate, korea_equity, global_bundle, boom, industry_cycle, direct_market, freshness, prospective_after, nowcast_data=nowcast_data, dart_data=dart_data)
         for industry in industries
     ]
-    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle)
+    results = _reconcile_six_axis_outputs(results, industries, policy, korea_rate, korea_equity, global_bundle, prospective_after)
 
     # 대표기업은 기존 KRX basket을 그대로 노출한다. 기업명은 이미 DART
     # corpCode ZIP을 받은 날에 저장된 로컬 캐시를 재사용하므로 추가 호출 0회.
