@@ -7,25 +7,25 @@
     "shipbuilding"
   ],
   "current": {
-    "score": 69.7,
-    "band": "우호",
+    "score": 66.7,
+    "band": "약우호",
     "cycle_phase": null,
-    "quality_score": 64.7,
+    "quality_score": 65.4,
     "data_coverage_pct": 100.0,
-    "quality_weighted_coverage_pct": 64.7,
+    "quality_weighted_coverage_pct": 65.4,
     "factors": {
       "earnings_momentum": {
-        "score": 86.48,
-        "quality": 60.6,
+        "score": 64.23,
+        "quality": 52.739999999999995,
         "available": true,
-        "source": "KOSIS·공식 산업실물 직접관측 + DART 분기 OP YoY",
-        "detail": "생산·출하/서비스생산·고용 등 실제 산업 관측치로 구성한 현재 실적 모멘텀입니다.",
+        "source": "산업 고유 실적·상업화 신호 + DART 분기 OP YoY",
+        "detail": "현재 산업점수에는 해당 산업의 실물·상업화 신호만 사용합니다.",
         "proxy": false,
         "dart_earnings_applied": true
       },
       "demand_cycle": {
-        "score": 82.99,
-        "quality": 68.14,
+        "score": 84.27,
+        "quality": 75.69999999999999,
         "available": true,
         "source": "KOSIS·공식 산업수요 직접관측 + DART 매출 YoY",
         "detail": "생산·출하·가동률·BSI·고용/소매판매 등 실제 관측치로 구성한 현재 수요·경기입니다.",
@@ -74,23 +74,23 @@
       {
         "factor": "earnings_momentum",
         "label": "산업 실적 모멘텀",
-        "score": 86.48,
-        "quality": 60.6,
+        "score": 64.23,
+        "quality": 52.7,
         "base_weight": 0.2214,
-        "effective_weight": 0.1341,
-        "normalized_weight": 0.2073,
-        "contribution_points": 7.56,
+        "effective_weight": 0.1167,
+        "normalized_weight": 0.1794,
+        "contribution_points": 2.55,
         "available": true
       },
       {
         "factor": "demand_cycle",
         "label": "수요·경기",
-        "score": 82.99,
-        "quality": 68.1,
+        "score": 84.27,
+        "quality": 75.7,
         "base_weight": 0.2755,
-        "effective_weight": 0.1877,
-        "normalized_weight": 0.2901,
-        "contribution_points": 9.57,
+        "effective_weight": 0.2086,
+        "normalized_weight": 0.3206,
+        "contribution_points": 10.99,
         "available": true
       },
       {
@@ -100,7 +100,7 @@
         "quality": 52.0,
         "base_weight": 0.1482,
         "effective_weight": 0.0771,
-        "normalized_weight": 0.1191,
+        "normalized_weight": 0.1184,
         "contribution_points": 0.41,
         "available": true
       },
@@ -111,8 +111,8 @@
         "quality": 85.8,
         "base_weight": 0.1414,
         "effective_weight": 0.1213,
-        "normalized_weight": 0.1874,
-        "contribution_points": -2.67,
+        "normalized_weight": 0.1864,
+        "contribution_points": -2.65,
         "available": true
       },
       {
@@ -122,8 +122,8 @@
         "quality": 75.0,
         "base_weight": 0.1306,
         "effective_weight": 0.098,
-        "normalized_weight": 0.1513,
-        "contribution_points": 3.93,
+        "normalized_weight": 0.1505,
+        "contribution_points": 3.91,
         "available": true
       },
       {
@@ -133,7 +133,7 @@
         "quality": 35.0,
         "base_weight": 0.083,
         "effective_weight": 0.029,
-        "normalized_weight": 0.0449,
+        "normalized_weight": 0.0446,
         "contribution_points": -0.18,
         "available": true
       }
@@ -154,19 +154,6 @@
         "as_of": "2026-06-01",
         "score": 88.8889,
         "available": true
-      },
-      {
-        "id": "customs_nowcast_8901200000",
-        "factor": "production_shipments",
-        "score": 85.0,
-        "quality": 65.0,
-        "source": "관세청 HS=8901200000 202607",
-        "as_of": "2026-07-01",
-        "available": true,
-        "is_nowcast": true,
-        "exp_yoy_score": 100.0,
-        "imp_yoy_score": 100.0,
-        "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
       }
     ],
     "positive_indicators": [],
@@ -180,23 +167,23 @@
     "change_strength": null,
     "status": "scored",
     "score_source": "observed",
-    "observed_score": 66.3,
-    "observed_coverage_pct": 30.0,
+    "observed_score": 67.5,
+    "observed_coverage_pct": 10.0,
     "estimated_score": null,
     "estimated_quality": null,
-    "notes": "관측 산업피드 coverage 30.0%는 원자료 anchor 범위입니다. 최종 현재점수는 DART·KOSIS·KRX·실측 금융환경을 포함한 6개 6축의 품질가중 집계로 산출하며, 6축 coverage 100.0% / 품질가중 coverage 64.7%를 사용합니다.",
-    "legacy_observed_anchor_score": 66.3,
-    "legacy_observed_anchor_quality": 40.0,
+    "notes": "관측 산업피드 coverage 10.0%는 원자료 anchor 범위입니다. 최종 현재점수는 DART·KOSIS·KRX·실측 금융환경을 포함한 6개 6축의 품질가중 집계로 산출하며, 6축 coverage 100.0% / 품질가중 coverage 65.4%를 사용합니다.",
+    "legacy_observed_anchor_score": 67.5,
+    "legacy_observed_anchor_quality": 35.0,
     "score_basis": "six_axis_quality_weighted_aggregate",
     "six_axis_available_factor_count": 6,
-    "six_axis_raw_score": 69.7
+    "six_axis_raw_score": 66.7
   },
   "forecast_3m": {
     "score": 48.0,
     "band": "중립",
-    "delta_points": -21.7,
+    "delta_points": -18.7,
     "direction": "악화",
-    "change_strength": "매우 많이",
+    "change_strength": "많이",
     "quality_score": 45.0,
     "data_coverage_pct": 100,
     "quality_weighted_coverage_pct": 58.3,
@@ -374,13 +361,20 @@
     "confidence_status": "PRE_OOS_CAPPED",
     "horizon_decay": 0.88,
     "oos_evaluated_cases": 0,
+    "score_v2_shadow": 48.0,
+    "v2_status": "SHADOW_PRE_OOS",
+    "v2_legacy_anchor_score": 48.0,
+    "v2_factor_aggregate_score": 48.0,
+    "v2_factor_blend_weight": 0.233,
+    "v2_quality_weighted_coverage_pct": 58.3,
+    "v2_promotion_rule": "keep legacy score until prospective OOS challenger comparison proves superiority",
     "horizon_basis": "3m_model",
     "horizon_specific_inputs": true
   },
   "forecast_3_6m": {
     "score": 46.0,
     "band": "중립",
-    "delta_points": -23.7,
+    "delta_points": -20.7,
     "direction": "악화",
     "change_strength": "매우 많이",
     "quality_score": 56.0,
@@ -526,7 +520,7 @@
   "forecast_6_12m": {
     "score": 44.9,
     "band": "중립",
-    "delta_points": -24.8,
+    "delta_points": -21.8,
     "direction": "악화",
     "change_strength": "매우 많이",
     "quality_score": 55.8,
@@ -779,16 +773,16 @@
     "rule": "OOS PENDING (평가 0건): 허용한도 ±2.0pt. OOS 통과 후 단계적 확대."
   },
   "interpretation": {
-    "headline": "현재 우호 70/100",
+    "headline": "현재 약우호 67/100",
     "beginner": "현재점수는 산업 실물 관측치만 단독 사용하지 않고, 실제로 화면에 표시되는 산업실적·수요·가격/마진·금융환경·KRX 내부환경·밸류에이션 6축을 자료품질로 가중해 합산합니다. 관측 산업피드 점수는 별도 anchor로 보존합니다.",
     "warning": "산업환경 점수는 기업 자체의 주가나 재무가치 점수가 아닙니다."
   },
   "quality": {
     "sector_specificity_score": 100.0,
     "forecast_upstream_quality_score": 45.0,
-    "source_freshness_score": 0.0,
+    "source_freshness_score": 100.0,
     "prospective_validation": {
-      "schema_version": "1.0.0",
+      "schema_version": "1.1.0",
       "status": "PENDING",
       "quality_score": 30.0,
       "registered_forecasts": 101,
@@ -798,6 +792,19 @@
       "positive_signal_mean_return_pct": null,
       "negative_signal_mean_return_pct": null,
       "return_spread_pct_point": null,
+      "challenger_v2": {
+        "status": "PENDING",
+        "evaluated_cases": 0,
+        "directional_cases": 0,
+        "direction_accuracy": null,
+        "positive_signal_mean_return_pct": null,
+        "negative_signal_mean_return_pct": null,
+        "return_spread_pct_point": null,
+        "legacy_direction_accuracy": null,
+        "legacy_return_spread_pct_point": null,
+        "promotion_rule": "minimum 24 evaluated cases; challenger direction accuracy >= legacy +2%p and return spread >= legacy",
+        "production_score_unchanged": true
+      },
       "requirements": {
         "min_evaluated_cases": 24,
         "direction_accuracy_min": 0.55,
@@ -806,20 +813,20 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-21T06:49:16.705574+00:00"
+      "generated_at_utc": "2026-08-21T07:02:27.862441+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,
     "industry_historical_valuation_available": false,
     "data_status": "scored",
-    "current_metric_coverage": 30.0,
+    "current_metric_coverage": 10.0,
     "leading_metric_coverage": 100,
     "oos_bridge_status": "PENDING",
     "oos_evaluated_cases": 0,
     "oos_bridge_max_points": 2.0,
-    "observed_metric_coverage_pct": 30.0,
+    "observed_metric_coverage_pct": 10.0,
     "current_six_axis_coverage_pct": 100.0,
-    "current_six_axis_quality_weighted_coverage_pct": 64.7,
+    "current_six_axis_quality_weighted_coverage_pct": 65.4,
     "forecast_upstream_quality_by_horizon": {
       "3m": 45.0,
       "3_6m": 56.0,

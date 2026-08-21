@@ -1,77 +1,16 @@
 {
   "schema_version": "1.0.0",
-  "status": "raw",
-  "generated_at_utc": "2026-08-21T06:45:07.776169+00:00",
+  "status": "pending",
+  "generated_at_utc": "2026-08-21T07:00:07.060460+00:00",
+  "industries": [],
   "collector": "customs-nowcast-v3.1-full-mapping",
-  "reference_month": "202607",
-  "industries": [
-    {
-      "industry_key": "shipbuilding",
-      "current": {
-        "metrics": [
-          {
-            "id": "customs_nowcast_8901200000",
-            "factor": "production_shipments",
-            "score": 85.0,
-            "quality": 65.0,
-            "source": "관세청 HS=8901200000 202607",
-            "as_of": "2026-07-01",
-            "available": true,
-            "is_nowcast": true,
-            "exp_yoy_score": 100.0,
-            "imp_yoy_score": 100.0,
-            "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
-          }
-        ],
-        "nowcast": true
-      },
-      "as_of": "202607"
-    },
-    {
-      "industry_key": "pharma",
-      "current": {
-        "metrics": [
-          {
-            "id": "customs_nowcast_3004909900",
-            "factor": "production_shipments",
-            "score": 59.4999,
-            "quality": 65.0,
-            "source": "관세청 HS=3004909900 202607",
-            "as_of": "2026-07-01",
-            "available": true,
-            "is_nowcast": true,
-            "exp_yoy_score": 72.001,
-            "imp_yoy_score": 38.282,
-            "note": "관세청 API. 품질상한 65.0, shrinkage 0.7"
-          }
-        ],
-        "nowcast": true
-      },
-      "as_of": "202607"
-    }
-  ],
-  "scored_industry_count": 2,
-  "external_calls": 33,
+  "reason": "관세청 API 엔드포인트 탐색 실패 (400/인증 오류) — CUSTOMS_API_KEY가 이 서비스에 등록됐는지 확인 필요",
+  "external_calls": 3,
+  "source_state": "UNAVAILABLE",
   "diagnostics": [
     "ref=202607",
-    "probe getItemtradeList ['strtYymm', 'endYymm']: OK code=200 snippet='<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><header><result'",
-    "endpoint_ok=getItemtradeList params=['strtYymm', 'endYymm', 'hsSgn']",
-    "semiconductor: no positive values",
-    "display: no positive values",
-    "automotive: no positive values",
-    "automotive_parts: no positive values",
-    "battery: no positive values",
-    "shipbuilding: score=85.0 exp=100.0 imp=100.0",
-    "steel_materials: no positive values",
-    "chemicals: no positive values",
-    "petrochemicals: no positive values",
-    "refining_energy: no positive values",
-    "defense_aerospace: no positive values",
-    "electronic_components: no positive values",
-    "home_appliance: no positive values",
-    "pharma: score=59.4999 exp=72.001 imp=38.282",
-    "cosmetics: no positive values"
-  ],
-  "missing_data_policy": "do_not_impute_or_neutral_fill",
-  "source_state": "LIVE"
+    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1",
+    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1",
+    "probe getItemtradeList ['strtYymm', 'endYymm']: code=-1"
+  ]
 }

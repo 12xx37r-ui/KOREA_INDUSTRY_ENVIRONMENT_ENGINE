@@ -362,6 +362,13 @@
     "confidence_status": "PRE_OOS_CAPPED",
     "horizon_decay": 0.88,
     "oos_evaluated_cases": 0,
+    "score_v2_shadow": 47.8,
+    "v2_status": "SHADOW_PRE_OOS",
+    "v2_legacy_anchor_score": 47.8,
+    "v2_factor_aggregate_score": 47.8,
+    "v2_factor_blend_weight": 0.221,
+    "v2_quality_weighted_coverage_pct": 55.2,
+    "v2_promotion_rule": "keep legacy score until prospective OOS challenger comparison proves superiority",
     "horizon_basis": "3m_model",
     "horizon_specific_inputs": true
   },
@@ -774,9 +781,9 @@
   "quality": {
     "sector_specificity_score": 100.0,
     "forecast_upstream_quality_score": 45.0,
-    "source_freshness_score": 0.0,
+    "source_freshness_score": 100.0,
     "prospective_validation": {
-      "schema_version": "1.0.0",
+      "schema_version": "1.1.0",
       "status": "PENDING",
       "quality_score": 30.0,
       "registered_forecasts": 101,
@@ -786,6 +793,19 @@
       "positive_signal_mean_return_pct": null,
       "negative_signal_mean_return_pct": null,
       "return_spread_pct_point": null,
+      "challenger_v2": {
+        "status": "PENDING",
+        "evaluated_cases": 0,
+        "directional_cases": 0,
+        "direction_accuracy": null,
+        "positive_signal_mean_return_pct": null,
+        "negative_signal_mean_return_pct": null,
+        "return_spread_pct_point": null,
+        "legacy_direction_accuracy": null,
+        "legacy_return_spread_pct_point": null,
+        "promotion_rule": "minimum 24 evaluated cases; challenger direction accuracy >= legacy +2%p and return spread >= legacy",
+        "production_score_unchanged": true
+      },
       "requirements": {
         "min_evaluated_cases": 24,
         "direction_accuracy_min": 0.55,
@@ -794,7 +814,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-21T06:49:16.705574+00:00"
+      "generated_at_utc": "2026-08-21T07:02:27.862441+00:00"
     },
     "direct_sector_market_available": true,
     "industry_specific_valuation_available": true,

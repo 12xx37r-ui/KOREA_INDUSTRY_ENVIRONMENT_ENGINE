@@ -451,7 +451,7 @@
     "forecast_upstream_quality_score": 0.0,
     "source_freshness_score": 0.0,
     "prospective_validation": {
-      "schema_version": "1.0.0",
+      "schema_version": "1.1.0",
       "status": "PENDING",
       "quality_score": 30.0,
       "registered_forecasts": 101,
@@ -461,6 +461,19 @@
       "positive_signal_mean_return_pct": null,
       "negative_signal_mean_return_pct": null,
       "return_spread_pct_point": null,
+      "challenger_v2": {
+        "status": "PENDING",
+        "evaluated_cases": 0,
+        "directional_cases": 0,
+        "direction_accuracy": null,
+        "positive_signal_mean_return_pct": null,
+        "negative_signal_mean_return_pct": null,
+        "return_spread_pct_point": null,
+        "legacy_direction_accuracy": null,
+        "legacy_return_spread_pct_point": null,
+        "promotion_rule": "minimum 24 evaluated cases; challenger direction accuracy >= legacy +2%p and return spread >= legacy",
+        "production_score_unchanged": true
+      },
       "requirements": {
         "min_evaluated_cases": 24,
         "direction_accuracy_min": 0.55,
@@ -469,7 +482,7 @@
         "same_forecast_month_deduplicated": true
       },
       "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-      "generated_at_utc": "2026-08-21T06:49:16.705574+00:00"
+      "generated_at_utc": "2026-08-21T07:02:27.862441+00:00"
     },
     "data_status": "estimated",
     "current_metric_coverage": 0.0,
