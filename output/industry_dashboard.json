@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "engine_version": "1.3.0-stable",
-  "generated_at_utc": "2026-08-21T07:12:16.335754+00:00",
+  "generated_at_utc": "2026-08-21T08:01:29.879924+00:00",
   "status": "ok",
   "industry_count": 101,
   "search_rule": "industry label, key, alias, parent sector, and industry group",
@@ -374,7 +374,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -818,7 +818,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -1255,7 +1255,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -1730,7 +1730,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -2168,7 +2168,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -2611,7 +2611,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -3000,20 +3000,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.3,
+        "band": "중립",
+        "quality_score": 58.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 43.2,
+        "band": "중립",
+        "quality_score": 58.8,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -3047,23 +3047,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 62.1,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 61.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 58.3,
+          "6_12m": 58.8
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -3465,7 +3487,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -3892,7 +3914,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -4366,7 +4388,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -4802,7 +4824,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -5233,7 +5255,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -5606,20 +5628,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 36.0,
+        "band": "약불리",
+        "quality_score": 55.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 34.9,
+        "band": "약불리",
+        "quality_score": 54.0,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -5653,23 +5675,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.4,
+          "6_12m": 54.0
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -6010,20 +6054,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 36.5,
+        "band": "약불리",
+        "quality_score": 55.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 35.5,
+        "band": "약불리",
+        "quality_score": 53.8,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -6057,23 +6101,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 66.1,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 61.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.1,
+          "6_12m": 53.8
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -6408,20 +6474,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.6,
+        "band": "중립",
+        "quality_score": 64.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.2,
+        "band": "중립",
+        "quality_score": 63.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -6455,23 +6521,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 71.7,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 68.9,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 64.1,
+          "6_12m": 63.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -6868,7 +6956,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -7297,7 +7385,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -7682,20 +7770,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.3,
+        "band": "중립",
+        "quality_score": 58.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.7,
+        "band": "중립",
+        "quality_score": 58.2,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -7729,23 +7817,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 61.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 58.3,
+          "6_12m": 58.2
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -8105,20 +8215,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.7,
+        "band": "중립",
+        "quality_score": 50.8,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.7,
+        "band": "중립",
+        "quality_score": 50.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -8152,19 +8262,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 52.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 54.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 50.8,
+          "6_12m": 50.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -8207,7 +8334,12 @@
           "preorders",
           "mobile_rank",
           "steam_wishlist"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -8550,20 +8682,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.8,
+        "band": "중립",
+        "quality_score": 55.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.7,
+        "band": "중립",
+        "quality_score": 55.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -8597,23 +8729,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 74.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 61.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.9,
+          "6_12m": 55.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -8991,20 +9145,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.0,
+        "band": "중립",
+        "quality_score": 58.2,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.8,
+        "band": "중립",
+        "quality_score": 58.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -9038,23 +9192,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.3,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 58.2,
+          "6_12m": 58.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -9450,7 +9626,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -9833,20 +10009,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.4,
+        "band": "중립",
+        "quality_score": 51.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.9,
+        "band": "중립",
+        "quality_score": 51.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -9880,23 +10056,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 55.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 51.9,
+          "6_12m": 51.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -10244,20 +10442,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.0,
+        "band": "중립",
+        "quality_score": 63.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 43.5,
+        "band": "중립",
+        "quality_score": 62.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -10291,23 +10489,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 70.0,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 67.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 63.0,
+          "6_12m": 62.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -10648,20 +10868,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.5,
+        "band": "중립",
+        "quality_score": 60.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.0,
+        "band": "중립",
+        "quality_score": 60.2,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -10695,23 +10915,45 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 67.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 64.0,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 60.3,
+          "6_12m": 60.2
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [],
         "leading_inputs": [],
         "specialized_current_metrics": [],
-        "specialized_leading_metrics": []
+        "specialized_leading_metrics": [],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -11053,20 +11295,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.4,
+        "band": "중립",
+        "quality_score": 55.5,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.3,
+        "band": "중립",
+        "quality_score": 55.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -11100,19 +11342,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 59.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.5,
+          "6_12m": 55.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -11153,7 +11412,12 @@
           "china_tourists",
           "japan_tourists",
           "vip_demand"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -11506,20 +11770,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.2,
+        "band": "중립",
+        "quality_score": 55.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.2,
+        "band": "중립",
+        "quality_score": 55.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -11553,19 +11817,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.5,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.4,
+          "6_12m": 55.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -11606,7 +11887,12 @@
           "airline_bookings",
           "search_trends",
           "consumer_confidence"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -11996,7 +12282,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -12417,20 +12703,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.4,
+        "band": "중립",
+        "quality_score": 57.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.0,
+        "band": "중립",
+        "quality_score": 57.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -12464,19 +12750,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 56.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.9,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 57.0,
+          "6_12m": 57.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -12517,7 +12820,12 @@
           "online_shopping",
           "manufacturing_pmi",
           "trade_volume"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -12907,7 +13215,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -13379,7 +13687,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -13842,7 +14150,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -14257,20 +14565,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.8,
+        "band": "중립",
+        "quality_score": 56.7,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.8,
+        "band": "중립",
+        "quality_score": 57.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -14304,19 +14612,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 59.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 56.7,
+          "6_12m": 57.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -14357,7 +14682,12 @@
           "enrollment",
           "education_policy",
           "household_income"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -14695,20 +15025,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 35.9,
+        "band": "약불리",
+        "quality_score": 57.2,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 34.0,
+        "band": "약불리",
+        "quality_score": 56.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -14742,19 +15072,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 57.2,
+          "6_12m": 56.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -14795,7 +15142,12 @@
           "loan_growth",
           "credit_cycle",
           "regulation"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -15137,20 +15489,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.8,
+        "band": "중립",
+        "quality_score": 52.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.2,
+        "band": "중립",
+        "quality_score": 52.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -15184,19 +15536,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 61.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 56.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 52.9,
+          "6_12m": 52.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -15237,7 +15606,12 @@
           "pc_smartphone_orders",
           "server_capex",
           "component_orders"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -15628,7 +16002,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -16054,20 +16428,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.3,
+        "band": "중립",
+        "quality_score": 51.5,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.9,
+        "band": "중립",
+        "quality_score": 51.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -16101,19 +16475,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 56.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 55.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 51.5,
+          "6_12m": 51.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -16154,7 +16545,12 @@
           "smartphone_orders",
           "replacement_cycle",
           "channel_inventory"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -16489,20 +16885,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.2,
+        "band": "중립",
+        "quality_score": 54.6,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.5,
+        "band": "중립",
+        "quality_score": 54.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -16536,19 +16932,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.1,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.0,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 54.6,
+          "6_12m": 54.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -16589,7 +17002,12 @@
           "hyperscaler_capex",
           "server_orders",
           "data_center_capex"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -16930,20 +17348,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.4,
+        "band": "중립",
+        "quality_score": 54.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.7,
+        "band": "중립",
+        "quality_score": 54.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -16977,19 +17395,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 57.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 54.4,
+          "6_12m": 54.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -17030,7 +17465,12 @@
           "enterprise_it_budget",
           "new_contracts",
           "cloud_migration"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -17376,20 +17816,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.2,
+        "band": "중립",
+        "quality_score": 56.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.5,
+        "band": "중립",
+        "quality_score": 56.0,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -17423,19 +17863,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.3,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 59.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 56.1,
+          "6_12m": 56.0
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -17476,7 +17933,12 @@
           "enterprise_it_budget",
           "cloud_capex",
           "new_contracts"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -17811,20 +18273,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.3,
+        "band": "중립",
+        "quality_score": 59.7,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.7,
+        "band": "중립",
+        "quality_score": 59.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -17858,19 +18320,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 61.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.9,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 59.7,
+          "6_12m": 59.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -17911,7 +18390,12 @@
           "datacenter_capex",
           "ai_investment",
           "gpu_orders"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -18252,20 +18736,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 51.2,
+        "band": "중립",
+        "quality_score": 57.5,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.2,
+        "band": "중립",
+        "quality_score": 57.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -18299,19 +18783,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 60.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 57.5,
+          "6_12m": 57.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -18352,7 +18853,12 @@
           "security_budget",
           "attack_incidents",
           "new_contracts"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -18693,20 +19199,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.3,
+        "band": "중립",
+        "quality_score": 57.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.5,
+        "band": "중립",
+        "quality_score": 57.9,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -18740,19 +19246,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.0,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 60.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 57.9,
+          "6_12m": 57.9
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -18793,7 +19316,12 @@
           "ad_budget",
           "online_transactions",
           "user_growth"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -19128,20 +19656,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.4,
+        "band": "중립",
+        "quality_score": 55.5,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.6,
+        "band": "중립",
+        "quality_score": 55.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -19175,19 +19703,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 56.7,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.3,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 55.5,
+          "6_12m": 55.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -19228,7 +19773,12 @@
           "marketing_budget",
           "online_traffic",
           "ad_pricing"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -19562,20 +20112,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.3,
+        "band": "중립",
+        "quality_score": 51.6,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.8,
+        "band": "중립",
+        "quality_score": 51.7,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -19609,19 +20159,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 53.7,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 54.4,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 51.6,
+          "6_12m": 51.7
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -19662,7 +20229,12 @@
           "user_growth",
           "ad_budget",
           "content_supply"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -19997,20 +20569,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.9,
+        "band": "중립",
+        "quality_score": 61.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.2,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -20044,19 +20616,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.3,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 65.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 61.9,
+          "6_12m": 62.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -20097,7 +20686,12 @@
           "content_investment",
           "ad_budget",
           "program_pipeline"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -20439,20 +21033,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.8,
+        "band": "중립",
+        "quality_score": 61.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.1,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -20486,19 +21080,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.3,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 65.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 61.9,
+          "6_12m": 62.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -20539,7 +21150,12 @@
           "production_pipeline",
           "platform_investment",
           "content_export_contracts"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -20880,20 +21496,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.4,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.6,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -20927,19 +21543,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 60.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 66.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 62.1,
+          "6_12m": 62.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -20980,7 +21613,12 @@
           "album_preorders",
           "tour_schedule",
           "fan_growth"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -21327,20 +21965,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.5,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.7,
+        "band": "중립",
+        "quality_score": 62.2,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -21374,19 +22012,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 60.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 66.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 62.1,
+          "6_12m": 62.2
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -21431,7 +22086,12 @@
           "world_tour",
           "fan_growth",
           "preorders"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -21778,20 +22438,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.7,
+        "band": "중립",
+        "quality_score": 54.9,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.1,
+        "band": "중립",
+        "quality_score": 55.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -21825,19 +22485,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 56.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 54.9,
+          "6_12m": 55.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -21878,7 +22555,12 @@
           "content_investment",
           "new_subscribers",
           "content_pipeline"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -22219,20 +22901,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 50.0,
+        "band": "중립",
+        "quality_score": 61.7,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.1,
+        "band": "중립",
+        "quality_score": 62.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -22266,19 +22948,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.8,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 65.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 61.7,
+          "6_12m": 62.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -22319,7 +23018,12 @@
           "new_ip_launch",
           "licensing_contracts",
           "fan_growth"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -22701,7 +23405,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -23121,20 +23825,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.2,
+        "band": "중립",
+        "quality_score": 58.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.8,
+        "band": "중립",
+        "quality_score": 58.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -23168,19 +23872,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.6,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 58.4,
+          "6_12m": 58.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -23223,7 +23944,12 @@
           "online_sales",
           "tourists",
           "duty_free_sales"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -23569,20 +24295,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.2,
+        "band": "중립",
+        "quality_score": 61.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.8,
+        "band": "중립",
+        "quality_score": 61.7,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -23616,19 +24342,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.7,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 64.4,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 61.3,
+          "6_12m": 61.7
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -23669,7 +24412,12 @@
           "consumer_confidence",
           "tourists",
           "real_wage"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -24051,7 +24799,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -24464,20 +25212,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.5,
+        "band": "중립",
+        "quality_score": 58.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.0,
+        "band": "중립",
+        "quality_score": 58.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -24511,19 +25259,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 61.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 61.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 58.0,
+          "6_12m": 58.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -24564,7 +25329,12 @@
           "consumer_confidence",
           "luxury_sales",
           "tourists"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -24904,20 +25674,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.8,
+        "band": "중립",
+        "quality_score": 60.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.0,
+        "band": "중립",
+        "quality_score": 60.0,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -24951,19 +25721,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 63.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 60.1,
+          "6_12m": 60.0
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -25004,7 +25791,12 @@
           "consumer_confidence",
           "employment",
           "real_wage"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -25339,20 +26131,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.2,
+        "band": "중립",
+        "quality_score": 55.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.6,
+        "band": "중립",
+        "quality_score": 55.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -25386,19 +26178,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 57.5,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.4,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.3,
+          "6_12m": 55.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -25439,7 +26248,12 @@
           "china_tourists",
           "airline_capacity",
           "fx"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -25780,20 +26594,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.6,
+        "band": "중립",
+        "quality_score": 53.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.0,
+        "band": "중립",
+        "quality_score": 53.0,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -25827,19 +26641,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 56.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 56.2,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 53.0,
+          "6_12m": 53.0
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -25880,7 +26711,12 @@
           "consumer_confidence",
           "card_spending",
           "ad_budget"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -26221,20 +27057,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.4,
+        "band": "중립",
+        "quality_score": 51.6,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.5,
+        "band": "중립",
+        "quality_score": 51.7,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -26268,19 +27104,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 54.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 54.0,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 51.6,
+          "6_12m": 51.7
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -26321,7 +27174,12 @@
           "consumer_confidence",
           "food_price",
           "wage"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -26655,20 +27513,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.9,
+        "band": "중립",
+        "quality_score": 55.3,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.1,
+        "band": "중립",
+        "quality_score": 55.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -26702,19 +27560,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 65.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 58.4,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.3,
+          "6_12m": 55.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -26755,7 +27630,12 @@
           "airline_bookings",
           "tourists",
           "event_schedule"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -27096,20 +27976,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.6,
+        "band": "중립",
+        "quality_score": 55.2,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 47.4,
+        "band": "중립",
+        "quality_score": 55.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -27143,19 +28023,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 56.5,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 57.9,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 55.2,
+          "6_12m": 55.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -27196,7 +28093,12 @@
           "consumer_confidence",
           "weather",
           "real_wage"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -27531,20 +28433,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.7,
+        "band": "중립",
+        "quality_score": 57.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.5,
+        "band": "중립",
+        "quality_score": 57.8,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -27578,19 +28480,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 59.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 60.5,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 57.4,
+          "6_12m": 57.8
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -27631,7 +28550,12 @@
           "vehicle_sales",
           "consumer_credit",
           "mileage"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -27966,20 +28890,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.9,
+        "band": "중립",
+        "quality_score": 51.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.3,
+        "band": "중립",
+        "quality_score": 51.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -28013,19 +28937,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 52.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 53.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 51.4,
+          "6_12m": 51.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -28066,7 +29007,12 @@
           "consumer_spending",
           "driver_supply",
           "fuel_price"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -28448,7 +29394,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -28929,7 +29875,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -29399,7 +30345,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -29863,7 +30809,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -30278,20 +31224,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.6,
+        "band": "중립",
+        "quality_score": 49.7,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.1,
+        "band": "중립",
+        "quality_score": 49.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -30325,19 +31271,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 58.3,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 52.7,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 49.7,
+          "6_12m": 49.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -30378,7 +31341,12 @@
           "consumer_confidence",
           "real_wage",
           "food_price"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -30768,7 +31736,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -31236,7 +32204,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -31703,7 +32671,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -32163,7 +33131,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -32632,7 +33600,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -33099,7 +34067,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -33562,7 +34530,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -34030,7 +34998,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -34492,7 +35460,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -34961,7 +35929,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -35431,7 +36399,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -35894,7 +36862,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -36366,7 +37334,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -36828,7 +37796,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -37241,20 +38209,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 42.4,
+        "band": "약불리",
+        "quality_score": 61.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 40.7,
+        "band": "약불리",
+        "quality_score": 61.0,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -37288,19 +38256,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 65.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 63.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 61.0,
+          "6_12m": 61.0
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -37341,7 +38326,12 @@
           "public_capex",
           "water_policy",
           "industrial_output"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -37725,7 +38715,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -38193,7 +39183,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -38621,20 +39611,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.0,
+        "band": "중립",
+        "quality_score": 64.8,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 43.1,
+        "band": "중립",
+        "quality_score": 64.4,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -38668,19 +39658,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 68.0,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 64.8,
+          "6_12m": 64.4
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -38721,7 +39728,12 @@
           "hydrogen_policy",
           "infrastructure_capex",
           "project_approvals"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -39110,7 +40122,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -39530,20 +40542,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 41.2,
+        "band": "약불리",
+        "quality_score": 59.1,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 40.7,
+        "band": "약불리",
+        "quality_score": 58.7,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -39577,19 +40589,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 64.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.9,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 59.1,
+          "6_12m": 58.7
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -39630,7 +40659,12 @@
           "power_demand",
           "tariff_policy",
           "fuel_price"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -40020,7 +41054,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -40487,7 +41521,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -40962,7 +41996,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -41382,20 +42416,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 49.2,
+        "band": "중립",
+        "quality_score": 54.5,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 48.6,
+        "band": "중립",
+        "quality_score": 54.1,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -41429,19 +42463,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 54.7,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 57.1,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 54.5,
+          "6_12m": 54.1
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -41482,7 +42533,12 @@
           "medical_demand",
           "policy",
           "hospital_capex"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -41866,7 +42922,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -42335,7 +43391,7 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "direct_sector_market_available": true,
         "industry_specific_valuation_available": true,
@@ -42751,20 +43807,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.5,
+        "band": "중립",
+        "quality_score": 55.4,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 46.0,
+        "band": "중립",
+        "quality_score": 55.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -42798,19 +43854,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 51.4,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 56.2,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 55.4,
+          "6_12m": 55.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -42851,7 +43924,12 @@
           "dental_visits",
           "pet_ownership",
           "medical_policy"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -43188,20 +44266,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 37.8,
+        "band": "약불리",
+        "quality_score": 57.7,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 36.6,
+        "band": "약불리",
+        "quality_score": 56.3,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -43235,19 +44313,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 70.1,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 63.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 57.7,
+          "6_12m": 56.3
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -43288,7 +44383,12 @@
           "policy_rate",
           "credit_demand",
           "delinquency"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -43631,20 +44731,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 41.4,
+        "band": "약불리",
+        "quality_score": 60.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 40.7,
+        "band": "약불리",
+        "quality_score": 58.5,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -43678,19 +44778,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 70.3,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 65.3,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 60.0,
+          "6_12m": 58.5
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -43731,7 +44848,12 @@
           "market_direction",
           "fundraising",
           "ipo_environment"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -44073,20 +45195,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 42.2,
+        "band": "약불리",
+        "quality_score": 63.0,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 41.5,
+        "band": "약불리",
+        "quality_score": 62.7,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 83.3,
+        "forecast_upstream_quality_score": 25.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -44120,19 +45242,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 73.2,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 66.8,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 25.0,
+          "3_6m": 63.0,
+          "6_12m": 62.7
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -44177,7 +45316,12 @@
           "loan_growth",
           "housing_supply",
           "permits"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -44522,20 +45666,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 41.9,
+        "band": "약불리",
+        "quality_score": 62.2,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 41.2,
+        "band": "약불리",
+        "quality_score": 61.8,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 83.3,
+        "forecast_upstream_quality_score": 45.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -44569,19 +45713,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 69.6,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 66.0,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 45.0,
+          "3_6m": 62.2,
+          "6_12m": 61.8
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -44626,7 +45787,12 @@
           "leasing_demand",
           "supply_pipeline",
           "capex"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
@@ -44975,20 +46141,20 @@
         ]
       },
       "forecast_3_6m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 45.8,
+        "band": "중립",
+        "quality_score": 57.8,
+        "status": "estimated"
       },
       "forecast_6_12m": {
-        "score": null,
-        "band": null,
-        "quality_score": 0.0,
-        "status": "insufficient_data"
+        "score": 44.9,
+        "band": "중립",
+        "quality_score": 57.6,
+        "status": "estimated"
       },
       "quality": {
-        "sector_specificity_score": 0.0,
-        "forecast_upstream_quality_score": 0.0,
+        "sector_specificity_score": 100.0,
+        "forecast_upstream_quality_score": 33.0,
         "source_freshness_score": 0.0,
         "prospective_validation": {
           "schema_version": "1.1.0",
@@ -45022,19 +46188,36 @@
             "same_forecast_month_deduplicated": true
           },
           "note": "산업전망 자체의 3개월 주가방향 OOS가 축적되기 전에는 개별종목 예측에서 보조 오버레이의 최대 영향도를 제한합니다.",
-          "generated_at_utc": "2026-08-21T07:12:16.460234+00:00"
+          "generated_at_utc": "2026-08-21T08:01:30.019011+00:00"
         },
         "data_status": "estimated",
         "current_metric_coverage": 0.0,
         "leading_metric_coverage": 0.0,
+        "current_factor_coverage_pct": 100.0,
+        "current_factor_quality_weighted_coverage_pct": 72.9,
+        "forecast_3m_factor_coverage_pct": 100.0,
+        "forecast_3m_factor_quality_weighted_coverage_pct": 62.3,
         "oos_bridge_status": "PENDING",
         "oos_evaluated_cases": 0,
-        "oos_bridge_max_points": 2.0
+        "oos_bridge_max_points": 2.0,
+        "forecast_upstream_quality_by_horizon": {
+          "3m": 33.0,
+          "3_6m": 57.8,
+          "6_12m": 57.6
+        }
       },
       "score_model": {
         "current": "estimated_macro_theme_krx",
-        "future": "estimated_macro_theme_financial_conditions",
+        "future": "horizon_specific_3m_6m_12m_multi_source_models",
         "data_status": "estimated",
+        "regime": "tightening",
+        "regime_label": "금리 인상기",
+        "regime_active": [
+          "tightening",
+          "high_fx"
+        ],
+        "current_excludes_macro": false,
+        "future_uses_industry_sensitivities": true,
         "current_inputs": [
           "production",
           "shipments",
@@ -45075,7 +46258,12 @@
           "commodity_cycle",
           "subsidiary_earnings",
           "capital_allocation"
-        ]
+        ],
+        "horizon_specific_models": {
+          "3m": "existing_3m_leading_model",
+          "3_6m": "independent_6m_multi_source_model",
+          "6_12m": "independent_12m_multi_source_model"
+        }
       },
       "companies": [
         {
