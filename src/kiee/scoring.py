@@ -1084,6 +1084,11 @@ def _pending_industry_result(
         "current": "estimated_macro_theme_krx" if estimated_current else "insufficient_data",
         "future": "estimated_macro_theme_financial_conditions",
         "data_status": "estimated" if estimated_current else "insufficient_data",
+        "regime": (regime.get("primary_regime") if regime else None) or "neutral",
+        "regime_label": (regime.get("primary_label") if regime else None) or "중립",
+        "regime_active": [r["name"] for r in (regime.get("active_regimes") or [])] if regime else [],
+        "current_excludes_macro": False if estimated_current else None,
+        "future_uses_industry_sensitivities": True if estimated_forecast else None,
         "current_inputs": industry.get("current_metric_groups") or [],
         "leading_inputs": industry.get("leading_metric_groups") or [],
         "specialized_current_metrics": industry.get("specialized_current_metrics") or [],
@@ -1101,15 +1106,22 @@ def _pending_industry_result(
         "direct_market": direct,
         "theme_bridge": theme,
         "stock_prediction_bridge": {
-            "allowed_as_auxiliary": bridge_limits["allowed_auxiliary"],
-            "allowed_as_primary": bridge_limits["allowed_primary"],
+            "allowed_as_auxiliary": False,
+            "allowed_as_primary": False,
             "bounded_direction_adjustment_points": 0.0,
             "max_abs_adjustment_points": bridge_limits["max_points"],
-            "signal_normalized": 0.0,
-            "quality_score": 0.0,
+            "signal_normalized": round(
+                clamp(
+                    0.60 * (((forecast_3m.get("score") or 50.0) - 50.0) / 50.0)
+                    + 0.40 * clamp(((forecast_3m.get("score") or 50.0) - (current.get("score") or 50.0)) / 15.0, -1, 1),
+                    -1, 1,
+                ), 4
+            ) if forecast_3m.get("score") is not None and current.get("score") is not None else 0.0,
+            "quality_score": float(forecast_3m.get("quality_score") or 0.0),
             "validation_status": oos_status,
             "oos_current_limit": bridge_limits["max_points"],
-            "rule": f"OOS {oos_status} (평가 {evaluated_cases}건): 허용한도 ±{bridge_limits['max_points']}pt. 산업실물피드 연결 후 본격 활성화.",
+            "oos_evaluated_cases": evaluated_cases,
+            "rule": f"OOS {oos_status} (평가 {evaluated_cases}건): 허용한도 ±{bridge_limits['max_points']}pt. 추정 산업은 검증 전 실제 주가예측 입력으로 사용하지 않습니다.",
         },
         "interpretation": {
             "headline": f"추정 {current.get('band', '데이터 부족')} {current.get('score', 'N/A')}/100" if estimated_current else "산업실물지표 연결 대기",
@@ -1117,13 +1129,20 @@ def _pending_industry_result(
             "warning": "추정 점수(estimated)는 산업 고유 실물지표 없이 산출한 보조 참고치입니다. 과신 금지.",
         },
         "quality": {
-            "sector_specificity_score": 0.0,
-            "forecast_upstream_quality_score": 0.0,
-            "source_freshness_score": 0.0,
+            "sector_specificity_score": round(
+                100.0 * max(0, estimated_current["available_factor_count"] - estimated_current.get("proxy_factor_count", 0))
+                / max(1, estimated_current["available_factor_count"]), 1
+            ) if estimated_current else 0.0,
+            "forecast_upstream_quality_score": round(float(forecast_3m.get("quality_score") or 0.0), 1),
+            "source_freshness_score": round(float(freshness_quality or 0.0), 1),
             "prospective_validation": prospective_summary or {},
             "data_status": "estimated" if estimated_current else "insufficient_data",
             "current_metric_coverage": 0.0,
             "leading_metric_coverage": 0.0,
+            "current_factor_coverage_pct": round(float(current.get("data_coverage_pct") or 0.0), 1),
+            "current_factor_quality_weighted_coverage_pct": round(float(current.get("quality_weighted_coverage_pct") or 0.0), 1),
+            "forecast_3m_factor_coverage_pct": round(float(forecast_3m.get("data_coverage_pct") or 0.0), 1),
+            "forecast_3m_factor_quality_weighted_coverage_pct": round(float(forecast_3m.get("quality_weighted_coverage_pct") or 0.0), 1),
             "oos_bridge_status": oos_status,
             "oos_evaluated_cases": evaluated_cases,
             "oos_bridge_max_points": bridge_limits["max_points"],

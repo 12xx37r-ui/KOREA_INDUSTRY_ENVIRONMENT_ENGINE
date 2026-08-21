@@ -316,6 +316,69 @@ def _reconcile_six_axis_outputs(
                 round(float(q3), 1) if q3 is not None else 0.0
             )
             quality["forecast_upstream_quality_score_basis"] = "3m_backward_compatibility"
+
+    # Estimated industries can have a valid six-factor 3m block even when the
+    # dedicated industry-cycle feed has no 3_6m/6_12m rows. Fill only those
+    # missing horizons from the already-loaded 6m/12m macro paths. This adds no
+    # external calls and never overwrites an existing published horizon score.
+    if korea_rate is not None and korea_equity is not None and global_bundle is not None:
+        for row in results:
+            current_score = finite((row.get("current") or {}).get("score"))
+            base_3m = row.get("forecast_3m") or {}
+            if current_score is None or finite(base_3m.get("score")) is None or not isinstance(base_3m.get("factors"), dict):
+                continue
+            industry = by_key.get(str(row.get("industry_key"))) or {}
+            if not industry:
+                continue
+            filled_any = False
+            for block_name, horizon, months in (("forecast_3_6m", "3_6m", 6), ("forecast_6_12m", "6_12m", 12)):
+                existing = row.get(block_name) if isinstance(row.get(block_name), dict) else {}
+                if finite(existing.get("score")) is not None:
+                    continue
+                block = _build_independent_horizon_block(
+                    row, industry, policy, korea_rate, korea_equity, global_bundle, months, float(current_score)
+                )
+                block["filled_from_existing_upstreams"] = True
+                block["previous_status"] = existing.get("status") or "insufficient_data"
+                block["reason"] = (
+                    "해당 산업의 전용 중장기 실물 선행값이 없어, 이미 수집된 3개월 산업 6축 앵커와 "
+                    f"{months}개월 한국 금리·환율·유동성 및 글로벌 수요·원가 전망을 결합해 산출했습니다."
+                )
+                valuation = (block.get("factors") or {}).get("valuation")
+                if isinstance(valuation, dict) and finite(valuation.get("score")) is not None:
+                    valuation_shadow = {"factors": {"valuation": dict(valuation)}}
+                    _apply_long_horizon_valuation_guard(valuation_shadow, horizon)
+                    guarded = valuation_shadow["factors"]["valuation"]
+                    valuation["score_v2_shadow"] = guarded.get("score")
+                    valuation["quality_v2_shadow"] = guarded.get("quality")
+                    valuation["forecast_role_v2"] = guarded.get("forecast_role")
+                    valuation["horizon_guard_v2"] = guarded.get("horizon_guard")
+                    valuation["production_score_unchanged"] = True
+                block.update(_forecast_confidence_v2(block, horizon, prospective_summary, policy))
+                block.update(_forecast_challenger_v2(block, horizon, industry))
+                row[block_name] = block
+                filled_any = True
+            if not filled_any:
+                continue
+            score_model = row.get("score_model")
+            if isinstance(score_model, dict):
+                score_model["future"] = "horizon_specific_3m_6m_12m_multi_source_models"
+                score_model["future_uses_industry_sensitivities"] = True
+                score_model["horizon_specific_models"] = {
+                    "3m": "existing_3m_leading_model",
+                    "3_6m": "independent_6m_multi_source_model",
+                    "6_12m": "independent_12m_multi_source_model",
+                }
+            quality = row.get("quality")
+            if isinstance(quality, dict):
+                q3 = finite((row.get("forecast_3m") or {}).get("quality_score"))
+                q6 = finite((row.get("forecast_3_6m") or {}).get("quality_score"))
+                q12 = finite((row.get("forecast_6_12m") or {}).get("quality_score"))
+                quality["forecast_upstream_quality_by_horizon"] = {
+                    "3m": round(float(q3), 1) if q3 is not None else None,
+                    "3_6m": round(float(q6), 1) if q6 is not None else None,
+                    "6_12m": round(float(q12), 1) if q12 is not None else None,
+                }
     return results
 
 def _company_name_map(root: Path) -> dict[str, str]:
