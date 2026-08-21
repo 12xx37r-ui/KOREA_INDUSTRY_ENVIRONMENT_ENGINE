@@ -1,12 +1,12 @@
 {
   "schema_version": "3.0.0",
   "engine_version": "korea-equity-environment-v3.0-semiconductor-pbr-band",
-  "generated_at_utc": "2026-08-21T06:43:30.933111+00:00",
+  "generated_at_utc": "2026-08-21T09:04:31.114716+00:00",
   "scope": "한국 주식시장 직접환경 전용. 기존 금리·환율 엔진 출력과 독립",
   "score": 44,
   "score_valid": true,
   "bias": "중립",
-  "final_score": 36.478,
+  "final_score": 36.6917,
   "final_score_valid": true,
   "final_bias": "약불리",
   "circuit_breaker": false,
@@ -77,9 +77,9 @@
     },
     "credit_spread": {
       "available": true,
-      "score_normalized": -0.828125,
-      "spread_pct_point": 0.693,
-      "percentile": 0.914062,
+      "score_normalized": -0.803125,
+      "spread_pct_point": 0.688,
+      "percentile": 0.901563,
       "history_samples": 320,
       "history_source": "same_run_ecos_history",
       "detail": "AA- 회사채3년-국고채3년의 동일날짜 스프레드 과거분포 백분위. 좁을수록 우호."
@@ -173,7 +173,7 @@
   "score_after_pbr": 34,
   "volatility_regime": {
     "model_version": "volatility-regime-v1.0",
-    "generated_at_utc": "2026-08-21T06:43:30.931994+00:00",
+    "generated_at_utc": "2026-08-21T09:04:31.113679+00:00",
     "regime": "normal",
     "circuit_breaker": false,
     "circuit_breaker_reasons": [],
@@ -185,40 +185,40 @@
     "shock_multiplier": {
       "available": true,
       "penalty": 0.0,
-      "z_score": -0.1639,
-      "abs_z": 0.1639,
+      "z_score": -0.1769,
+      "abs_z": 0.1769,
       "regime_label": "정상",
       "formula": "penalty = z^2 * 3.0 (|z|>2 구간), (|z|-1)*5.0 (1<|z|<=2), 0 (정상)"
     },
     "emp": {
       "available": true,
-      "emp_score": -1.652,
+      "emp_score": -1.7945,
       "components_count": 2,
       "evidence": {
-        "fx_change_pct": -3.88,
+        "fx_change_pct": -4.1649,
         "reserve_change_pct": null,
         "rate_differential_pct": -1.44
       },
       "interpretation": "양수=원화절하 압력 증가, 음수=원화절상 압력"
     },
     "emp_adjustment": {
-      "adjusted_score": 36.478,
+      "adjusted_score": 36.6917,
       "original_score": 34,
-      "emp_score": -1.652,
-      "adjustment": 2.478,
+      "emp_score": -1.7945,
+      "adjustment": 2.6917,
       "emp_applied": true
     },
     "macro_env_score_original": 34,
-    "macro_env_score_after_emp": 36.478,
-    "final_score": 36.478,
+    "macro_env_score_after_emp": 36.6917,
+    "final_score": 36.6917,
     "final_score_valid": true,
     "regime_evidence": {
-      "fx_3d_change_pct": -1.9284,
-      "fx_std_5d": 12.1542,
-      "fx_std_10d": 11.7652,
-      "fx_z_score": 0.1639,
+      "fx_3d_change_pct": -2.2192,
+      "fx_std_5d": 13.1224,
+      "fx_std_10d": 12.5439,
+      "fx_z_score": 0.1769,
       "vkospi_latest": null,
-      "cds_proxy": 0.163
+      "cds_proxy": 0.216
     }
   },
   "current_inputs": {
@@ -317,11 +317,11 @@
     },
     "credit": {
       "available": true,
-      "corp_aa_minus_3y_pct": 4.504,
-      "corp_as_of": "20260820",
-      "gov_3y_pct": 3.811,
-      "gov_as_of": "20260820",
-      "spread_pct_point": 0.693,
+      "corp_aa_minus_3y_pct": 4.542,
+      "corp_as_of": "20260821",
+      "gov_3y_pct": 3.854,
+      "gov_as_of": "20260821",
+      "spread_pct_point": 0.688,
       "spread_history": [
         {
           "date": "20250206",
@@ -2584,9 +2584,15 @@
           "corp_aa_minus_3y_pct": 4.504,
           "gov_3y_pct": 3.811,
           "spread_pct_point": 0.693
+        },
+        {
+          "date": "20260821",
+          "corp_aa_minus_3y_pct": 4.542,
+          "gov_3y_pct": 3.854,
+          "spread_pct_point": 0.688
         }
       ],
-      "history_samples": 377,
+      "history_samples": 378,
       "stale": false,
       "source": "한국은행 ECOS 시장금리(일별)",
       "source_url": "https://ecos.bok.or.kr/",
