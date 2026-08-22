@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at_utc": "2026-08-21T09:59:45.827698+00:00",
+  "generated_at_utc": "2026-08-22T06:29:24.640851+00:00",
   "policy": {
     "priority": "freshness_first",
     "live_market_rule": "when new market data may exist, source API is queried on every workflow",
@@ -16,8 +16,8 @@
     ]
   },
   "providers": {
-    "DART": {
-      "network_calls": 1,
+    "GITHUB": {
+      "network_calls": 5,
       "duplicate_calls_removed": 0,
       "cache_uses": 0,
       "retries": 0,
@@ -41,12 +41,12 @@
       "state": "LIVE"
     },
     "CUSTOMS": {
-      "network_calls": 31,
+      "network_calls": 33,
       "duplicate_calls_removed": 0,
       "cache_uses": 0,
-      "retries": 0,
+      "retries": 2,
       "rate_limit_429": 0,
-      "timeouts": 0,
+      "timeouts": 2,
       "fallback_used": false,
       "lkg_used": false,
       "unavailable": 0,
@@ -64,8 +64,8 @@
       "unavailable": 0,
       "state": "LIVE"
     },
-    "GITHUB": {
-      "network_calls": 5,
+    "DART": {
+      "network_calls": 1,
       "duplicate_calls_removed": 0,
       "cache_uses": 0,
       "retries": 0,
@@ -78,12 +78,12 @@
     }
   },
   "totals": {
-    "network_calls": 58,
+    "network_calls": 60,
     "duplicate_calls_removed": 2,
     "cache_uses": 0,
-    "retries": 0,
+    "retries": 2,
     "rate_limit_429": 0,
-    "timeouts": 0,
+    "timeouts": 2,
     "fallback_used": false,
     "lkg_used": false
   }
