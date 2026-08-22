@@ -64,3 +64,33 @@ def test_estimated_industry_missing_long_horizons_are_filled_from_existing_upstr
     assert out["forecast_6_12m"]["filled_from_existing_upstreams"] is True
     assert out["score_model"]["horizon_specific_models"]["3_6m"] == "independent_6m_multi_source_model"
     assert out["quality"]["forecast_upstream_quality_by_horizon"]["6_12m"] is not None
+
+
+def test_estimated_forecast_quality_uses_information_density_not_fixed_45_cap():
+    from kiee.scoring import _build_estimated_forecast
+
+    # Six direct factors with ~60 quality and full coverage should naturally clear 50,
+    # while remaining below observed-quality territory due to the estimated haircut.
+    industry = {
+        "key": "sample",
+        "weights_3m": {
+            "earnings_momentum": 1/6, "demand_cycle": 1/6, "pricing_margin": 1/6,
+            "financial_conditions": 1/6, "market_internals": 1/6, "valuation": 1/6,
+        },
+        "sensitivities": {},
+    }
+    # Patch factor construction so the test isolates the quality formula.
+    import kiee.scoring as scoring
+    factors = {k: {"score": 50.0, "quality": q, "available": True, "proxy": False} for k, q in {
+        "earnings_momentum": 51, "demand_cycle": 52, "pricing_margin": 74,
+        "financial_conditions": 83, "market_internals": 75, "valuation": 27,
+    }.items()}
+    original = scoring._build_factors
+    scoring._build_factors = lambda *args, **kwargs: (factors, {})
+    try:
+        out = _build_estimated_forecast(industry, {}, {}, {}, {}, {}, {}, 50.0)
+    finally:
+        scoring._build_factors = original
+    assert out is not None
+    assert 50.0 <= out["estimated_quality"] <= 70.0
+    assert out["estimated_quality"] != 45.0

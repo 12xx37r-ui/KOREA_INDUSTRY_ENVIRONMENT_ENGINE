@@ -940,11 +940,23 @@ def _build_estimated_forecast(
     raw_score = float(agg["score"])
     score = 50.0 + (raw_score - 50.0) * shrink_extra
 
-    # 현재 수급(market_internals)은 전망에 최대 25% 잔존
+    # 전망 quality는 단순 지표 개수의 고정 cap(기존 최대 45) 대신
+    # 실제 정보량을 반영한다. 품질가중 coverage가 핵심이고, 전체 coverage와
+    # 사용 가능한 factor의 평균 quality를 보조로 사용한다. estimated 전망이라는
+    # 불확실성은 15% haircut으로 유지하며 proxy는 별도 감점한다.
     proxy_count = sum(1 for f in factors.values() if f.get("proxy") and f.get("available"))
-    proxy_penalty = proxy_count * 8.0
-    # 전망 추정 quality는 현재보다 더 낮게
-    estimated_q = max(0.0, min(45.0, 15.0 + available_count * 7.0 - proxy_penalty))
+    available_qualities = [
+        float(f.get("quality") or 0.0)
+        for f in factors.values()
+        if f.get("available") and float(f.get("quality") or 0.0) > 0.0
+    ]
+    mean_factor_quality = (sum(available_qualities) / len(available_qualities)) if available_qualities else 0.0
+    information_quality = (
+        0.70 * float(agg.get("quality_weighted_coverage_pct") or 0.0)
+        + 0.15 * float(agg.get("base_data_coverage_pct") or 0.0)
+        + 0.15 * mean_factor_quality
+    )
+    estimated_q = clamp(information_quality * 0.85 - proxy_count * 5.0, 0.0, 70.0)
 
     delta = round(score - current_score, 1) if current_score is not None else None
     direction = "개선" if delta is not None and delta > 1 else ("악화" if delta is not None and delta < -1 else "유지") if delta is not None else "추정"
