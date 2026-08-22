@@ -576,6 +576,44 @@ def _build_factors(industry: dict[str, Any], policy: dict[str, Any], kr: dict[st
         valuation["provenance"] = "gap_proxy"
         valuation["input_basis"] = "broad_market_valuation_proxy"
 
+    # Forecast provenance must describe how the forecast score was produced, not
+    # merely whether one of its anchors came from direct data. This prevents the
+    # UI from labeling blended/derived future scores as if they were direct observations.
+    if future:
+        earnings["forecast_provenance"] = "forecast_blend" if theme.get("available") else "model_proxy"
+        earnings["input_basis"] = "industry_leading_anchor_plus_market_earnings_environment"
+        earnings["detail"] = (
+            f"산업 실물·상업화 앵커 {(f'{float(theme_score):.2f}/100' if theme_score is not None else '자료 없음')} · 한국시장 이익환경 {float(broad_earn if broad_earn is not None else 50.0):.2f}/100 · "
+            f"3개월 전망점수 {float(earnings.get('score') or 50.0):.2f}/100"
+        )
+        demand["forecast_provenance"] = "forecast_blend" if theme.get("available") else "model_proxy"
+        demand["input_basis"] = "industry_leading_anchor_plus_global_demand_forecast"
+        demand["detail"] = (
+            f"산업 실물·상업화 앵커 {(f'{float(theme_score):.2f}/100' if theme_score is not None else '자료 없음')} · 글로벌 소비 3개월 전망 {float(consumer):.2f}/100 · "
+            f"글로벌 경기 {float(macro):.2f}/100 · 업종 소비민감도 {consumer_sens:.2f} · 최종 {float(demand.get('score') or 50.0):.2f}/100"
+        )
+        pricing["forecast_provenance"] = "forecast_blend" if theme.get("available") else "model_proxy"
+        pricing["input_basis"] = "industry_margin_anchor_plus_global_cost_forecast"
+        pricing["detail"] = (
+            f"산업 마진·상업화 앵커 {(f'{float(theme_score):.2f}/100' if theme_score is not None else '자료 없음')} · 글로벌 원가압력 3개월 전망 {float(cost_pressure):.2f}/100 · "
+            f"업종 원가민감도 {cost_sens:.2f} · 최종 {float(pricing.get('score') or 50.0):.2f}/100"
+        )
+        financial["forecast_provenance"] = "macro_forecast_derived"
+        financial["input_basis"] = "horizon_specific_macro_forecasts"
+        market_internal["forecast_provenance"] = "forecast_blend"
+        market_internal["input_basis"] = "krx_anchor_plus_korea_global_equity_forecast"
+        market_internal["detail"] = (
+            f"KRX 업종 내부환경 {float(direct_score if direct_score is not None else 50.0):.2f}/100 · 한국증시 환경 {float(broad_market):.2f}/100 · "
+            f"글로벌 주식 3개월 전망 {float(global_equity):.2f}/100 · 최종 {float(market_internal.get('score') or 50.0):.2f}/100"
+        )
+        if direct_val is not None:
+            valuation["forecast_provenance"] = "direct_anchor"
+            valuation["input_basis"] = "current_krx_valuation_anchor_with_forecast_shrinkage"
+            valuation["detail"] = (
+                " · ".join(valuation_detail_parts) +
+                " · 현재 KRX 밸류에이션을 3개월 전망의 느린 앵커로 사용하며 미래 PER·PBR을 직접 관측한 값은 아닙니다."
+            )
+
     factors = {
         "earnings_momentum": earnings,
         "demand_cycle": demand,
@@ -733,6 +771,14 @@ def _apply_dart_earnings_to_factors(
             merged["score"] = roundn(blended, 2)
             merged["quality"] = clamp(em.get("quality", 0) * 0.6 + d_quality * 0.4, 0, 100)
             merged["source"] = em.get("source", "") + " + DART 분기 OP YoY"
+            merged["detail"] = (
+                (str(em.get("detail") or "").rstrip(" .") + " · ") if em.get("detail") else ""
+            ) + f"DART {dart_metric.get('as_of','')} 영업이익 YoY 중앙값 {float(dart_metric.get('median_yoy_pct') or 0):+.2f}% · 대표 {int(dart_metric.get('n_firms') or 0)}개사"
+            merged["direct_values"] = {
+                "as_of": dart_metric.get("as_of"),
+                "operating_profit_yoy_pct": roundn(dart_metric.get("median_yoy_pct"), 2),
+                "n_firms": int(dart_metric.get("n_firms") or 0),
+            }
             merged["dart_earnings_applied"] = True
             merged["proxy"] = False
             if surprise:
@@ -760,6 +806,17 @@ def _apply_dart_earnings_to_factors(
             merged_dc["score"] = roundn(float(dc["score"]) * 0.70 + revenue_score * 0.30, 2)
             merged_dc["quality"] = clamp((finite(dc.get("quality"), 0.0) or 0.0) * 0.70 + revenue_quality * 0.30, 0, 100)
             merged_dc["source"] = dc.get("source", "") + " + DART 매출 YoY"
+            merged_dc["detail"] = (
+                (str(dc.get("detail") or "").rstrip(" .") + " · ") if dc.get("detail") else ""
+            ) + (
+                f"DART {dart_metric.get('as_of','')} 매출 YoY 중앙값 {float(revenue_yoy):+.2f}% · 대표 {int(dart_metric.get('revenue_n_firms') or 0)}개사"
+                if revenue_yoy is not None else f"DART {dart_metric.get('as_of','')} 매출 YoY 직접자료"
+            )
+            merged_dc["direct_values"] = {
+                "as_of": dart_metric.get("as_of"),
+                "revenue_yoy_pct": roundn(revenue_yoy, 2),
+                "n_firms": int(dart_metric.get("revenue_n_firms") or 0),
+            }
             merged_dc["proxy"] = False
             merged_dc["dart_revenue_applied"] = True
             factors["demand_cycle"] = merged_dc
@@ -784,6 +841,17 @@ def _apply_dart_earnings_to_factors(
             merged_pm["score"] = roundn(float(pm["score"]) * 0.65 + margin_score * 0.35, 2)
             merged_pm["quality"] = clamp((finite(pm.get("quality"), 0.0) or 0.0) * 0.65 + margin_quality * 0.35, 0, 100)
             merged_pm["source"] = pm.get("source", "") + " + DART 영업마진 변화"
+            merged_pm["detail"] = (
+                (str(pm.get("detail") or "").rstrip(" .") + " · ") if pm.get("detail") else ""
+            ) + (
+                f"DART {dart_metric.get('as_of','')} 영업이익률 YoY 변화 중앙값 {float(margin_delta):+.2f}%p · 대표 {int(dart_metric.get('margin_n_firms') or 0)}개사"
+                if margin_delta is not None else f"DART {dart_metric.get('as_of','')} 영업이익률 변화 직접자료"
+            )
+            merged_pm["direct_values"] = {
+                "as_of": dart_metric.get("as_of"),
+                "operating_margin_delta_ppt": roundn(margin_delta, 3),
+                "n_firms": int(dart_metric.get("margin_n_firms") or 0),
+            }
             merged_pm["proxy"] = False
             merged_pm["dart_margin_applied"] = True
             factors["pricing_margin"] = merged_pm

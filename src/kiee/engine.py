@@ -113,16 +113,61 @@ def _build_independent_horizon_block(row: dict[str, Any], industry: dict[str, An
     # factor values remain industry anchors rather than being copied wholesale.
     macro_weight = 0.45 if months==6 else 0.62
     factors={}
-    factors["earnings_momentum"]={"score":round(clamp(e3*(1-macro_weight*0.45)+demand_macro*(macro_weight*0.45),0,100),2),"quality":round(min(eq,consumer_q)*0.9,1),"available":True,"proxy":False,"source":f"산업 3개월 실적선행 앵커 + 글로벌 수요 {months}개월 경로"}
-    factors["demand_cycle"]={"score":round(clamp(d3*(1-macro_weight)+demand_macro*macro_weight,0,100),2),"quality":round(min(dq,consumer_q),1),"available":True,"proxy":False,"source":f"산업 수요선행 + 글로벌 고용·소비 {months}개월 독립예측"}
-    factors["pricing_margin"]={"score":round(clamp(p3*(1-macro_weight)+pricing_macro*macro_weight,0,100),2),"quality":round(min(pq,cost_q),1),"available":True,"proxy":False,"source":f"산업 마진선행 + 글로벌 원가압력 {months}개월 독립예측"}
-    factors["financial_conditions"]={**financial,"source":f"한국 금리·환율·유동성·원화강도 {months}개월 경로 → 업종 민감도"}
+    earnings_score=round(clamp(e3*(1-macro_weight*0.45)+demand_macro*(macro_weight*0.45),0,100),2)
+    demand_score=round(clamp(d3*(1-macro_weight)+demand_macro*macro_weight,0,100),2)
+    pricing_score=round(clamp(p3*(1-macro_weight)+pricing_macro*macro_weight,0,100),2)
+    factors["earnings_momentum"]={
+        "score":earnings_score,"quality":round(min(eq,consumer_q)*0.9,1),"available":True,"proxy":False,
+        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_anchor_plus_{months}m_global_demand",
+        "source":f"산업 3개월 실적선행 앵커 + 글로벌 수요 {months}개월 경로",
+        "detail":f"3개월 실적선행 앵커 {e3:.2f}/100 · 글로벌 소비·수요 {months}개월 전망 {float(consumer or 50):.2f}/100 · 업종 수요민감도 {consumer_sens:.2f} · 최종 {earnings_score:.2f}/100",
+        "forecast_inputs":{"industry_3m_anchor_score":roundn(e3,2),"global_consumer_forecast":roundn(consumer,2),"consumer_sensitivity":roundn(consumer_sens,3)}
+    }
+    factors["demand_cycle"]={
+        "score":demand_score,"quality":round(min(dq,consumer_q),1),"available":True,"proxy":False,
+        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_demand_plus_{months}m_global_demand",
+        "source":f"산업 수요선행 + 글로벌 고용·소비 {months}개월 독립예측",
+        "detail":f"3개월 수요선행 앵커 {d3:.2f}/100 · 글로벌 소비·수요 {months}개월 전망 {float(consumer or 50):.2f}/100 · 거시 반영비중 {macro_weight*100:.0f}% · 최종 {demand_score:.2f}/100",
+        "forecast_inputs":{"industry_3m_anchor_score":roundn(d3,2),"global_consumer_forecast":roundn(consumer,2),"macro_blend_weight":roundn(macro_weight,3)}
+    }
+    factors["pricing_margin"]={
+        "score":pricing_score,"quality":round(min(pq,cost_q),1),"available":True,"proxy":False,
+        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_margin_plus_{months}m_global_cost",
+        "source":f"산업 마진선행 + 글로벌 원가압력 {months}개월 독립예측",
+        "detail":f"3개월 가격·마진 앵커 {p3:.2f}/100 · 글로벌 원가압력 {months}개월 전망 {float(cost or 50):.2f}/100 · 업종 원가민감도 {cost_sens:.2f} · 최종 {pricing_score:.2f}/100",
+        "forecast_inputs":{"industry_3m_anchor_score":roundn(p3,2),"global_cost_pressure_forecast":roundn(cost,2),"cost_relief_sensitivity":roundn(cost_sens,3)}
+    }
+    financial["forecast_provenance"]="macro_forecast_derived"
+    financial["provenance"]="macro_derived"
+    financial["input_basis"]="horizon_specific_macro_forecasts"
+    financial["source"]=f"한국 금리·환율·유동성·원화강도 {months}개월 경로 → 업종 민감도"
+    financial["detail"]=(
+        f"{months}개월 기준금리 전망 {float(ki['rate']):.3f}% · USD/KRW 전망 {float(ki['fx']):,.2f}원 · "
+        f"원화유동성 {float(ki['liquidity']):+.3f} · 원화강도 {float(ki['strength']):.1f}/100 · 업종 민감도 적용"
+    )
+    financial["forecast_inputs"]={"policy_rate_forecast_pct":roundn(ki.get("rate"),3),"usdkrw_forecast":roundn(ki.get("fx"),2),"krw_liquidity_forecast":roundn(ki.get("liquidity"),4),"krw_strength_forecast":roundn(ki.get("strength"),2)}
+    factors["financial_conditions"]=financial
     # Market internals lose persistence with horizon; combine them with horizon demand/financial conditions.
     market_keep=0.40 if months==6 else 0.20
     structural=(demand_macro+float(financial["score"]))/2
-    factors["market_internals"]={"score":round(clamp(m3*market_keep+structural*(1-market_keep),0,100),2),"quality":round(min(mq*market_keep+min(consumer_q,float(financial["quality"]))*(1-market_keep),80.0),1),"available":True,"proxy":True,"source":f"KRX 단기 내부환경 감쇠 + {months}개월 수요·금융 구조환경"}
-    # Valuation is a slow-moving direct anchor; keep score but decay freshness/quality by horizon.
-    factors["valuation"]={"score":round(v3,2),"quality":round(vq*(0.88 if months==6 else 0.72),1),"available":True,"proxy":bool((base_factors.get("valuation") or {}).get("proxy")),"provenance":(base_factors.get("valuation") or {}).get("provenance","direct"),"source":f"현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 ({months}개월)"}
+    market_score=round(clamp(m3*market_keep+structural*(1-market_keep),0,100),2)
+    factors["market_internals"]={
+        "score":market_score,"quality":round(min(mq*market_keep+min(consumer_q,float(financial["quality"]))*(1-market_keep),80.0),1),
+        "available":True,"proxy":True,"forecast_provenance":"model_derived","provenance":"gap_proxy","input_basis":f"decayed_krx_anchor_plus_{months}m_structure",
+        "source":f"KRX 단기 내부환경 감쇠 + {months}개월 수요·금융 구조환경",
+        "detail":f"3개월 KRX·시장 앵커 {m3:.2f}/100을 {market_keep*100:.0f}%만 유지하고, {months}개월 수요·금융 구조점수 {structural:.2f}/100을 결합 · 최종 {market_score:.2f}/100",
+        "forecast_inputs":{"market_3m_anchor_score":roundn(m3,2),"anchor_keep_weight":roundn(market_keep,3),"structural_score":roundn(structural,2)}
+    }
+    # Valuation is a slow-moving current direct anchor; score persists but quality decays by horizon.
+    valuation_quality=round(vq*(0.88 if months==6 else 0.72),1)
+    factors["valuation"]={
+        "score":round(v3,2),"quality":valuation_quality,"available":True,
+        "proxy":bool((base_factors.get("valuation") or {}).get("proxy")),"forecast_provenance":"direct_anchor","provenance":(base_factors.get("valuation") or {}).get("provenance","direct"),
+        "input_basis":"current_krx_valuation_anchor_with_horizon_quality_decay",
+        "source":f"현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 ({months}개월)",
+        "detail":f"현재 업종 밸류에이션 점수 {v3:.2f}/100을 장기 앵커로 유지하되 자료품질을 {vq:.1f}% → {valuation_quality:.1f}%로 감쇠합니다. 미래 PER·PBR을 직접 예측한 값은 아닙니다.",
+        "forecast_inputs":{"current_valuation_anchor_score":roundn(v3,2),"current_anchor_quality":roundn(vq,1),"horizon_quality":roundn(valuation_quality,1)}
+    }
 
     base_w=industry.get("weights_3m") or {}
     mult={6:{"earnings_momentum":1.00,"demand_cycle":1.08,"pricing_margin":1.10,"financial_conditions":1.35,"market_internals":0.55,"valuation":1.45},12:{"earnings_momentum":0.85,"demand_cycle":1.00,"pricing_margin":1.20,"financial_conditions":1.55,"market_internals":0.30,"valuation":1.75}}[months]
