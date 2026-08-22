@@ -90,110 +90,209 @@ def _financial_horizon_factor(industry: dict[str, Any], ki: dict[str, Any]) -> d
 
 
 def _build_independent_horizon_block(row: dict[str, Any], industry: dict[str, Any], policy: dict[str, Any], korea_rate: dict[str, Any], korea_equity: dict[str, Any], global_bundle: dict[str, Any], months: int, current_score: float) -> dict[str, Any]:
+    """Build 6m/12m forecasts from horizon-specific inputs instead of extending 3m.
+
+    The 3m block is retained only as a short leading anchor.  Medium/long horizons
+    are driven primarily by the matching 6m/12m global demand/cost paths and Korean
+    rate/FX/liquidity/strength paths.  Current observed factors are included as a
+    separate anchor so an erroneous 3m reading cannot mechanically dominate both
+    longer horizons.
+    """
+    current = row.get("current") or {}
     base = row.get("forecast_3m") or {}
+    current_factors = current.get("factors") or {}
     base_factors = base.get("factors") or {}
     cards = global_bundle.get("cards") or {}
     c9 = cards.get("9") or cards.get(9) or {}
     c10 = cards.get("10") or cards.get(10) or {}
-    consumer, consumer_q = _horizon_forecast_value(c9, months, finite(c9.get("current"),50.0))
-    cost, cost_q = _horizon_forecast_value(c10, months, finite(c10.get("current"),50.0))
+    consumer, consumer_q = _horizon_forecast_value(c9, months, finite(c9.get("current"), 50.0))
+    cost, cost_q = _horizon_forecast_value(c10, months, finite(c10.get("current"), 50.0))
     sens = industry.get("sensitivities") or {}
-    consumer_sens=clamp(abs(float(sens.get("consumer_cycle",0.0))),0,1)
-    cost_sens=float(sens.get("cost_relief",0.0))
-    demand_macro=clamp(50+(float(consumer or 50)-50)*max(0.35,consumer_sens),0,100)
-    pricing_macro=clamp(50-(float(cost or 50)-50)*cost_sens,0,100)
-    ki=_korea_horizon_inputs(korea_rate,korea_equity,months)
-    financial=_financial_horizon_factor(industry,ki)
+    consumer_sens = clamp(abs(float(sens.get("consumer_cycle", 0.0))), 0, 1)
+    cost_sens = float(sens.get("cost_relief", 0.0))
+    demand_macro = clamp(50 + (float(consumer or 50) - 50) * max(0.35, consumer_sens), 0, 100)
+    pricing_macro = clamp(50 - (float(cost or 50) - 50) * cost_sens, 0, 100)
+    ki = _korea_horizon_inputs(korea_rate, korea_equity, months)
+    financial = _financial_horizon_factor(industry, ki)
 
-    def bf(name, default=50.0):
-        f=base_factors.get(name) or {}
-        return finite(f.get("score"),default) or default, finite(f.get("quality"),40.0) or 40.0
-    e3,eq=bf("earnings_momentum"); d3,dq=bf("demand_cycle"); p3,pq=bf("pricing_margin"); m3,mq=bf("market_internals"); v3,vq=bf("valuation")
-    # Horizon-specific macro paths move the medium/long blocks independently; 3m
-    # factor values remain industry anchors rather than being copied wholesale.
-    macro_weight = 0.45 if months==6 else 0.62
-    factors={}
-    earnings_score=round(clamp(e3*(1-macro_weight*0.45)+demand_macro*(macro_weight*0.45),0,100),2)
-    demand_score=round(clamp(d3*(1-macro_weight)+demand_macro*macro_weight,0,100),2)
-    pricing_score=round(clamp(p3*(1-macro_weight)+pricing_macro*macro_weight,0,100),2)
-    factors["earnings_momentum"]={
-        "score":earnings_score,"quality":round(min(eq,consumer_q)*0.9,1),"available":True,"proxy":False,
-        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_anchor_plus_{months}m_global_demand",
-        "source":f"산업 3개월 실적선행 앵커 + 글로벌 수요 {months}개월 경로",
-        "detail":f"3개월 실적선행 앵커 {e3:.2f}/100 · 글로벌 소비·수요 {months}개월 전망 {float(consumer or 50):.2f}/100 · 업종 수요민감도 {consumer_sens:.2f} · 최종 {earnings_score:.2f}/100",
-        "forecast_inputs":{"industry_3m_anchor_score":roundn(e3,2),"global_consumer_forecast":roundn(consumer,2),"consumer_sensitivity":roundn(consumer_sens,3)}
+    def scoreq(container: dict[str, Any], name: str, default_score: float = 50.0, default_q: float = 35.0) -> tuple[float, float]:
+        f = container.get(name) or {}
+        return finite(f.get("score"), default_score) or default_score, finite(f.get("quality"), default_q) or default_q
+
+    ce, ceq = scoreq(current_factors, "earnings_momentum")
+    cd, cdq = scoreq(current_factors, "demand_cycle")
+    cp, cpq = scoreq(current_factors, "pricing_margin")
+    cm, cmq = scoreq(current_factors, "market_internals")
+    cv, cvq = scoreq(current_factors, "valuation")
+    e3, e3q = scoreq(base_factors, "earnings_momentum", ce, ceq)
+    d3, d3q = scoreq(base_factors, "demand_cycle", cd, cdq)
+    p3, p3q = scoreq(base_factors, "pricing_margin", cp, cpq)
+    m3, m3q = scoreq(base_factors, "market_internals", cm, cmq)
+    v3, v3q = scoreq(base_factors, "valuation", cv, cvq)
+
+    # 6m/12m have their own driver mix.  3m is deliberately a minority anchor.
+    if months == 6:
+        mix = {
+            "earnings": (0.25, 0.25, 0.35, 0.15),  # current, 3m, horizon demand, horizon financial
+            "demand": (0.15, 0.25, 0.45, 0.15),
+            "pricing": (0.15, 0.20, 0.55, 0.10),  # current, 3m, horizon cost, horizon financial
+            "market_keep_current": 0.18,
+            "market_keep_3m": 0.22,
+            "valuation_earnings_adj": 0.10,
+            "valuation_demand_adj": 0.06,
+            "quality_cap": 82.0,
+        }
+    else:
+        mix = {
+            "earnings": (0.15, 0.15, 0.45, 0.25),
+            "demand": (0.10, 0.15, 0.55, 0.20),
+            "pricing": (0.10, 0.15, 0.62, 0.13),
+            "market_keep_current": 0.08,
+            "market_keep_3m": 0.12,
+            "valuation_earnings_adj": 0.14,
+            "valuation_demand_adj": 0.08,
+            "quality_cap": 75.0,
+        }
+
+    fin_score = float(financial.get("score") or 50.0)
+    fin_q = float(financial.get("quality") or 35.0)
+    ew = mix["earnings"]
+    dw = mix["demand"]
+    pw = mix["pricing"]
+    earnings_score = round(clamp(ce*ew[0] + e3*ew[1] + demand_macro*ew[2] + fin_score*ew[3], 0, 100), 2)
+    demand_score = round(clamp(cd*dw[0] + d3*dw[1] + demand_macro*dw[2] + fin_score*dw[3], 0, 100), 2)
+    pricing_score = round(clamp(cp*pw[0] + p3*pw[1] + pricing_macro*pw[2] + fin_score*pw[3], 0, 100), 2)
+
+    def qblend(values: list[tuple[float, float]]) -> float:
+        den = sum(w for _, w in values if w > 0)
+        return clamp(sum(q*w for q, w in values if w > 0) / den if den else 0.0, 0.0, 100.0)
+
+    earnings_q = qblend([(ceq, ew[0]), (e3q, ew[1]), (consumer_q, ew[2]), (fin_q, ew[3])])
+    demand_q = qblend([(cdq, dw[0]), (d3q, dw[1]), (consumer_q, dw[2]), (fin_q, dw[3])])
+    pricing_q = qblend([(cpq, pw[0]), (p3q, pw[1]), (cost_q, pw[2]), (fin_q, pw[3])])
+
+    factors: dict[str, Any] = {}
+    factors["earnings_momentum"] = {
+        "score": earnings_score, "quality": round(earnings_q, 1), "available": True, "proxy": False,
+        "forecast_provenance": "horizon_model_blend", "provenance": "model_derived",
+        "input_basis": f"current_and_3m_industry_anchors_plus_{months}m_demand_financial",
+        "source": f"현재·3개월 산업실적 앵커 + 글로벌 수요·한국 금융환경 {months}개월 경로",
+        "detail": (
+            f"현재 실적 {ce:.2f}/100 · 3개월 실적 {e3:.2f}/100 · 글로벌 수요 {months}개월 {float(consumer or 50):.2f}/100 "
+            f"(민감도 적용 {demand_macro:.2f}/100) · 금융환경 {fin_score:.2f}/100 · 최종 {earnings_score:.2f}/100"
+        ),
+        "forecast_inputs": {"current_industry_score": roundn(ce,2), "industry_3m_score": roundn(e3,2), "global_consumer_forecast": roundn(consumer,2), "demand_macro_score": roundn(demand_macro,2), "financial_score": roundn(fin_score,2), "weights": list(ew)},
     }
-    factors["demand_cycle"]={
-        "score":demand_score,"quality":round(min(dq,consumer_q),1),"available":True,"proxy":False,
-        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_demand_plus_{months}m_global_demand",
-        "source":f"산업 수요선행 + 글로벌 고용·소비 {months}개월 독립예측",
-        "detail":f"3개월 수요선행 앵커 {d3:.2f}/100 · 글로벌 소비·수요 {months}개월 전망 {float(consumer or 50):.2f}/100 · 거시 반영비중 {macro_weight*100:.0f}% · 최종 {demand_score:.2f}/100",
-        "forecast_inputs":{"industry_3m_anchor_score":roundn(d3,2),"global_consumer_forecast":roundn(consumer,2),"macro_blend_weight":roundn(macro_weight,3)}
+    factors["demand_cycle"] = {
+        "score": demand_score, "quality": round(demand_q, 1), "available": True, "proxy": False,
+        "forecast_provenance": "horizon_model_blend", "provenance": "model_derived",
+        "input_basis": f"current_and_3m_industry_demand_plus_{months}m_global_demand_financial",
+        "source": f"현재·3개월 산업수요 + 글로벌 수요·한국 금융환경 {months}개월 독립경로",
+        "detail": (
+            f"현재 수요 {cd:.2f}/100 · 3개월 수요 {d3:.2f}/100 · 글로벌 소비·수요 {months}개월 {float(consumer or 50):.2f}/100 "
+            f"(민감도 적용 {demand_macro:.2f}/100) · 금융환경 {fin_score:.2f}/100 · 최종 {demand_score:.2f}/100"
+        ),
+        "forecast_inputs": {"current_industry_score": roundn(cd,2), "industry_3m_score": roundn(d3,2), "global_consumer_forecast": roundn(consumer,2), "demand_macro_score": roundn(demand_macro,2), "financial_score": roundn(fin_score,2), "weights": list(dw)},
     }
-    factors["pricing_margin"]={
-        "score":pricing_score,"quality":round(min(pq,cost_q),1),"available":True,"proxy":False,
-        "forecast_provenance":"forecast_blend","provenance":"direct","input_basis":f"3m_industry_margin_plus_{months}m_global_cost",
-        "source":f"산업 마진선행 + 글로벌 원가압력 {months}개월 독립예측",
-        "detail":f"3개월 가격·마진 앵커 {p3:.2f}/100 · 글로벌 원가압력 {months}개월 전망 {float(cost or 50):.2f}/100 · 업종 원가민감도 {cost_sens:.2f} · 최종 {pricing_score:.2f}/100",
-        "forecast_inputs":{"industry_3m_anchor_score":roundn(p3,2),"global_cost_pressure_forecast":roundn(cost,2),"cost_relief_sensitivity":roundn(cost_sens,3)}
+    factors["pricing_margin"] = {
+        "score": pricing_score, "quality": round(pricing_q, 1), "available": True, "proxy": False,
+        "forecast_provenance": "horizon_model_blend", "provenance": "model_derived",
+        "input_basis": f"current_and_3m_margin_plus_{months}m_cost_financial",
+        "source": f"현재·3개월 산업마진 + 글로벌 원가·한국 금융환경 {months}개월 독립경로",
+        "detail": (
+            f"현재 가격·마진 {cp:.2f}/100 · 3개월 가격·마진 {p3:.2f}/100 · 글로벌 원가압력 {months}개월 {float(cost or 50):.2f}/100 "
+            f"(민감도 적용 {pricing_macro:.2f}/100) · 금융환경 {fin_score:.2f}/100 · 최종 {pricing_score:.2f}/100"
+        ),
+        "forecast_inputs": {"current_industry_score": roundn(cp,2), "industry_3m_score": roundn(p3,2), "global_cost_pressure_forecast": roundn(cost,2), "pricing_macro_score": roundn(pricing_macro,2), "financial_score": roundn(fin_score,2), "weights": list(pw)},
     }
-    financial["forecast_provenance"]="macro_forecast_derived"
-    financial["provenance"]="macro_derived"
-    financial["input_basis"]="horizon_specific_macro_forecasts"
-    financial["source"]=f"한국 금리·환율·유동성·원화강도 {months}개월 경로 → 업종 민감도"
-    financial["detail"]=(
+
+    financial["forecast_provenance"] = "macro_forecast_derived"
+    financial["provenance"] = "macro_derived"
+    financial["input_basis"] = "horizon_specific_macro_forecasts"
+    financial["source"] = f"한국 금리·환율·유동성·원화강도 {months}개월 경로 → 업종 민감도"
+    financial["detail"] = (
         f"{months}개월 기준금리 전망 {float(ki['rate']):.3f}% · USD/KRW 전망 {float(ki['fx']):,.2f}원 · "
         f"원화유동성 {float(ki['liquidity']):+.3f} · 원화강도 {float(ki['strength']):.1f}/100 · 업종 민감도 적용"
     )
-    financial["forecast_inputs"]={"policy_rate_forecast_pct":roundn(ki.get("rate"),3),"usdkrw_forecast":roundn(ki.get("fx"),2),"krw_liquidity_forecast":roundn(ki.get("liquidity"),4),"krw_strength_forecast":roundn(ki.get("strength"),2)}
-    factors["financial_conditions"]=financial
-    # Market internals lose persistence with horizon; combine them with horizon demand/financial conditions.
-    market_keep=0.40 if months==6 else 0.20
-    structural=(demand_macro+float(financial["score"]))/2
-    market_score=round(clamp(m3*market_keep+structural*(1-market_keep),0,100),2)
-    factors["market_internals"]={
-        "score":market_score,"quality":round(min(mq*market_keep+min(consumer_q,float(financial["quality"]))*(1-market_keep),80.0),1),
-        "available":True,"proxy":True,"forecast_provenance":"model_derived","provenance":"gap_proxy","input_basis":f"decayed_krx_anchor_plus_{months}m_structure",
-        "source":f"KRX 단기 내부환경 감쇠 + {months}개월 수요·금융 구조환경",
-        "detail":f"3개월 KRX·시장 앵커 {m3:.2f}/100을 {market_keep*100:.0f}%만 유지하고, {months}개월 수요·금융 구조점수 {structural:.2f}/100을 결합 · 최종 {market_score:.2f}/100",
-        "forecast_inputs":{"market_3m_anchor_score":roundn(m3,2),"anchor_keep_weight":roundn(market_keep,3),"structural_score":roundn(structural,2)}
-    }
-    # Valuation is a slow-moving current direct anchor; score persists but quality decays by horizon.
-    valuation_quality=round(vq*(0.88 if months==6 else 0.72),1)
-    factors["valuation"]={
-        "score":round(v3,2),"quality":valuation_quality,"available":True,
-        "proxy":bool((base_factors.get("valuation") or {}).get("proxy")),"forecast_provenance":"direct_anchor","provenance":(base_factors.get("valuation") or {}).get("provenance","direct"),
-        "input_basis":"current_krx_valuation_anchor_with_horizon_quality_decay",
-        "source":f"현재 KRX 업종 밸류에이션 장기 평균회귀 앵커 ({months}개월)",
-        "detail":f"현재 업종 밸류에이션 점수 {v3:.2f}/100을 장기 앵커로 유지하되 자료품질을 {vq:.1f}% → {valuation_quality:.1f}%로 감쇠합니다. 미래 PER·PBR을 직접 예측한 값은 아닙니다.",
-        "forecast_inputs":{"current_valuation_anchor_score":roundn(v3,2),"current_anchor_quality":roundn(vq,1),"horizon_quality":roundn(valuation_quality,1)}
+    financial["forecast_inputs"] = {"policy_rate_forecast_pct":roundn(ki.get("rate"),3), "usdkrw_forecast":roundn(ki.get("fx"),2), "krw_liquidity_forecast":roundn(ki.get("liquidity"),4), "krw_strength_forecast":roundn(ki.get("strength"),2)}
+    factors["financial_conditions"] = financial
+
+    # Market internals are short-lived: current/3m anchors fade sharply and the
+    # medium/long estimate follows horizon demand, earnings and financial structure.
+    keep_c = float(mix["market_keep_current"])
+    keep_3 = float(mix["market_keep_3m"])
+    structural = (demand_score + earnings_score + fin_score) / 3.0
+    structure_w = max(0.0, 1.0 - keep_c - keep_3)
+    market_score = round(clamp(cm*keep_c + m3*keep_3 + structural*structure_w, 0, 100), 2)
+    market_q = qblend([(cmq, keep_c), (m3q, keep_3), (min(earnings_q, demand_q, fin_q), structure_w)])
+    factors["market_internals"] = {
+        "score": market_score, "quality": round(min(market_q, 78.0 if months == 6 else 68.0), 1),
+        "available": True, "proxy": True, "forecast_provenance": "model_derived", "provenance": "gap_proxy",
+        "input_basis": f"decayed_current_and_3m_market_anchors_plus_{months}m_fundamental_structure",
+        "source": f"현재·3개월 KRX 내부환경 감쇠 + {months}개월 실적·수요·금융 구조환경",
+        "detail": (
+            f"현재 시장 {cm:.2f}/100 {keep_c*100:.0f}% + 3개월 시장 {m3:.2f}/100 {keep_3*100:.0f}% + "
+            f"{months}개월 실적·수요·금융 구조 {structural:.2f}/100 {structure_w*100:.0f}% · 최종 {market_score:.2f}/100"
+        ),
+        "forecast_inputs": {"current_market_score":roundn(cm,2), "market_3m_anchor_score":roundn(m3,2), "current_keep_weight":roundn(keep_c,3), "anchor_3m_keep_weight":roundn(keep_3,3), "structural_score":roundn(structural,2)},
     }
 
-    base_w=industry.get("weights_3m") or {}
-    mult={6:{"earnings_momentum":1.00,"demand_cycle":1.08,"pricing_margin":1.10,"financial_conditions":1.35,"market_internals":0.55,"valuation":1.45},12:{"earnings_momentum":0.85,"demand_cycle":1.00,"pricing_margin":1.20,"financial_conditions":1.55,"market_internals":0.30,"valuation":1.75}}[months]
-    raww={k:max(0.0,float(base_w.get(k,0.0))*mult[k]) for k in mult}; total=sum(raww.values()) or 1.0
-    weights={k:v/total for k,v in raww.items()}
-    agg=_aggregate_score(factors,weights)
-    score=float(agg.get("score") or 50.0)
-    delta=round(score-current_score,1)
-    qcov=float(agg.get("quality_weighted_coverage_pct") or 0.0)
+    # Forward valuation proxy: keep the observed valuation as the dominant anchor,
+    # but adjust modestly for horizon earnings/demand improvement or deterioration.
+    # Adjustment is capped so valuation cannot become a disguised macro forecast.
+    val_anchor = cv if cvq >= v3q else v3
+    val_anchor_q = max(cvq, v3q)
+    earnings_adj = (earnings_score - 50.0) * float(mix["valuation_earnings_adj"])
+    demand_adj = (demand_score - 50.0) * float(mix["valuation_demand_adj"])
+    forward_adj = clamp(earnings_adj + demand_adj, -5.0 if months == 6 else -7.0, 5.0 if months == 6 else 7.0)
+    valuation_score = round(clamp(val_anchor + forward_adj, 0, 100), 2)
+    valuation_quality = round(val_anchor_q * (0.84 if months == 6 else 0.68), 1)
+    factors["valuation"] = {
+        "score": valuation_score, "quality": valuation_quality, "available": True,
+        "proxy": True, "forecast_provenance": "forward_earnings_adjusted_anchor", "provenance": "model_derived",
+        "input_basis": "current_krx_valuation_anchor_plus_horizon_fundamental_adjustment",
+        "source": f"현재 KRX 업종 밸류에이션 + {months}개월 실적·수요 전망 보정",
+        "detail": (
+            f"현재 밸류에이션 앵커 {val_anchor:.2f}/100 · {months}개월 실적·수요 전망에 따른 보정 {forward_adj:+.2f}점 · "
+            f"최종 {valuation_score:.2f}/100. 미래 PER·PBR 직접 관측값이 아니라 forward 이익환경 보정 앵커입니다."
+        ),
+        "forecast_inputs": {"current_valuation_anchor_score":roundn(val_anchor,2), "earnings_horizon_score":roundn(earnings_score,2), "demand_horizon_score":roundn(demand_score,2), "fundamental_adjustment_points":roundn(forward_adj,2), "horizon_quality":roundn(valuation_quality,1)},
+    }
+
+    # For an industry-environment forecast, medium/long weights emphasize future
+    # business conditions.  Short-lived market internals and current valuation are
+    # intentionally down-weighted as the horizon extends.
+    base_w = industry.get("weights_3m") or {}
+    mult = {
+        6: {"earnings_momentum":1.15, "demand_cycle":1.20, "pricing_margin":1.10, "financial_conditions":1.20, "market_internals":0.50, "valuation":0.70},
+        12:{"earnings_momentum":1.30, "demand_cycle":1.25, "pricing_margin":1.15, "financial_conditions":1.30, "market_internals":0.25, "valuation":0.50},
+    }[months]
+    raww = {k:max(0.0, float(base_w.get(k,0.0))*mult[k]) for k in mult}
+    total = sum(raww.values()) or 1.0
+    weights = {k:v/total for k,v in raww.items()}
+    agg = _aggregate_score(factors, weights)
+    score = float(agg.get("score") or 50.0)
+    delta = round(score-current_score, 1)
+    qcov = float(agg.get("quality_weighted_coverage_pct") or 0.0)
+    qcap = float(mix["quality_cap"])
     return {
-        "score":round(score,1),"band":_score_band(score,policy),"delta_points":delta,
+        "score":round(score,1), "band":_score_band(score,policy), "delta_points":delta,
         "direction":"개선" if delta>1 else ("악화" if delta<-1 else "유지"),
-        "change_strength":_delta_strength(delta,policy),"quality_score":round(min(qcov,80.0 if months==6 else 72.0),1),
+        "change_strength":_delta_strength(delta,policy), "quality_score":round(min(qcov,qcap),1),
         "data_coverage_pct":round(float(agg.get("base_data_coverage_pct") or 0.0),1),
-        "quality_weighted_coverage_pct":round(qcov,1),"factors":factors,"contributions":agg.get("contributions") or [],
-        "metrics":[],"positive_indicators":[],"negative_indicators":[],"status":"estimated","score_source":"independent_horizon_model",
-        "estimated_score":round(score,1),"estimated_quality":round(min(qcov,80.0 if months==6 else 72.0),1),
+        "quality_weighted_coverage_pct":round(qcov,1), "factors":factors, "contributions":agg.get("contributions") or [],
+        "metrics":[], "positive_indicators":[], "negative_indicators":[], "status":"estimated", "score_source":"independent_horizon_model", "horizon_model_version":"2.0",
+        "estimated_score":round(score,1), "estimated_quality":round(min(qcov,qcap),1),
         "available_factor_count":sum(1 for f in factors.values() if f.get("available")),
-        "horizon_basis":f"independent_{months}m_multi_source_model","horizon_specific_inputs":True,
+        "horizon_basis":f"independent_{months}m_multi_source_model", "horizon_specific_inputs":True,
         "horizon_inputs":{
-            "global_consumer_forecast":roundn(consumer,2),"global_consumer_quality":roundn(consumer_q,1),
-            "global_cost_pressure_forecast":roundn(cost,2),"global_cost_quality":roundn(cost_q,1),
-            "korea_policy_rate_forecast_pct":roundn(ki.get("rate"),3),"usdkrw_forecast":roundn(ki.get("fx"),2),
-            "krw_liquidity_forecast":roundn(ki.get("liquidity"),4),"krw_strength_forecast":roundn(ki.get("strength"),2),
+            "global_consumer_forecast":roundn(consumer,2), "global_consumer_quality":roundn(consumer_q,1),
+            "global_cost_pressure_forecast":roundn(cost,2), "global_cost_quality":roundn(cost_q,1),
+            "korea_policy_rate_forecast_pct":roundn(ki.get("rate"),3), "usdkrw_forecast":roundn(ki.get("fx"),2),
+            "krw_liquidity_forecast":roundn(ki.get("liquidity"),4), "krw_strength_forecast":roundn(ki.get("strength"),2),
         },
-        "model_note":"기존 원천의 6/12개월 독립 전망값을 재사용하며 새 외부 API 호출은 추가하지 않습니다.",
+        "horizon_weights": {k:roundn(v,4) for k,v in weights.items()},
+        "model_note":"6/12개월은 현재·3개월 산업앵커와 해당 기간 글로벌 수요·원가 및 한국 금리·환율·유동성 경로를 별도 결합합니다. 3개월 점수를 단순 연장하지 않습니다.",
     }
 
 
